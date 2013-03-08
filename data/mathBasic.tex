@@ -1,0 +1,41 @@
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 
+
+\chapter{数学基础}
+
+\section{常微分方程数值解}
+
+本节主要内容参考 \onlinecite{cheney2007numerical}。
+
+只考虑给定初值的一阶常微分方程组问题，其一般形式为
+\begin{align}
+  \left\{
+  \begin{aligned}
+    &\bm{x}'=\bm{f}(t,\bm{x})\\
+    &\bm{x}(t_0)=\bm{x}_0
+  \end{aligned}
+  \right.
+  \titlelabel{eq:mathbasic.ode.eq}{给定初值的一阶常微分方程组一般形式}
+\end{align}
+
+\subsection{数值方法}
+
+记时间$t$的离散步长为$h$。
+
+\subsubsection{欧拉方法}
+
+\ateqref{eq:mathbasic.ode.eq}式的离散格式为
+\begin{align}
+  &\bm{x}_{n+1}=\bm{x}_n + h \bm{f}(t_n,\bm{x}_n)
+\end{align}
+
+
+\subsubsection{隐式欧拉方法}
+
+\ateqref{eq:mathbasic.ode.eq}式的离散格式为
+\begin{align}
+  &\bm{x}_{n+1}=\bm{x}_n + h \bm{f}(t_{n+1},\bm{x}_{n+1})
+\end{align}
+

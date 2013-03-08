@@ -1,0 +1,53 @@
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 
+
+\chapter{程序辅助功能}
+
+\section{程序外部依赖库简介}
+
+\subsection{Thrust}
+
+Thrust是一个并行算法库，提供了Map、Reduce等基础函数，简化了CUDA程序开发。
+Thrust由NVidia公司的雇员Jared Hoberock、Nathan Bell开发并维护，
+被CUDA开发环境CUDA Toolkit所包含，并在Github上基于Apache开源协议开源，
+当前版本为Thrust 1.7.0，
+项目主页\url{http://thrust.github.com}。
+
+\subsection{CUSP}
+
+CUSP是CUDA环境下的一个稀疏矩阵函数库，依赖于Thrust，
+由NVidia公司的雇员Steven Dalton、Nathan Bell开发。
+CUSP基于Apache开源协议开源，当前版本为CUSP 0.3.1，
+项目地址\url{http://cusplibrary.github.com}。
+
+\subsection{HDF5}
+
+HDF5是一种分层的、带有元数据的、支持多种数据格式的、针对科学计算的数据文件存储格式及相关技术。
+它最早由美国国家超级计算应用中心（NCSA， 
+National Center for Supercomputing Applications）提出，
+现在由非营利的HDF Group管理和维护。\cite{HDF5Wiki}
+
+HDF5文件格式的读写库基于一种类似于BSD的协议开源，协议文本可以从
+\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取。
+
+当前版本为HDF5 1.8.10 patch1，
+可从\url{http://www.hdfgroup.org/downloads/index.html} 获取。
+
+\subsection{Lua、LuaJIT }
+
+Lua是一种快速、轻量级的嵌入式脚本语言，
+在1993年由巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）
+计算机图形技术组（Computer Graphics Technology Group）的成员
+Roberto Ierusalimschy、 Luiz Henrique de Figueiredo和 Waldemar Celes所开发。
+\cite{LuaWiki}
+
+Lua很容易嵌入到其他程序中作为内嵌的解释器使用，已在PC游戏界广泛使用。
+当前版本5.2.1，基于MIT开源协议开源，
+可从 \url{http://www.lua.org/download.html}获得。
+
+LuaJIT是Lua语言的非官方JIT(Just-In-Time Compiler)实现，由Mike Pall开发。
+LuaJIT基于MIT开源协议开源，当前版本LuaJIT 2.0.1，可以从\url{luajit.org/download.html}获取。
+LuaJIT是当前世界上最快的动态语言实现之一。\cite{LuaJITHomepage}
+
