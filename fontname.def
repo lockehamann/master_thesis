@@ -1,0 +1,7 @@
+\ProvidesFile{fontname.def}
+\newcommand{\fontsong}{宋体}
+\newcommand{\fonthei}{黑体}
+\newcommand{\fontkai}{楷体}
+\newcommand{\fontfs}{仿宋}
+\newcommand{\fontli}{隶书}
+\newcommand{\fontyou}{幼圆}
