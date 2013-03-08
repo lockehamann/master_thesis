@@ -95,8 +95,9 @@
 \RequirePackage[config]{subfig}
 \RequirePackage{indentfirst}
 \RequirePackage[neverdecrease]{paralist}
+\RequirePackage[bottom]{footmisc} %使用了\raggedbottom后仍然保持脚注在页面底部
 \ifthu@xetex
-  \RequirePackage{mathptmx} % fontspec conflicts with txfonts now, so we have to load other times-math fonts.
+  %\RequirePackage{mathptmx} % fontspec conflicts with txfonts now, so we have to load other times-math fonts.
   \RequirePackage[CJKnumber=true,normalindentfirst]{xeCJK}
   \xeCJKsetup{AutoFakeBold=true,AutoFakeSlant=true}
   \punctstyle{quanjiao}

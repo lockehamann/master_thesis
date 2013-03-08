@@ -1,8 +1,9 @@
 \ProvidesPackage{thutils}[2007/11/30 4.1 put any packages you would like to use here]
 
 % 处理数学公式中的黑斜体的宏包
-%\RequirePackage{bm}
+\RequirePackage{bm}
 
+\raggedbottom %不要增加段落间距
 
 % 不同于~|\mathcal| or |\mathfrak| 之类的英文花体字体
 %\RequirePackage{mathrsfs}
@@ -19,6 +20,7 @@
 % 表格中的反斜线
 \RequirePackage{diagbox}
 
+
 % 确定浮动对象的位置，可以使用~H，强制将浮动对象放到这里（可能效果很差）
 \RequirePackage{float}
 
@@ -33,8 +35,124 @@
 % 给自定义的宏后面自动加空白
 % \RequirePackage{xspace}
 
+\newif\ifthu@addfootnotetoref\thu@addfootnotetoreffalse
 
-% 定义自己常用的东西
-\newcommand{\china}{中华人民共和国}
+\DeclareOption{addfootnotetoref}{\thu@addfootnotetoreftrue}
+\DeclareOption*{\typeout{What's \CurrentOption?}}
+\ProcessOptions\relax
+
+%========================智能引用============================
+\providecommand\hyperref[2][]{}
+
+\ifthu@addfootnotetoref
+\providecommand*{\footref}[1]{%
+  \begingroup
+    \unrestored@protected@xdef\@thefnmark{\ref{#1}}%
+  \endgroup
+  \hyperref[#1]{\@footnotemark}%
+}
+
+%以下内容主要由Tex@Newsmth版主milksea实现
+\def\getrefpage#1#2{%
+  \expandafter\@ifundefined{r@#2}{%
+    \edef#1{??}%
+  }{%
+    \begingroup
+    \edef\x{\csname r@#2\endcsname}%
+    \edef\x{\expandafter\@secondoffive\x}%
+    \edef\x{\noexpand\edef\noexpand#1{\x}}%
+    \expandafter\endgroup\x
+  }}
+
+\newcounter{refcnt}
+\def\getcurpage#1{%
+  \stepcounter{refcnt}%
+  \label{ref@\therefcnt}%
+  \getrefpage#1{ref@\therefcnt}}
+
+
+\newcommand\varref[4]{%
+  \getrefpage\refpage{#4}%
+  \getcurpage\curpage
+  \ifx\refpage\curpage
+    #1%
+  \else
+    \expandafter\@ifundefined{varref@#4@\curpage}{%
+      \@namedef{varref@#4@\curpage}{}%
+      #2%
+    }{%
+      #3%
+    }%
+  \fi}
+
+\def\secref@curpage#1{\hyperref[#1]{第 \ref*{#1} 节}}
+\def\secref@otherpage#1{%
+  \secref@curpage{#1}%
+  \footnote{\label{fn@#1@\curpage}%
+    \hyperref[#1]{\ref*{#1} 节}标题：\nameref{#1}，第 \refpage{} 页。}}
+\def\secref@moreotherpage#1{%
+  \secref@curpage{#1}\footref{fn@#1@\curpage}}
+
+\newcommand\sectionref[1]{\varref
+  {\secref@curpage{#1}}
+  {\secref@otherpage{#1}}
+  {\secref@moreotherpage{#1}}{#1}\!}
+
+
+\def\floatref@curpage#1{\autoref{#1}}
+
+\def\floatref@otherpage#1#2{%
+  \floatref@curpage{#1}%
+  \footnote{\label{fn@#1@\curpage}%
+    \autoref{#1}：\hyperref[#1]{\ifthenelse{\equal{#2}{}}{\nameref{#1}}{#2}}，第 \refpage{} 页。}}
+\def\floatref@moreotherpage#1{%
+  \floatref@curpage{#1}\footref{fn@#1@\curpage}}
+
+\newcommand\floatref[2][]{\varref
+  {\floatref@curpage{#2}\,}
+  {\floatref@otherpage{#2}{#1}\!}
+  {\floatref@moreotherpage{#2}\!}{#2}}
+
+
+\def\aeqref@curpage#1{\hyperref[#1]{ \eqref{#1} }}
+\def\aeqref@otherpage#1{%
+  \aeqref@curpage{#1}%
+  \footnote{\label{fn@#1@\curpage}%
+    \hyperref[#1]{ \eqref{#1} 式}，见第 \refpage{} 页。}}
+\def\aeqref@moreotherpage#1{%
+  \aeqref@curpage{#1}\footref{fn@#1@\curpage}}
+
+\def\ateqref@otherpage#1{%
+  \aeqref@curpage{#1}%
+  \footnote{\label{fn@#1@\curpage}%
+    \hyperref[#1]{ \eqref{#1} 式}，\titleref{#1}，见第 \refpage{} 页。}}
+
+\newcommand\aeqref[1]{\varref
+  {\aeqref@curpage{#1}}
+  {\aeqref@otherpage{#1}}
+  {\aeqref@moreotherpage{#1}}{#1}\!}
+
+\newcommand\ateqref[1]{\varref
+  {\aeqref@curpage{#1}}
+  {\ateqref@otherpage{#1}}
+  {\aeqref@moreotherpage{#1}}{#1}\!}
+
+
+\else
+
+\newcommand\sectionref[1]{\hyperref[#1]{第 \ref*{#1} 节}}
+\newcommand\floatref[2][]{\autoref{#2}}
+\newcommand\aeqref[1]{\eqref{#1}}
+
+\fi
+
+
+\newcommand\titlelabel[2]{%
+  \label{#1}%
+  \write\@auxout{%
+    \global\noexpand\@namedef{title@#1}{#2}}}
+\newcommand\titleref[1]{%
+  \@ifundefined{title@#1}{\TODO}{\@nameuse{title@#1}}}
+
 
 \endinput
