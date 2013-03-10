@@ -58,6 +58,8 @@
 \DeclareOption{arialtoc}{\thu@arialtoctrue}
 \newif\ifthu@arialtitle
 \DeclareOption{arialtitle}{\thu@arialtitletrue}
+\newif\ifthu@raggedbottom\thu@raggedbottomtrue
+\DeclareOption{noraggedbottom}{\thu@raggedbottomfalse}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ExecuteOptions{utf,arialtitle}
 \ProcessOptions\relax
@@ -95,6 +97,10 @@
 \RequirePackage[config]{subfig}
 \RequirePackage{indentfirst}
 \RequirePackage[neverdecrease]{paralist}
+\ifthu@raggedbottom
+  \RequirePackage[bottom]{footmisc}
+  \raggedbottom
+\fi
 \ifthu@xetex
   \RequirePackage{mathptmx} % fontspec conflicts with txfonts now, so we have to load other times-math fonts.
   \RequirePackage[CJKnumber=true,normalindentfirst]{xeCJK}
