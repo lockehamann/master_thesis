@@ -18,6 +18,11 @@ addfootnotetoref
 
 \usepackage[xetex,hyperref]{xcolor}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows,calc}
+\usetikzlibrary{external}
+\tikzexternalize
+
 \newcommand{\TODO}{ \textcolor{blue}{TODO} }
 \colorlet{BLUE}{blue}
 
@@ -56,6 +61,27 @@ addfootnotetoref
 \newcommand{\diff}[1]{\mathrm{d}#1}
 
 
+\tikzifexternalizing{}
+{
+\usepackage{eso-pic}
+\usepackage{datetime}
+\newdateformat{mydate}{\THEYEAR-\twodigit{\THEMONTH}-\twodigit{\THEDAY}}
+\newtimeformat{mytime}{\twodigit{\THEHOUR}:\twodigit{\THEMINUTE}}
+\settimeformat{mytime}
+\AddToShipoutPicture{%
+  \parbox[b][\paperheight]{\paperwidth}{%
+    \vfill
+    \centering%
+    \tikzset{external/export next=false}%
+    \begin{tikzpicture}
+      \coordinate (center) at (current page.center);
+      \node [rotate=45,scale=10] at ($(center) +(-1cm,1cm)$) {\textcolor[gray]{0.9}{DRAFT}};
+      \node [rotate=45,scale=2.5] at ($(center) +(1cm,-1cm)$)
+          {\textcolor[gray]{0.85}{编译时间：\mydate\today\hspace{5pt} \currenttime}};
+    \end{tikzpicture}%
+    \vfill
+  }}
+}
 
 \begin{document}
 
