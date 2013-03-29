@@ -104,17 +104,17 @@
 
 \def\floatref@curpage#1{\autoref{#1}}
 
-\def\floatref@otherpage#1#2{%
+\def\floatref@otherpage#1{%
   \floatref@curpage{#1}%
   \footnote{\label{fn@#1@\curpage}%
-    \autoref{#1}：\hyperref[#1]{\ifthenelse{\equal{#2}{}}{\nameref{#1}}{#2}}，第 \refpage{} 页。}}
+    \autoref{#1}：\hyperref[#1]{\nameref{#1}}，第 \refpage{} 页。}}
 \def\floatref@moreotherpage#1{%
   \floatref@curpage{#1}\footref{fn@#1@\curpage}}
 
-\newcommand\floatref[2][]{\varref
-  {\floatref@curpage{#2}\,}
-  {\floatref@otherpage{#2}{#1}\!}
-  {\floatref@moreotherpage{#2}\!}{#2}}
+\newcommand\floatref[1]{\varref
+  {\floatref@curpage{#1}\,}
+  {\floatref@otherpage{#1}\!}
+  {\floatref@moreotherpage{#1}\!}{#1}}
 
 
 \def\aeqref@curpage#1{\hyperref[#1]{ \eqref{#1} }}
