@@ -119,7 +119,6 @@ Block之间没有任何直接的同步方式，
 而CUDA对Grid大小（包含的Block数量）的限制则很小。
 NVIDIA这样做是为了通过强制程序员对计算任务进行分割的方式获得了一定的程序并行扩展性，
 同时也简化了同一系列不同规格GPU的设计，即通过增减SM/SMX的数量来控制GPU计算能力。
-\usetikzlibrary{arrows.new}
 \begin{figure}
 \centering
 \begin{tikzpicture}[scale=0.6, transform shape]
