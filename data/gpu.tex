@@ -16,19 +16,17 @@
 CUDA翻译为\emph{统一计算设备架构}，本身定位做一种包含CPU和GPU的编程模型，
 不过实际上一般只用作GPU编程和GPU、CPU通讯编程。
 
-为方便起见本章以下只考虑单机上只有一个GPU核心的情况，
-多GPU核心情况的讨论放在\sectionref{sec:gpu.multi-gpu}进行。
-
 CUDA把设备资源分为主机端和GPU端两部分，
 主机端包含CPU、内存等正常C/C++程序可以访问到的资源，
 GPU端包含多个SM(Streaming Multiprocessor)
 或SMX(Next Generation Streaming Multiprocessor)
-\footnote{从 NVIDIA显卡的 Kepler 架构开始，SM的规格大幅改变，改称为SMX。}
+\footnote{从 NVIDIA显卡的 Kepler 架构开始，SM的规格大幅改变，改称为SMX。
+为方便起见以下不再提SM，提到SMX时也包含SM。}
 、显存等资源。
 
-其中SM/SMX代表GPU核心内的一个相对独立的向量处理单元，
-类似传统的向量机中央处理器，这些SM/SMX位于GPU的核心芯片内。
-显存位于显卡PCB上，并被所有的SM/SMX共享。
+其中SMX代表GPU核心内的一个相对独立的向量处理单元，
+类似传统的向量机中央处理器，这些SMX位于GPU的核心芯片内。
+显存位于显卡PCB上，并被所有的SMX共享。
 
 显存和主机内存是独立的，有各自的地址空间，
 CPU端的代码不能直接读写显存，
@@ -83,15 +81,15 @@ CUDA提供的Thread编号同样是1维、2维或3维整数，
     \TextBox{\x*2.5+1}{-\y*1.5+3}{Block(\x,\y)}
   }
 \draw  (0.5,5) rectangle (8.5,1);
-\node at (1.5,4.5) {Grid};
+\node at (1.5,4.5) {\large Grid};
 
 \foreach \x in {0,...,3}
   \foreach \y in {0,...,2}
   {
-    \TextBox{\x*2.5}{-\y*1.5-1.5}{Block(\x,\y)}
+    \TextBox{\x*2.5}{-\y*1.5-1.5}{\small Thread(\x,\y)}
   }
 \draw  (-0.5,0.5)  rectangle (10,-5);
-\node at (1,0) {Block(2,1)};
+\node at (1,0) {\large Block(2,1)};
 
 \draw [dashed]  (6,2.5) edge (-0.5,0.5);
 \draw [dashed]  (8,2.5) edge (10,0.5);
@@ -104,21 +102,22 @@ CUDA提供的Thread编号同样是1维、2维或3维整数，
 
 同一个global函数调用时所涉及的线程均使用global函数的参数作为输入，
 CUDA提供threadIdx、blockIdx等变量在代码中区分各个线程。
-线程以Block为单元分配给GPU上的各个SM/SMX独立执行，
+线程以Block为单元分配给GPU上的各个SMX独立执行，
 Block之间没有任何直接的同步方式，
-程序员不需要知道也不应该猜测各Block是如何在各个SM/SMX执行的。
-需要说明的是：强行使用显存作为Block间的同步可能会导致各SM/SMX死锁。
+程序员不需要知道也不应该猜测各Block是如何在各个SMX执行的。
+需要说明的是：强行使用显存作为Block间的同步可能会导致各SMX死锁。
 实际Block间同步的最主要方式就是等待该global函数执行完，
 此时所有Block状态都是确定的，即已经执行完。
 
-这样GPU或驱动就可以根据实际GPU核心上的SM/SMX数量来具体配置各Block是如何在SM/SMX上执行的，
+这样GPU或驱动就可以根据实际GPU核心上的SMX数量来具体配置各Block是如何在SMX上执行的，
 使得当SM数量不超过Block数量时global函数有了一定的并行扩展性，
 见\floatref{fig:gpu.cuda.scalability}。
-由于每个Block是运行在一个实际SM/SMX上的，
-所以SM/SMX的寄存器、共享存储空间等资源会对Block的大小（包含的Thread数量）有一定的限制，
+由于每个Block是运行在一个实际SMX上的，
+所以SMX的寄存器、共享存储空间等资源会对Block的大小（包含的Thread数量）有一定的限制，
 而CUDA对Grid大小（包含的Block数量）的限制则很小。
 NVIDIA这样做是为了通过强制程序员对计算任务进行分割的方式获得了一定的程序并行扩展性，
-同时也简化了同一系列不同规格GPU的设计，即通过增减SM/SMX的数量来控制GPU计算能力。
+同时也简化了同一系列不同规格GPU的设计，即通过增减SMX的数量来控制GPU计算能力。
+
 \begin{figure}
 \centering
 \begin{tikzpicture}[scale=0.6, transform shape]
@@ -192,7 +191,7 @@ NVIDIA这样做是为了通过强制程序员对计算任务进行分割的方�
 %15*SMX
 \def\SMX#1#2{
 \draw  (#1+0, #2) rectangle (#1+1, #2+1);
-\node at (#1+0.5, #2+0.5) {SMX};
+\node at (#1+0.5, #2+0.5) {\small SMX};
 }
 \def\len{1.5}
 \foreach \x in {0,...,8}
@@ -202,7 +201,7 @@ NVIDIA这样做是为了通过强制程序员对计算任务进行分割的方�
 
 %L2 Cache
 \draw  (0,-0.5) rectangle (13,-1.5);
-\node at (6.5,-1) {L2 Cache};
+\node at (6.5,-1) {L2缓存};
 
 
 \def\Memory#1#2{
@@ -228,32 +227,197 @@ NVIDIA这样做是为了通过强制程序员对计算任务进行分割的方�
 \end{figure}
 
 GPU是由多个SMX组成的，例如Kepler架构GK110核心
-（结构见\floatref{fig:gpu.cuda.gk110}）就包含15个SMX，
-其中每个SMX含有192个CUDA Core单元（支持单精度、整数计算）、
-64个双精度浮点计算单元、32个特殊函数计算单元、32个读取/存储单元，
-4个Wrap调度器，65536个32bit寄存器，见\floatref{fig:gpu.cuda.smx}。
+（见\floatref{fig:gpu.cuda.gk110}）就包含15个SMX，
+其中每个SMX（见\floatref{fig:gpu.cuda.smx}）
+含有192个CUDA Core单元（支持单精度、整数计算，图示中Core）、
+64个双精度浮点计算单元（图示中DP Unit）、
+32个特殊函数计算单元（图示中SFU）、
+32个读取/存储单元（图示中LD/ST），
+4个Wrap调度器，65536个32bit寄存器。
+SMX以32个Thread为一组（称为wrap）来调度Block中的线程，
+每个SMX有4个wrap调度器和8个指令分派单元，这使得SMX可以同时执行4个wrap，
+每个周期中每个wrap最多可以有两条不相关的指令被同时分派。
 \cite{cudadoc-KeplerGK110ArchitectureWhitepaper}
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.6]{smx.png}
+%\includegraphics[scale=0.6]{smx.png}
+\begin{tikzpicture}[scale=0.7, transform shape]
+\def\TextBox#1#2#3#4
+{
+  \draw (#1,#2) rectangle (#1+#3,#2+1);
+  \node at (#1+#3/2, #2+0.5) {#4};
+}
+
+\def\CoreLine#1#2
+{
+\foreach \i in {0,...,2}
+{ \TextBox{#1+\i*1.5+0}{#2+0}{1}{Core} }
+\TextBox{#1+4.5}{#2+0}{2}{DP Unit}
+
+\foreach \i in {0,...,2}
+{ \TextBox{#1+\i*1.5+7}{#2+0}{1}{Core} }
+\TextBox{#1+11.5}{#2+0}{2}{DP Unit}
+
+\TextBox{#1+14}{#2+0}{1.5}{LD/ST}
+\TextBox{#1+16}{#2+0}{1}{SFU}
+}
+
+\CoreLine{0}{0}
+
+\CoreLine{0}{-4}
+
+\draw [decorate, decoration={brace, amplitude=10pt}] (-0.5,-4.25) -- (-0.5,1.25);
+\node [left]at (-1,-1.5) {\large 32组};
+\draw [loosely dashed] (0.5,-0.5) -- (0.5,-2.5);
+\draw [loosely dashed] (8,-0.5) -- (8,-2.5);
+\draw [loosely dashed] (16.5,-0.5) -- (16.5,-2.5);
+
+\draw  (-0.5,2.5) rectangle (17.5,1.5);
+\node at (8,2) {\large 寄存器文件(65536个 32bit寄存器)};
+
+\foreach \x in {0,...,3}
+{
+  \def\xlen{4.5}
+  \draw  (\x*\xlen-0.25,4) rectangle (\x*\xlen-0.25+4,3);
+  \node  at (\x*\xlen+1.75,3.5) {\large Wrap调度器}; 
+}
+\draw  (-0.5,4.5) rectangle (17.5,5.5);
+\node at (8,5) {\large 指令缓存};
+
+\draw  (17.5,-4.5) rectangle (-0.5,-5.5);
+\draw  (17.5,-6) rectangle (-0.5,-7);
+\draw  (17.5,-7.5) rectangle (-0.5,-8.5);
+\node at (8,-5) {\large 内部互联网络};
+\node at (8,-6.5) {\large 64KB 共享存储区 / L1 缓存};
+\node at (8,-8) {\large 48KB 只读数据缓存};
+
+\foreach \x in {0,...,7}
+{
+  \foreach \y in {0,1}
+  {
+    \draw  (\x*2.25-0.5,-\y*1.5-9) rectangle (\x*2.25+1.5,-\y*1.5-10);
+    \node at (\x*2.25+0.5,-\y*1.5-9.5) {纹理单元};
+  }
+}
+
+\draw  (-3,-12) rectangle (18,6.5);
+\node [right] at (-2.5,6) {\Large SMX};
+\end{tikzpicture}
 \caption[SMX结构示意图]{\label{fig:gpu.cuda.smx}SMX结构示意图
 \cite{cudadoc-KeplerGK110ArchitectureWhitepaper}}
 \end{figure}
 
-The SMX schedules threads in groups of 32 parallel threads called warps.
- Each SMX features four warp schedulers and eight instruction dispatch units,
-  allowing four warps to be issued and executed concurrently.
-  Kepler’s quad warp scheduler selects four warps,
-   and two independent instructions per warp can be dispatched each cycle. 
+SMX的存储器结构较为复杂，通用存储器的结构见\floatref{fig:gpu.cuda.memory}，
+其中寄存器部分和传统程序一样，并不直接对程序员可见，由CUDA编译器进行分配，
+L1缓存、L2缓存对程序员也不是直接可见的，会在访问显存时自动进行调度。
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[scale=0.8, transform shape]
+
+\draw  (0,3) ellipse (1 and 0.5);
+\node at (0,3) {Thread};
+
+\draw  (-1.5,0.5) rectangle (1.5,1.5);
+\node at (0,1) {L1缓存};
+
+\draw  (-5,0.5) rectangle (-2,1.5);
+\node at (-3.5,1) {共享存储区};
+
+\draw  (2,0.5) rectangle (5,1.5);
+\node at (3.5,1) {只读数据缓存};
+
+\draw [latex new-latex new, arrow head=3mm] (0,2.5) -- (0,1.5);
+\draw [latex new-latex new, arrow head=3mm] (-0.5,2.5) -- (-3.5,1.5);
+\draw [latex new-, arrow head=3mm] (0.5,2.5) -- (3.5,1.5);
+
+\draw  (-5,-1.5) rectangle (5,-0.5);
+\node at (0,-1) {\large L2缓存};
+\draw [latex new-latex new, arrow head=3mm](0,0.5) -- (0,-0.5);
+\draw [latex new-, arrow head=3mm](3.5,0.5) -- (3.5,-0.5);
+
+\draw  (-5,-3.5) rectangle (5,-2.5);
+\node at (0,-3) {\large 显存};
+\draw [latex new-latex new, arrow head=3mm](0,-1.5) -- (0,-2.5);
+
+\draw [decorate, decoration={brace, amplitude=7pt}] (-5.5,0) -- (-5.5,4);
+\node [left] at (-5.75,2) {\large SMX};
+
+\draw [decorate, decoration={brace, amplitude=7pt}] (-7,-2) -- (-7,4);
+\node [left] at (-7.5,1) {\large GK110};
+
+\draw (-5,2.5) rectangle (-2,3.5);
+\node at (-3.5,3) {寄存器};
+\draw [latex new-latex new, arrow head=3mm] (-1,3) -- (-2,3);
+\end{tikzpicture}
+\caption[Kepler存储器结构示意图]{\label{fig:gpu.cuda.memory}Kepler存储器结构示意图
+\cite{cudadoc-KeplerGK110ArchitectureWhitepaper}}
+\end{figure}
+
+Global函数和device函数可以通过指针直接访问共享存储区、显存。
+共享存储区位于SMX内，和L1缓存共用64KB空间，
+在global函数启动时可以对共享存储区/L1缓存的分配进行设置，
+分配的方式有：16KB/48KB、32KB/32KB(限Kepler架构)、48KB/16KB三种。
+\cite{cudadoc-KeplerGK110ArchitectureWhitepaper}
+
+在SMX上运行的Block中的所有线程共享SMX全部的65536个32位寄存器，
+一旦分配完成，每个Thread线程就只能使用自己所有的寄存器，其他的寄存器则不可见。
+每个Thread需要使用的寄存器数量由CUDA编译器控制。
+
+共享存储区则对同一个Block内所有的线程可见，是同一个Block内的Thread协作、通讯的主要方式，
+每个Block使用的共享存储区的大小在global函数启动时进行配置。
+
+只读数据缓存可以用来加速在global函数运行过程中保持不便的数据的读取，
+程序员可以通过带有const  \_\_restrict\_\_标识的指针进行访问，
+也可以通过纹理模式访问。在Fermi及之前的架构中，该部分缓存只能通过纹理方式使用。
 \cite{cudadoc-KeplerGK110ArchitectureWhitepaper}
 
 
-\subsection{多GPU及多节点并行计算}
-\label{sec:gpu.multi-gpu}
 
 \section{其他GPU编程技术简介}
 
 \subsection{OpenCL}
-\subsection{AMP}
+
+在以CUDA为代表的各种硬件相关的GPU、众核编程技术发展之后，
+非营利性组织Khronos提出异构平台计算的开放标准OpenCL。
+
+在GPU通用计算领域起步较晚的AMD公司（原ATI公司被AMD收购）
+放弃设计一个CUDA这样专为自己生产的GPU编程的编程技术，
+直接采用OpenCL作为其GPU的主要开发技术。
+
+OpenCL在很多设备概念、编程模型上照搬较为成熟的CUDA的设计，
+但和CUDA相比仍有较大差异。
+
+CUDA程序的编译过程主要发生在主程序开发过程中，CUDA C/C++编译器首先处理CUDA程序的源代码，
+把代码分为GPU端和CPU端两部分，CPU端的代码交给GCC/MSVC等传统编译器进行编译，
+GPU端的代码则由自己处理，生成相应的GPU PTX代码、主机端调用代码等部分，
+最后和程序的其他部分链接成一个主程序。
+这其中的PTX代码类似“GPU上的汇编代码”，实际上更接近于Java编译后的字节码，
+PTX代码在运行时由主机端驱动程序编译成实际GPU的硬件指令交给GPU运行。
+通过增加PTX这一层抽象，NVIDIA使得程序能够在GPU ISA(Instruction Set Architecture)
+设计发生变化时仍然可以直接运行。
+
+OpenCL代码语法和CUDA一样以C为蓝本，但并不和普通的C代码混在一起，
+而是直接以文本形式保存于程序或其他数据文件中，
+在运行时由硬件驱动进行编译生成实际硬件代码运行。
+所以说OpenCL程序的编译过程主要发生在运行时。
+
+现在支持OpenCL的主要硬件/厂商有：\cite{opencl-conformant-products}
+\begin{enumerate}[1)]
+\item Intel x86 CPU（及内嵌的Intel HD Graphics集成显卡）
+\item AMD CPU/APU
+\item AMD显卡
+\item NVIDIA显卡
+\item Intel MIC(Many Integrated Core) Architecture
+\item ARM
+\end{enumerate}
+相对来说，AMD显卡和MIC上的OpenCL支持较好，因为这是它们上的主要编程方式，
+NVIDIA对OpenCL的支持略差，某些情况下可能会有性能明显下降的情况。
+
+
+\subsection{C++ AMP}
+
+C++ AMP全称C++ Accelerated Massive Parallelism
+\cite{cppamp}
 \subsection{OpenACC与OpenMP}
