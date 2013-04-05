@@ -109,7 +109,6 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 %%% 正文部分
 \mainmatter
-
 \chapter{引言}
 \section{研究背景}
 \section{国内外研究现状}
@@ -117,16 +116,8 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 \include{data/gpu}
 
-\section{GPU线性方程组求解算法}
-\subsection{传统迭代算法回顾}
-\subsection{Krylov子空间类算法}
-\subsubsection{CG}
-\subsubsection{BiCGStab}
-\subsubsection{GMRES}
-\subsection{预条件处理}
-\subsubsection{多重网格}
-
-\chapter{GPU大型中子扩散方程求解方法研究}
+\chapter{大型扩散方程GPU求解方法研究}
+\section{矩阵格式选择}
 \section{迭代算法选择}
 \section{预条件算法选择}
 \section{双层网格加速}
@@ -135,9 +126,13 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 \section{稳态公式推导}
 \section{动力学公式推导}
 
-\chapter{数值结果验证及参数影响对比}
-
-
+\chapter{数值结果验证}
+\section{基准算例}
+\subsection{静态三维IAEA PWR基准问题}
+\subsection{动态二维TWIGL基准问题}
+\subsection{动态三维LMW基准问题}
+\section{数值结果及验证}
+\section{参数影响对比}
 
 \chapter{结论与展望}
 
@@ -162,10 +157,41 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 \section{运行环境}
 \section{输入文件格式}
 \subsection{Lua语法简介}
+
+Lua是一种快速、轻量级的嵌入式脚本语言，
+在1993年由巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）
+计算机图形技术组（Computer Graphics Technology Group）的成员
+Roberto Ierusalimschy、 Luiz Henrique de Figueiredo和 Waldemar Celes所开发。
+
+Lua很容易嵌入到其他程序中作为内嵌的解释器使用，已在PC游戏界广泛使用。
+当前版本5.2.2，基于MIT开源协议开源，
+可从 \url{http://www.lua.org/download.html}获得。
+
+LuaJIT是Lua语言的非官方JIT(Just-In-Time Compiler)实现，由Mike Pall开发。
+LuaJIT基于MIT开源协议开源，当前版本LuaJIT 2.0.1，可以从\url{luajit.org/download.html}获取。
+LuaJIT是当前世界上最快的动态语言实现之一。\cite{LuaJITHomepage}
+
+\TODO
+
 \section{输出文件格式}
 \subsection{HDF5简介}
+
+HDF5是一种分层的、带有元数据的、支持多种数据格式的、针对科学计算的数据文件存储格式及相关技术。
+它最早由美国国家超级计算应用中心（NCSA， 
+National Center for Supercomputing Applications）提出，
+现在由非营利的HDF Group管理和维护。
+
+HDF5文件格式的读写库基于一种类似于BSD的协议开源，协议文本可以从
+\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取。
+
+当前版本为HDF5 1.8.10 patch1，
+可从\url{http://www.hdfgroup.org/downloads/index.html} 获取。
+
+\TODO 使用简介
+
 \subsection{Python简介}
 \subsection{后处理脚本示例}
+\section{编译说明}
 
 %\include{data/mathbasic}
 

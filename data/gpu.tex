@@ -1,13 +1,52 @@
 
 
 
-\chapter{GPU通用计算简介}
+\chapter{GPU科学计算简介}
 
-\TODO GPU通用计算发展历史简述。
+\section{GPU通用计算发展历史简述}
 
-现在较为成熟和广泛使用的GPU编程技术是NVIDIA公司在2007年提出
-的CUDA(Compute Unified Device Architecture)编程模型，
-以下主要对CUDA进行介绍。
+\subsection{GPU发展历史简述}
+GPU全称Graphics Processing Unit，译作图形处理单元，
+是现在个人电脑中显卡的核心部分。
+显卡最初是作为图形加速卡出现的，所以GPU和CPU不同，
+是专门为图形处理中大量重复计算的处理进行设计的。
+
+GPU的编程方式最初由GPU的生产厂商决定，
+缺乏统一的标准（现在的手机GPU正处于这样的状态）。
+为了统一众多的标准，先后出现了两套的图形编程API(Application Programming Interface)：
+微软的DirectX和开放的OpenGL，现在这两套API已经被广泛接受和认可。
+DirectX和OpenGL是针对图形应用的API，
+所以其中支持的运算也都是图形处理领域的运算，
+并不适合一般的科学计算和通用计算。
+各公司为了追求利润，GPU硬件本身也是针对DirectX/OpenGL进行设计，
+内部划分为若干种特化的运算单元。
+
+随着用户需求的不断提高和技术的不断发展，
+在GPU中实现各种功能单一的特化单元遇到了一些问题：
+一是各种单元的比例分配，不同的游戏对于不同的硬件资源有着不同的需求，
+在设计时固化一种比例很难适应所有游戏的需要，并会造成计算资源的浪费；
+二是游戏开发人员更进一步控制、定制图形处理过程的需求也在不断增长，
+特化的硬件不能适应这种需求。
+所以从2001年左右开始，GPU的硬件设计由特化的运算单元转为通用运算单元，
+DirectX/OpenGL等也提供了通用编程的方式，
+为GPU的通用计算打下了基础。
+
+\subsection{GPU通用计算历史简述}
+
+早在DirectX/OpenGL提供通用编程方式以前，
+就有科学工作者试图在GPU上进行科学计算等非图形计算，
+其方式主要是：把计算任务转化或伪装为一个普通的图形计算任务，
+交给图形API进行计算。这种方式对能够转化的计算任务的类型有着相当大的限制，
+而且这种转化过程较为繁琐，所以该方法并未得到广泛的使用。
+
+等DirectX/OpenGL提供通用编程方式以后，虽然各种限制有所放松，
+但由于DirectX/OpenGL本身并非针对通用计算设计，
+所以对于一般的科学工作者来说，编程仍非常不便。
+
+直到2007年NVIDIA公司提出了CUDA(Compute Unified Device Architecture)编程模型，
+并进行大力推广后，GPU的通用计算才逐渐走入科学工作者的视野。
+目前除了某些对计算能力要求特别高的领域以外，
+GPU进行通用计算仍在学术界领域，尚未大量进入工业界。
 
 \section{CUDA简介}
 
@@ -380,7 +419,8 @@ Global函数和device函数可以通过指针直接访问共享存储区、显�
 \subsection{OpenCL}
 
 在以CUDA为代表的各种硬件相关的GPU、众核编程技术发展之后，
-非营利性组织Khronos提出异构平台计算的开放标准OpenCL。
+苹果公司提出异构平台计算的开放标准OpenCL，
+标准文本见文献\onlinecite{opencl}。
 
 在GPU通用计算领域起步较晚的AMD公司（原ATI公司被AMD收购）
 放弃设计一个CUDA这样专为自己生产的GPU编程的编程技术，
@@ -388,7 +428,6 @@ Global函数和device函数可以通过指针直接访问共享存储区、显�
 
 OpenCL在很多设备概念、编程模型上照搬较为成熟的CUDA的设计，
 但和CUDA相比仍有较大差异。
-
 CUDA程序的编译过程主要发生在主程序开发过程中，CUDA C/C++编译器首先处理CUDA程序的源代码，
 把代码分为GPU端和CPU端两部分，CPU端的代码交给GCC/MSVC等传统编译器进行编译，
 GPU端的代码则由自己处理，生成相应的GPU PTX代码、主机端调用代码等部分，
@@ -398,7 +437,7 @@ PTX代码在运行时由主机端驱动程序编译成实际GPU的硬件指令�
 通过增加PTX这一层抽象，NVIDIA使得程序能够在GPU ISA(Instruction Set Architecture)
 设计发生变化时仍然可以直接运行。
 
-OpenCL代码语法和CUDA一样以C为蓝本，但并不和普通的C代码混在一起，
+OpenCL代码语法和CUDA一样以C语言为蓝本\footnote{CUDA后期加入了C++的很多语法。}，但并不和普通的C代码混在一起，
 而是直接以文本形式保存于程序或其他数据文件中，
 在运行时由硬件驱动进行编译生成实际硬件代码运行。
 所以说OpenCL程序的编译过程主要发生在运行时。
@@ -418,6 +457,327 @@ NVIDIA对OpenCL的支持略差，某些情况下可能会有性能明显下降�
 
 \subsection{C++ AMP}
 
-C++ AMP全称C++ Accelerated Massive Parallelism
-\cite{cppamp}
+C++ AMP全称C++ Accelerated Massive Parallelism，是微软提出的一个开放的C++ GPU编程标准，
+并给出了Windows平台上基于DirectX 11的实现。
+C++ AMP的标准文本见文献\onlinecite{cppamp}。
+C++ AMP和CUDA类似，都是在已有的语言上增加了新的部分来对GPU进行编程。
+\cite{cppamp-overview}
+
+由于C++ AMP是一个开放标准，所以也可能会有进一步的发展。
+2012年Intel公司展示了一个把C++ AMP代码编译到OpenCL的实现，使得C++ AMP跨系统跨平台成为可能。
+\cite{cppamp-opencl}
+不过暂时还没有该技术转化为产品的消息。
+
+
 \subsection{OpenACC与OpenMP}
+
+由于之前的GPU编程技术需要程序员管理的细节过多，
+在2011年11月有CAPS、CRAY、NVIDIA和PGI等公司联合提出了并行计算标准OpenACC。
+\cite{reyes2012comparative}
+OpenACC标准文本可以从\url{http://www.openacc-standard.org/Downloads}下载。
+OpenACC与OpenMP类似，是一种基于用户制导语句的半自动并行化标准。
+OpenMP主要针对于共享存储器的CPU多核环境，
+而OpenACC则主要面向CPU+GPU异构环境。
+
+当前支持OpenACC的编译器主要为CAPS、CRAY、PGI等公司提供的也商业编译器。
+
+OpenACC已计划被纳入OpenMP 4.0标准。\cite{beyer2011openmp}
+
+
+
+\section{GPU线性方程组求解算法简介}
+
+数值计算中线性方程组的求解方法基本可以分为两大类：直接解法和迭代解法。
+直接解法的计算量固定且容易估计，没有迭代收敛性问题，但算法本身并行度太低，
+很难适合GPU这样的类向量机型处理器，所以以下主要介绍迭代解法。
+
+\subsection{传统迭代算法简介}
+考虑如下形式的线性方程组
+\begin{align}
+  \bm{A}\bm{x}=\bm{b}
+\end{align}
+其中
+\begin{align}
+  \bm{A}=\begin{pmatrix}
+  a_{11} & a_{12} & \cdots & a_{1n}\\
+  a_{21} & a_{22} & \cdots & a_{2n}\\
+  \vdots & \vdots & \ddots & \vdots\\
+  a_{n1} & a_{n2} & \cdots & a_{nn}\\
+  \end{pmatrix}
+\end{align}
+并记
+\begin{align}
+  \bm{D}=\begin{pmatrix}
+      a_{11} &  &  & \\
+       & a_{22} &  & \\
+       &  & \ddots & \\
+       &  &  & a_{nn}\\
+      \end{pmatrix}
+  \hspace{5pt}
+  \bm{L}=\begin{pmatrix}
+    0 &  &  & \\
+    a_{21} & 0 &  & \\
+    \vdots & \ddots & 0 & \\
+    a_{n1} & \cdots & a_{n,n-1} & 0\\
+    \end{pmatrix}
+  \hspace{5pt}
+  \bm{U}=\begin{pmatrix}
+      0 & a_{12} & \cdots & a_{1n}\\
+       & 0 & \ddots & \vdots\\
+       &  & 0 & a_{n-1,n}\\
+       &  &  & 0\\
+      \end{pmatrix}
+\end{align}
+
+\subsubsection{Jacobi迭代}
+Jacobi迭代的形式为
+\begin{align}
+  \bm{x}^{(k+1)}=\bm{D}^{-1}\pb[b]{\bm{b}-\pb{\bm{L}+\bm{U}}\bm{x}^{(k)}}
+\end{align}
+收敛条件为
+\begin{align}
+  \rho\pb[b]{\bm{D}^{-1}\pb{\bm{L}+\bm{U}}}<1
+\end{align}
+其中$\rho(\bm{M})$表示$\bm{M}$的谱半径。\cite{golub2012matrix}
+
+\subsubsection{Gauss-Seidel迭代}
+Gauss-Seidel迭代的形式为
+\begin{align}
+  \bm{x}^{(k+1)}=\pb{\bm{L}+\bm{D}}^{-1}\pb[b]{\bm{b}-\bm{U}\bm{x}^{(k)}}
+\end{align}
+当$\bm{A}$对称正定时，Gauss-Seidel迭代收敛。\cite{golub2012matrix}
+
+Gauss-Seidel迭代在传统CPU求解线性方程组中使用广泛，
+但其主要步骤$\pb{\bm{L}+\bm{D}}^{-1}$项的计算是一个串行过程，
+较难在GPU这种向量机上实现，所以在GPU求解线性方程组中使用不多。
+
+\subsubsection{逐次超松弛迭代}
+逐次超松弛迭代是Jacobi迭代和Gauss-Seidel迭代的推广，
+其迭代的形式为\cite{golub2012matrix}
+\begin{align}
+  \bm{x}^{(k+1)}=\pb{\bm{L}+\omega\bm{D}}^{-1}
+                  \pb[b]{\omega\bm{b}-\pb{\omega\bm{U}+(\omega-1)\bm{D}}\bm{x}^{(k)}}
+\end{align}
+
+该迭代方法在GPU上面临和Gauss-Seidel迭代同样的问题。
+
+\subsection{Krylov子空间类算法简介}
+\subsubsection{CG(Conjugate gradient)共轭梯度法}
+CG方法可以用于求解$\bm{A}$对称正定时的线性方程，
+其求解过程见\floatref{alg:gpu.cg}。\cite{golub2012matrix}
+
+\begin{algorithm}
+\KwIn{$\bm{A},\bm{x}_0,\bm{b}$}
+\KwOut{$\bm{x}_e$}
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
+$\bm{p}_0 := \bm{r}_0$\;
+$k:=0$\;
+
+\While{ True }{
+$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{r}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$\;
+$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
+$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
+\If{$\vb{\bm{r}_{k+1}}$ is small}{
+  return $\bm{x}_e := \bm{x}_{k+1}$\;
+}
+$\displaystyle \beta_k := \frac{\bm{r}_{k+1}^T\bm{r}_{k+1}}{\bm{r}_k^T\bm{r}_k}$\;
+$\bm{p}_{k+1}:=\bm{r}_{k+1}+\beta_k\bm{p}_k$\;
+$k:=k+1$\;
+}
+\setlabelname{CG方法}
+\caption{CG方法\label{alg:gpu.cg}}
+\end{algorithm}
+
+带预条件的CG方法见\floatref{alg:gpu.pcg}。\cite{golub2012matrix}
+由于只需在在\floatref{alg:gpu.pcg}中令$\bm{M}=\bm{I}$即可得到\floatref{alg:gpu.cg}，
+所以以下只给出带预条件的迭代算法。
+
+\begin{algorithm}
+\KwIn{$\bm{A},\bm{x}_0,\bm{b},\bm{M}$}
+\KwOut{$\bm{x}_e$}
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
+$\bm{z}_0 := \bm{M}^{-1}\bm{r}_0$\;
+$\bm{p}_0 := \bm{r}_0$\;
+$k:=0$\;
+\While{ True }{
+$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{z}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$\;
+$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
+$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
+\If{$\vb{\bm{r}_{k+1}}$ is small}{
+  return $\bm{x}_e := \bm{x}_{k+1}$\;
+}
+$\bm{z}_{k+1}:=\bm{M}^{-1}\bm{r}_{k+1}$\;
+$\displaystyle \beta_k := \frac{\bm{z}_{k+1}^T\bm{r}_{k+1}}{\bm{z}_k^T\bm{r}_k}$\;
+$\bm{p}_{k+1}:=\bm{z}_{k+1}+\beta_k\bm{p}_k$\;
+$k:=k+1$\;
+}
+\setlabelname{带预条件的CG方法}
+\caption{\label{alg:gpu.pcg}带预条件的CG方法}
+\end{algorithm}
+
+\subsubsection{BiCGStab}
+对于非对称正定的方程组，可以把CG方法扩展为BiCG(BiConjugate Gradient)方法，
+见\floatref{alg:gpu.pbicg}。
+\cite{press2007numericalrecipes}
+
+\begin{algorithm}
+\KwIn{$\bm{A},\bm{x}_0,\bm{x}_0^*,\bm{b},\bm{b}^*,\bm{M}$}
+\KwOut{$\bm{x}_e,\bm{x}_e^*$}
+
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
+$\bm{r}_0^* = \bm{b}^*-\bm{x}_0^*\bm{A}$ \;
+$\bm{p}_0 = \bm{M}^{-1}\bm{r}_0$\;
+$\bm{p}_0^* = \bm{r}_0^*\bm{M}^{-1}$\;
+$k:=0$\;
+\While{ True }{
+$\displaystyle \alpha_k:=\frac{\bm{r}_k^*\bm{M}^{-1}\bm{r}_k}{\bm{p}_k^*\bm{A}\bm{p}_k}$\;
+$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
+$\bm{x}_{k+1}^*:=\bm{x}_k^*+\overline{\alpha_k}\bm{p}_k^*$\;
+$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
+$\bm{r}_{k+1}^*:=\bm{r}_k^*-\overline{\alpha_k}\bm{p}_k^*\bm{A}$\;
+\If{$\vb{\bm{r}_{k+1}}$ or $\vb{\bm{r}_{k+1}^*}$ is small}{
+  $\bm{x}_e := \bm{x}_{k+1}$\;
+  $\bm{x}_e^* := \bm{x}_{k+1}^*$\;
+  return \;
+}
+$\displaystyle \beta_k := \frac{\bm{r}_{k+1}^*\bm{M}^{-1}\bm{r}_{k+1}}{\bm{r}_k^*\bm{M}^{-1}\bm{r}_k}$\;
+$\bm{p}_{k+1}:=\bm{M}^{-1}\bm{r}_{k+1}+\beta_k\bm{p}_k$\;
+$\bm{p}_{k+1}^*:=\bm{r}_{k+1}^*\bm{M}^{-1}+\overline{\beta_k}\bm{p}_k^*$\;
+$k:=k+1$\;
+}
+\setlabelname{带预条件的BiCG方法}
+\caption{\label{alg:gpu.pbicg}带预条件的BiCG方法}
+\end{algorithm}
+
+但由于BiCG方法的数值稳定性较差，可能会遇到不收敛的情况，
+所以文献\onlinecite{van1992bicgstab}提出了BiCGStab方法，
+见\floatref{alg:gpu.pbicgstab}。
+
+\begin{algorithm}
+\KwIn{$\bm{A},\bm{x}_0,\bm{b},\bm{K}$}
+\KwOut{$\bm{x}_e$}
+
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
+任取$\bm{r}_0^*$使得$\bm{r}_0^*\cdot\bm{r}_0\neq 0$\;
+$\rho_0:=\alpha:=\omega_0:=1$\;
+$\bm{v}_0:=\bm{p}_0 := \bm{0}$\;
+$k:=1$\;
+\While{ True }{
+$\rho_k:=\bm{r}_0^*\cdot\bm{r}_{k-1}$\;
+$\displaystyle \beta:=\frac{\rho_k}{\rho_{k-1}}\frac{\alpha}{\omega_{k-1}}$\;
+$\bm{p}_k:=\bm{r}_{k-1}+\beta\pb{\bm{p}_{k-1}-\omega_{k-1}\bm{v}_{k-1}}$\;
+$\bm{y}:=\bm{K}^{-1}\bm{p}_k$\;
+$\bm{v}_k:=\bm{Ay}$\;
+$\displaystyle \alpha:=\frac{\rho_k}{\bm{r}_0^*\cdot\bm{v}_k}$\;
+$\bm{s}:=\bm{r}_{k-1}-\alpha\bm{v}_k$\;
+$\bm{z}:=\bm{K}^{-1}\bm{s}$\;
+$\bm{t}:=\bm{Az}$\;
+$\displaystyle \omega_k:=\frac{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{s})}{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{t})}$\;
+$\bm{x}_{k}:=\bm{x}_{k-1}+\alpha\bm{y}+\omega_k\bm{z}$\;
+end\;
+\If{$\bm{x}_{k}$收敛}{
+  return $\bm{x}_e := \bm{x}_{k}$\;
+}
+$\bm{r}_k:=\bm{s}-\omega_k\bm{t}$\;
+$k:=k+1$\;
+}
+\setlabelname{带预条件的BiCGStab方法}
+\caption{\label{alg:gpu.pbicgstab}带预条件的BiCGStab方法}
+\end{algorithm}
+
+\subsubsection{GMRES(Generalized Minimal RESidual method)广义最小残量法}
+GMRES是一种可以用于求解非对阵矩阵的Krylov子空间方法，
+由Saad和Schultz在1986年提出。\cite{saad1986gmres}
+
+实际计算中GMRES需要再启动等技巧，这里只给出一个简单的GMRES算法，
+见\floatref{alg:gpu.gmres}。\cite{golub2012matrix}
+
+\begin{algorithm}
+\KwIn{$\bm{A},\bm{x}_0,\bm{b}\text{，并有}\bm{A}\bm{x}_0\approx\bm{b}$}
+\KwOut{$\bm{x}_e$}
+
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
+$h_{10}:=\| \bm{r}_0\|_2$\;
+$k:=0$\;
+\While{ $h_{k+1,k}>0$ }{
+$\displaystyle \bm{q}_{k+1}:=\frac{\bm{r}_k}{h_{k+1,k}}$\;
+$k:=k+1$\;
+$\bm{r}_k:=\bm{A}\bm{q}_k$\;
+\For{$i:=1 \  \mathrm{to} \   k$}
+{
+$h_{ik}:=\bm{q}_i^T\cdot\bm{r}_k$\;
+$\bm{r}_k:=\bm{r}_k-h_{ik}\bm{q}_i$\;
+}
+$h_{k+1,k}:=\| \bm{r}_k\|_2$\;
+$\bm{x}=\bm{x}_0+\bm{Q}_k\bm{y}_k$
+其中$\bm{y}_k$使$\left\| h_{10}e_1-\overline{\bm{H}_m}\bm{y}_k \right\|_2$最小\;
+}
+$\bm{x}_e:=\bm{x}_k$\;
+\setlabelname{GMRES方法}
+\caption{\label{alg:gpu.gmres}GMRES方法}
+\end{algorithm}
+
+
+\subsection{预条件处理简介}
+当矩阵$\bm{A}$的条件数较大时，以上的各种迭代方法的收敛速度往往并不理想，
+为了改善在大条件数情况下的收敛速度，Krylov往往和预条件处理共同使用。
+预条件处理的思路是把原始问题同解变换为一个条件数较小的问题。
+预条件的方法一般是找到一个矩阵$\bm{P}$使得$\bm{P^{-1}A}$的条件数较小，
+且方程组$\bm{Px}=\bm{b}$较容易求解。\cite{saad2003iterative}
+
+以下列举一些常见的预条件算法
+\begin{enumerate}
+\item Jacobi，又称对角线预处理
+
+取\cite{saad2003iterative}
+\begin{align}
+  \bm{P}=\begin{pmatrix}
+  \displaystyle \frac{1}{A_{11}} & & &\\
+  & \displaystyle \frac{1}{A_{22}} & &\\
+  & & \ddots &\\
+  & & & \displaystyle \frac{1}{A_{nn}}\\
+  \end{pmatrix}
+\end{align}
+
+\item SPAI(SParse Approximate Inverse)\cite{saad2003iterative}
+
+计算使$\|\bm{AT}-\bm{I}\|_F$最小的$\bm{T}$，
+取$\bm{P}=\bm{T}^{-1}$，具体过程参见文献\onlinecite{grote1997parallel}。
+由于在计算中只使用$\bm{P}^{-1}$，所以不需要计算$\bm{T}^{-1}$。
+
+\item IC(Incomplete Cholesky factorization)
+
+参见文献\onlinecite{golub2012matrix}第10.3.2节。
+
+\item ILU(Incomplete LU Factorizations)
+
+参见文献\onlinecite{saad2003iterative}第10.3节。
+
+\end{enumerate}
+上面介绍的预条件算法除了Jacobi具有天然的并行度外，
+其他算法的Setup过程的串行度较高，较难在GPU上实现。
+
+
+%\subsubsection{多重网格}
+
+\begin{table}
+\centering
+\caption{不同求解算法求解2维Poisson问题需要的计算量\cite{trottenberg2000multigrid}}
+\begin{minipage}{.7\linewidth}
+\centering
+\begin{tabular}{lc}
+\toprule
+求解方法 & 需要的计算量\footnote{记N为未知元数量。}\\
+\midrule
+高斯消去 & $\mathcal{O}(N^2)$\\
+Jacobi迭代 & $\mathcal{O}(N^2\log\epsilon)$\\
+Gauss-Seidel迭代 & $\mathcal{O}(N^2\log\epsilon)$\\
+超松弛迭代 & $\mathcal{O}(N^{3/2}\log\epsilon)$\\
+CG & $\mathcal{O}(N^{3/2}\log\epsilon)$\\
+IC CG & $\mathcal{O}(N^{5/4}\log\epsilon)$\\
+ADI\footnote{Alternating Direction Implicit，交替隐式迭代。} & $\mathcal{O}(N\log N)$\\
+完全多重网格法 & $\mathcal{O}(N)$\\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
