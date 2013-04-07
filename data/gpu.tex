@@ -437,7 +437,10 @@ PTX代码在运行时由主机端驱动程序编译成实际GPU的硬件指令�
 通过增加PTX这一层抽象，NVIDIA使得程序能够在GPU ISA(Instruction Set Architecture)
 设计发生变化时仍然可以直接运行。
 
-OpenCL代码语法和CUDA一样以C语言为蓝本\footnote{CUDA后期加入了C++的很多语法。}，但并不和普通的C代码混在一起，
+OpenCL代码语法和CUDA一样\footnote{CUDA后期加入了C++支持。}以
+C语言为蓝本\footnote{现在也有为OpenCL增加C++支持的提议，%
+见文献\onlinecite{gaster2013opencl}。}，
+但并不和普通的C代码混在一起，
 而是直接以文本形式保存于程序或其他数据文件中，
 在运行时由硬件驱动进行编译生成实际硬件代码运行。
 所以说OpenCL程序的编译过程主要发生在运行时。

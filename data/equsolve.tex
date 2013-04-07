@@ -1,10 +1,288 @@
 
 
 \chapter{大型扩散方程GPU求解方法研究}
-\section{矩阵格式选择}
-\subsection{稀疏矩阵存储格式介绍}
-\subsection{稀疏矩阵格式选择}
+
+本课题主要使用中子扩散方程作为实际研究问题，
+中子扩散方程在实际求解中大多使用有限差分方式进行空间离散，
+得到的线性方程组为7对角实对称对角占优矩阵（三维、单一能群内）。
+稳态和动力学扩散方程的求解主要涉及到大型7对角线矩阵的最大特征值计算
+和大型线性方程组求解。
+本章则主要研究如何在GPU上高效地求解这类问题。
+
+\section{稀疏矩阵格式选择}
+
+\subsection{常见存储格式介绍}
+
+\subsubsection{坐标格式(COO)}
+COO格式直接存储每个非零元素的位置和值，
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0\\
+0 & 2 & 0\\
+5 & 0 & 3
+\end{pmatrix}
+\end{align*}
+的COO格式表示为\footnote{下标从0开始计数，下同。}
+\begin{align*}
+\mathrm{rows}=\begin{pmatrix}
+0 & 0 & 1 & 2 & 2  
+\end{pmatrix}
+\\
+\mathrm{cols}=\begin{pmatrix}
+0 & 1 & 1 & 0 & 2
+\end{pmatrix}
+\\
+\mathrm{values}=\begin{pmatrix}
+1 & 7 & 2 & 5 & 3
+\end{pmatrix}
+\end{align*}
+
+
+
+\subsubsection{行压缩格式(CSC)}
+CSC格式把每行的非零元连续存放，相对于COO节省了存储行号的空间，
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0\\
+0 & 2 & 0\\
+5 & 0 & 3
+\end{pmatrix}
+\end{align*}
+的CSC格式表示为
+\begin{align*}
+\mathrm{ptr}&=\begin{pmatrix}
+0 & 2 & 3  
+\end{pmatrix}
+\\
+\mathrm{cols}&=\begin{pmatrix}
+0 & 1 & 1 & 0 & 2
+\end{pmatrix}
+\\
+\mathrm{values}&=\begin{pmatrix}
+1 & 7 & 2 & 5 & 3
+\end{pmatrix}
+\end{align*}
+
+如果把行列的存储方式调换，则可得到另一种格式，即列压缩格式(CSC)。
+
+\subsubsection{对角线格式(DIA)}
+对角线格式是专门用于存储对角线稀疏矩阵的一种格式，
+其思路是只存储有非零元素的对角线。
+如矩阵\cite{bell2008spmv}
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+的DIA格式表示为\footnote{其中$\_$表示DIA格式不使用的任意值，下同。}
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+\_ & 1 & 7\\
+\_ & 2 & 8\\
+5 & 3 & 9\\
+6 & 4 & \_
+\end{pmatrix}
+\quad
+\mathrm{offsets}=\begin{pmatrix}
+-2 & 0 & 1\\
+\end{pmatrix}
+\end{align*}
+
+
+\subsubsection{ELLPACK格式(ELL)}
+ELL是为向量机设计的一种稀疏矩阵存储格式，
+用于存储$M\times N$的矩阵且每行最多只有$k$个元素的情况。\cite{grimes1979itpack}
+如矩阵\cite{bell2008spmv}
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+的ELL格式表示为
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+1 & 7 & \_\\
+2 & 8 & \_\\
+5 & 3 & 9 \\
+6 & 4 & \_
+\end{pmatrix}
+\quad
+\mathrm{indices}=\begin{pmatrix}
+0 & 1 & \_\\
+1 & 2 & \_\\
+0 & 2 & 3\\
+1 & 4 & \_
+\end{pmatrix}
+\end{align*}
+
+\subsubsection{Hybrid格式(HYB)}
+由于ELL格式只适合每行元素个数相差不多的情况，
+所以又进一步出现了Hybrid格式，即同时使用ELL格式和COO格式，
+ELL格式存储系数矩阵中较为规整的部分（每行元素数量接近），
+COO格式则存储剩下的比较不规则的非零元。\cite{bell2008spmv}
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+可拆分为两个矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 0\\
+0 & 6 & 0 & 4
+\end{pmatrix}
++
+\begin{pmatrix}
+0 &  &  & \\
+ & 0 &  & \\
+ &  & 0 & 9\\
+ &  &  & 0
+\end{pmatrix}
+\end{align*}
+分别使用ELL和COO格式进行存储，
+ELL格式部分为
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+1 & 7\\
+2 & 8\\
+5 & 3\\
+6 & 4
+\end{pmatrix}
+\quad
+\mathrm{indices}=\begin{pmatrix}
+0 & 1\\
+1 & 2\\
+0 & 2\\
+1 & 4
+\end{pmatrix}
+\end{align*}
+COO格式部分为
+\begin{align*}
+\mathrm{rows}=\begin{pmatrix}
+2
+\end{pmatrix}
+\\
+\mathrm{cols}=\begin{pmatrix}
+3
+\end{pmatrix}
+\\
+\mathrm{values}=\begin{pmatrix}
+9
+\end{pmatrix}
+\end{align*}
+
+HYB格式中，ELL部分每行存储多少个元素不是固定的，
+可以根据需要进行变化。
+
+
+\subsection{各存储格式性能比较}
+
+为了比较各种存储格式的速度，使用三维扩散临界计算程序来进行测试，
+测试算例为三维IAEA基准题（见\sectionref{sec:result.test.iaea}），
+各存储格式的计算时间见\floatref{tab:equsolve.spformat}及
+\floatref{fig:equsolve.spformat}，图中DM表示双层网格加速（见\sectionref{sec:equsolve.multimesh}），
+SP表示单精度、DP表示双精度。
+
+结果很清楚地显示：对于三维扩散方程，DIA和ELL格式明显优于CSR和COO格式，其中DIA性能最高。
+这主要是因为DIA和ELL较为适合向量机型处理器的运算和内存访问方式，
+而且DIA格式占用的空间最少（因为矩阵正好是7对角线矩阵）。
+在CG和BiCGStab计算中，矩阵参与的部分是稀疏矩阵-向量乘法（以下简称为SpMV），
+SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimizing}\footnote{现在的GPU运算能力太强，使得显存带宽成为瓶颈。}，
+所以DIA性能最好是预料之中。
+
+\begin{sidewaystable}
+\pdfrotate
+\centering
+\begin{minipage}{.8\linewidth}
+\centering
+\caption[不同稀疏矩阵格式求解三维临界扩散的时间表]
+{\label{tab:equsolve.spformat}%
+不同稀疏矩阵格式求解三维临界扩散的时间表(单位:s)%
+\footnote{不同的存储格式对非零元有着不同的求和顺序，由于浮点误差存在，%
+不同的格式要达到收敛标准所需要的迭代次数可能有差别，并导致总计算时间的改变。}
+}
+\begin{tabular}{ccccccccc}
+\toprule
+ \multirow {3}{*}{矩阵格式}  &
+       \multicolumn{4}{c}{2.5cm $\times$ 2.5cm $\times$ 2.5cm}
+       &\multicolumn{4}{c}{1.25cm $\times$ 1.25cm $\times$ 1.25cm} \\
+ &\multicolumn{2}{c}{CG\footnote{内迭代每轮18次，下同。}}
+ 	   &\multicolumn{2}{c}{BiCGStab\footnote{内迭代每轮30次，下同。}}
+       & \multicolumn{2}{c}{CG}& \multicolumn{2}{c}{BiCGStab}\\
+ & SP& DP& SP& DP& SP& DP& SP& DP\\
+\midrule
+ DIA&  5.475&  7.956& 12.199& 19.391& 24.071& 43.415&  64.256& 116.922\\
+ ELL&  6.255&  8.596& 14.711& 20.997& 29.141& 47.362&  81.261& 133.599\\
+ CSR& 10.452& 13.042& 27.814& 34.960& 62.478& 82.929& 180.430& 238.462\\
+ COO& 11.232& 13.432& 30.934& 36.629& 64.303& 82.384& 197.263& 248.618\\
+ DIA DM\footnote{粗网内迭代每轮10次，下同。}
+       &  3.838&  4.883&  6.349&  8.003&  9.266& 14.976&  14.165&  31.590\\
+ ELL DM&  4.399&  5.351&  7.363&  8.626& 10.920& 16.224&  17.503&  35.322\\
+ CSR DM&  5.975&  6.989& 11.513& 14.337& 19.734& 26.301&  38.438&  61.776\\
+ COO DM&  6.474&  7.660& 11.840& 13.712& 20.733& 26.364&  42.400&  65.910\\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{sidewaystable}
+
+\begin{figure}
+\centering
+\begin{asy}
+import graph;
+size(13cm,13cm,IgnoreAspect);
+real[] x=sequence(8);
+real[] DIA={5.475, 7.956, 12.199, 19.391, 24.071, 43.415, 64.256, 116.922};
+real[] ELL={6.255, 8.596, 14.711, 20.997, 29.141, 47.362, 81.261, 133.599};
+real[] CSR={10.452, 13.042, 27.814, 34.960, 62.478, 82.929, 180.430, 238.462};
+real[] COO={11.232, 13.432, 30.934, 36.629, 64.303, 82.384, 197.263, 248.618};
+real[] DIAMM={3.838, 4.883, 6.349, 8.003, 9.266, 14.976, 14.165, 31.590};
+real[] ELLMM={4.399, 5.351, 7.363, 8.626, 10.920, 16.224, 17.503, 35.322};
+real[] CSRMM={5.975, 6.989, 11.513, 14.337, 19.734, 26.301, 38.438, 61.776};
+real[] COOMM={6.474, 7.660, 11.840, 13.712, 20.733, 26.364, 42.400, 65.910};
+scale(Linear,Log);
+string[] month={
+"2.5cm${}^3$ CG SP",
+"2.5cm${}^3$ CG DP",
+"2.5cm${}^3$ BiCGStab SP",
+"2.5cm${}^3$ BiCGStab DP",
+"1.25cm${}^3$ CG SP",
+"1.25cm${}^3$ CG DP",
+"1.25cm${}^3$ BiCGStab SP",
+"1.25cm${}^3$ BiCGStab DP",
+};
+transform markersize = scale(1.5mm);
+draw(graph(x,DIA),legend="DIA", marker(markersize*polygon(3)));
+draw(graph(x,ELL),legend="ELL", marker(markersize*polygon(4)));
+draw(graph(x,CSR),legend="CSR", marker(markersize*unitcircle));
+draw(graph(x,COO),legend="COO", marker(markersize*cross(4))  );
+draw(graph(x,DIAMM),legend="DIA DM", dashed, marker(markersize*polygon(3)));
+draw(graph(x,ELLMM),legend="ELL DM", dashed, marker(markersize*polygon(4)));
+draw(graph(x,CSRMM),legend="CSR DM", dashed, marker(markersize*unitcircle));
+draw(graph(x,COOMM),legend="COO DM", dashed, marker(markersize*cross(4))  );
+xaxis(BottomTop,LeftTicks(rotate(90)*Label(),new string(real x) {
+return month[round(x)];}));
+yaxis("$T/\mathrm{s}$",LeftRight,RightTicks);
+add(legend(),point(NW),10SE);
+\end{asy}
+\caption{\label{fig:equsolve.spformat}不同稀疏矩阵格式求解三维临界扩散的时间}
+\end{figure}
+
 
 \section{迭代算法选择}
 \section{预条件算法选择}
 \section{双层网格加速}
+\label{sec:equsolve.multimesh}

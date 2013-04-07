@@ -1,0 +1,313 @@
+
+
+
+\chapter{三维扩散临界及动力学程序开发}
+\section{中子扩散时空动力学理论推导}
+
+\subsection{稳态公式推导}
+
+多群扩散时空动力学方程为
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},t}}
+  \left\{
+  \begin{aligned}
+    \frac{1}{v_g}\frac{\partial \phi_g\para}{\partial t}
+    &=\nabla\cdot D_g\para \nabla\phi_g\para 
+      -\Sigma_{t,g}\para \phi_g\para
+      +\sum_{i=1}^I \chi_{i,g}\para \lambda_i C_i\para \\
+          & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[B]{\chi_g\para \pb{1-\beta}\nu\Sigma_{f,g'}\para
+                            +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para \\
+    \frac{\partial C_i\para}{\partial t}
+     &=\beta_i \sum_{g'=1}^G \nu\Sigma_{f,g'}\para \phi_{g'}\para
+        -\lambda_i C_i\para \qquad i=1,2,\cdots,I
+  \end{aligned}
+  \right.
+  \titlelabel{equ:pro.diff.equ}{多群扩散时空动力学方程}
+\end{align}
+
+如果初始条件为稳态则有
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},t}}
+  \left\{
+  \begin{aligned}
+    \frac{\partial \phi_g\para}{\partial t}\Big|_{t=0} &=0 \\
+    \frac{\partial C_i\para}{\partial t}\Big|_{t=0} &=0
+  \end{aligned}
+  \right.
+  \label{equ:pro.diff.init.equ}
+\end{align}
+
+联立\aeqref{equ:pro.diff.equ}及\aeqref{equ:pro.diff.init.equ}，
+消去$C_i\pb{\bm{x},0}$可得
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},0}}
+  \begin{aligned}
+  &\nabla\cdot D_g\para \nabla\phi_g\para 
+   -\Sigma_{t,g}\para \phi_g\para \\
+  & \hspace{3cm}
+   +\sum_{g'=1}^G\pb[B]{\chi_g\para \nu\Sigma_{f,g'}\para
+                        +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para =0
+  \end{aligned}
+\end{align}
+
+此为$k_\mathrm{eff}=1$时的稳态扩散方程，
+由于问题的已知条件一般仅有$k_\mathrm{eff}\approx 1$，
+所以先求解普通的临界扩散方程。
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},0}}
+  \begin{aligned}
+  &\nabla\cdot D_g\para \nabla\phi_g\para 
+   -\Sigma_{t,g}\para \phi_g\para \\
+  & \hspace{3cm}
+   +\sum_{g'=1}^G\pb[B]{\frac{1}{k_\mathrm{eff}}\chi_g\para \nu\Sigma_{f,g'}\para
+                        +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para =0
+  \end{aligned}
+  \titlelabel{equ:pro.diff.init.diff.equ1}{扩散时空动力学问题的初始通量方程}
+\end{align}
+然后对裂变截面进行修正
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},t}}
+  \nu\Sigma'_{f,g'}\para = \frac{1}{k_\mathrm{eff}}\nu\Sigma_{f,g'}\para
+\end{align}
+修正后的问题的$k_\mathrm{eff}=1$，可以适用\eqref{equ:pro.diff.init.equ}，
+求得到初始条件的$C_i\pb{\bm{x},0}$
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},0}}
+  C_i\para = \frac{\beta_i}{\lambda_i}\sum_{g'=1}^G \nu\Sigma_{f,g'}\para\phi_{g'}\para
+  \label{equ:pro.diff.init.c}
+\end{align}
+
+边界条件为反射边界条件时
+\begin{align}
+  \bm{n}\cdot\nabla\phi_g\pb{\bm{x},t} = 0
+  \qquad \bm{x} \in \partial \mathcal{D}
+  \titlelabel{equ:pro.diff.boundary.equ}{扩散方程反射边界条件}
+\end{align}
+其中$\partial \mathcal{D}$是待求解问题区域的边界面，
+$\bm{n}$是边界面上的点$\bm{x}$在边界面上的法向量，
+方向指向区域外。
+
+边界条件为0边界条件时
+\begin{align}
+  \phi_g\pb{\bm{x},t} = 0
+  \qquad \bm{x} \in \partial \mathcal{D}
+\end{align}
+
+\subsubsection{空间离散}
+
+程序使用三维直角坐标网格，空间划分为$K_x\times K_y \times K_z$个结构网格，
+则网格集合为
+\begin{align}
+  \mathcal{D}_{\bm{k}}=\big\{(k_x,k_y,k_z)\big|k_w = 0,1,\cdots,K_w-1 ; w=x,y,z\big\}
+\end{align}
+
+在$xyz$坐标系中有一般离散关系
+\begin{align}
+  \phi(\bm{x}) &\rightarrow \phi_{\bm{k}} &
+  \Sigma(\bm{x}) &\rightarrow \Sigma_{\bm{k}} &
+  C_i(\bm{x}) &\rightarrow C_{i,\bm{k}}
+\end{align}
+
+其中$\bm{k}=(k_x,k_y,k_z)$为$xyz$空间离散后的网格坐标，
+为方便起见这里暂时省略能群$g$，时间步长$n$等下标上标，下同。
+
+离散的主要问题是微分项$\nabla\cdot D(\bm{x})\nabla\phi(\bm{x})$的离散方式，
+设$\nabla\cdot D(\bm{x})\nabla\phi(\bm{x})$对应的离散项为
+$\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
+在$xyz$坐标系中，可取
+\begin{align}
+  \begin{aligned}
+  \pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}
+    &=\sum_{w=x,y,z} \Sb[bg]{
+      \frac{2D_{\bm{k}}D_{\bm{k}+\hat{\bm{w}}}\pb{\phi_{\bm{k}+\hat{\bm{w}}} - \phi_{\bm{k}}}}
+           {\Delta w_{\bm{k}}\pb{D_{\bm{k}}\Delta w_{\bm{k}+\hat{\bm{w}}}+D_{\bm{k}+\hat{\bm{w}}}\Delta w_{\bm{k}}}}
+           \\
+    &\hspace{4cm} -\frac{2D_{\bm{k}}D_{\bm{k}-\hat{\bm{w}}}\pb{\phi_{\bm{k}} - \phi_{\bm{k}-\hat{\bm{w}}}}}
+           {\Delta w_{\bm{k}}\pb{D_{\bm{k}}\Delta w_{\bm{k}-\hat{\bm{w}}}+D_{\bm{k}-\hat{\bm{w}}}\Delta w_{\bm{k}}}}
+     }
+  \end{aligned}
+  \label{equ:dnabla2.equ0}
+\end{align}
+
+则\aeqref{equ:pro.diff.init.diff.equ1}的离散形式为
+\begin{align}
+  \pb[b]{\nabla\cdot D_g^{(0)} \nabla\phi_g^{(0)}}_{\bm{k}}
+   -\Sigma_{t,g,\bm{k}}^{(0)} \phi_{g,\bm{k}}^{(0)}
+   +\sum_{g'=1}^G\pb[B]{\frac{1}{k_\mathrm{eff}^{(0)}}\chi_{g,\bm{k}}^{(0)} \nu\Sigma_{f,g',\bm{k}}^{(0)}
+                        +\Sigma_{g'\rightarrow g,\bm{k}}^{(0)}}\phi_{g',\bm{k}}^{(0)} =0
+  \quad \bm{k} \in \mathcal{D}_{\bm{k}}
+\end{align}
+
+\aeqref{equ:pro.diff.init.c}的离散形式为
+\begin{align}
+  C_{i,\bm{k}}^{(0)} = \frac{\beta_i}{\lambda_i}
+    \sum_{g'=1}^G \nu\Sigma_{f,g',\bm{k}}^{(0)}\phi_{g',\bm{k}}^{(0)}
+  \qquad \bm{k} \in \mathcal{D}_{\bm{k}}
+\end{align}
+
+\subsection{动力学公式推导}
+
+将\aeqref{equ:pro.diff.equ}对时间$t$采用全隐式向后差分格式进行离散得
+\begin{align}
+  \newcommand{\para}[1][n]{\pb{\bm{x}}^{(#1)}}
+  \left\{
+  \begin{aligned}
+    \frac{1}{v_g}\frac{\phi_g\para - \phi_g\para[n-1]}{\Delta t}
+    &=\nabla\cdot D_g\para \nabla\phi_g\para 
+      -\Sigma_{t,g}\para \phi_g\para \\
+    & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[B]{\chi_g\para \pb{1-\beta}\nu\Sigma_{f,g'}\para
+                           +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para \\
+    &\hspace{1cm}
+      +\sum_{i=1}^I \chi_{i,g}\para \lambda_i C_i\para \\
+    \frac{C_i\para - C_i\para[n-1]}{\Delta t}
+     &=\beta_i \sum_{g'=1}^G \nu\Sigma_{f,g'}\para \phi_{g'}\para
+        -\lambda_i C_i\para
+  \end{aligned}
+  \right.
+  \label{equ:pro.diff.dt.equ0}
+\end{align}
+
+解出$C_i\pb{\bm{x}}^{(n)}$可得
+\begin{align}
+  \newcommand{\para}[1][n]{\pb{\bm{x}}^{(#1)}}
+  C_i\para = \frac{1}{1+\lambda_i\Delta t}
+    \pb[B]{C_i\para[n-1]
+    + \beta_i \Delta t \sum_{g'=1}^G \nu\Sigma_{f,g'}\para \phi_{g'}\para}
+  \label{equ:pro.diff.dt.c}
+\end{align}
+
+代回\aeqref{equ:pro.diff.dt.equ0}得
+\begin{align}
+  \newcommand{\para}[1][n]{\pb{\bm{x}}^{(#1)}}
+  \begin{aligned}
+    &\quad \frac{1}{v_g}\frac{\phi_g\para - \phi_g\para[n-1]}{\Delta t} \\
+    &=\nabla\cdot D_g\para \nabla\phi_g\para 
+      -\Sigma_{t,g}\para \phi_g\para \\
+    & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[B]{\chi_g\para \pb{1-\beta}\nu\Sigma_{f,g'}\para
+                           +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para \\
+    &\hspace{1cm}
+      +\sum_{i=1}^I \frac{\chi_{i,g}\para \lambda_i}{1+\lambda_i\Delta t}
+          \pb[B]{C_i\para[n-1] 
+      + \beta_i \Delta t \sum_{g'=1}^G \nu\Sigma_{f,g'}\para \phi_{g'}\para}
+  \end{aligned}
+\end{align}
+
+取$\chi_{i,g}=\chi_g$得
+\begin{align}
+  \newcommand{\para}[1][n]{\pb{\bm{x}}^{(#1)}}
+  \begin{aligned}
+    &\quad \frac{1}{v_g}\frac{\phi_g\para - \phi_g\para[n-1]}{\Delta t} \\
+    &=\nabla\cdot D_g\para \nabla\phi_g\para 
+      -\Sigma_{t,g}\para \phi_g\para 
+      +\sum_{i=1}^I \frac{\chi_g\para \lambda_i}{1+\lambda_i\Delta t} C_i\para[n-1]\\
+    & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[Bg]{\chi_g\para
+        \pb[bg]{1-\beta 
+          + \sum_{i=1}^I \frac{\lambda_i \beta_i \Delta t }{1+\lambda_i\Delta t}}
+      \nu\Sigma_{f,g'}\para \\
+    &\hspace{8cm}
+         +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para
+  \end{aligned}
+\end{align}
+
+记
+\begin{align}
+  \newcommand{\para}[1][n]{(\bm{x})^{(#1)}}
+  S_C\para = \sum_{i=1}^I \frac{\lambda_i}{1+\lambda_i\Delta t} C_i\para[n-1]
+  \titlelabel{equ:pro.diff.dt.sc}{离散扩散时空动力学中$S_C(\bm{x})^{(n)}$定义式} \\
+  %
+  B = 1-\beta + \sum_{i=1}^I \frac{\lambda_i \beta_i \Delta t }{1+\lambda_i\Delta t}
+  \titlelabel{equ:pro.diff.dt.B}{离散扩散时空动力学中$B(\bm{x})^{(n)}$定义式}
+\end{align}
+
+则有
+\begin{align}
+  \newcommand{\para}[1][n]{\pb{\bm{x}}^{(#1)}}
+  \begin{aligned}
+    &\quad \frac{1}{v_g}\frac{\phi_g\para - \phi_g\para[n-1]}{\Delta t} \\
+    &=\nabla\cdot D_g\para \nabla\phi_g\para 
+      -\Sigma_{t,g}\para \phi_g\para + \chi_g\para S_C\para\\
+    & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[B]{\chi_g\para
+        B \nu\Sigma_{f,g'}\para
+         +\Sigma_{g'\rightarrow g}\para}\phi_{g'}\para
+  \end{aligned}
+  \titlelabel{equ:pro.diff.dt.equ1}{时间$t$隐式向后差分离散后的扩散时空动力学通量$\phi$方程}
+\end{align}
+此为固定源扩散问题，可通过解线性方程进行求解。
+
+\subsubsection{空间离散}
+同临界问题部分，\aeqref{equ:pro.diff.dt.equ1}的离散形式为
+\begin{align}
+  \begin{aligned}
+    \frac{1}{v_g}\frac{\phi_{g,\bm{k}}^{(n)} - \phi_{g,\bm{k}}^{(n-1)}}{\Delta t} 
+    &=\pb[b]{\nabla\cdot D_{g}^{(n)} \nabla\phi_{g}^{(n)}}_{\bm{k}}
+      -\Sigma_{t,g,\bm{k}}^{(n)} \phi_{g,\bm{k}}^{(n)} + \chi_{g,\bm{k}}^{(n)} S_{C,\bm{k}}^{(n)}\\
+    & \hspace{1cm}
+      +\sum_{g'=1}^G\pb[B]{\chi_{g,\bm{k}}^{(n)}
+        B \nu\Sigma_{f,g',\bm{k}}^{(n)}
+         +\Sigma_{g'\rightarrow g,\bm{k}}^{(n)}}\phi_{g',\bm{k}}^{(n)}
+  \end{aligned}
+  \qquad \bm{k} \in \mathcal{D}_{\bm{k}}
+  \label{equ:pro.diff.dt.dx.equ1}
+\end{align}
+
+其中
+\begin{align}
+  S_{C,\bm{k}}^{(n)} &= \sum_{i=1}^I \frac{\lambda_i}{1+\lambda_i\Delta t} C_{i,\bm{k}}^{(n-1)}
+  \qquad \bm{k} \in \mathcal{D}_{\bm{k}}
+  \titlelabel{equ:pro.diff.dt.dx.sc}{离散扩散时空动力学中$S_{C,\bm{k}}^{(n)}$定义式}
+\end{align}
+
+\aeqref{equ:pro.diff.dt.c}的离散形式为
+\begin{align}
+  C_{i,\bm{k}}^{(n)} = \frac{1}{1+\lambda_i\Delta t}
+    \pb[B]{C_{i,\bm{k}}^{(n-1)}
+    + \beta_i \Delta t \sum_{g'=1}^G \nu\Sigma_{f,g',\bm{k}}^{(n)} \phi_{g',\bm{k}}^{(n)}}
+  \qquad \bm{k} \in \mathcal{D}_{\bm{k}}
+\end{align}
+
+
+
+\subsection{能群耦合}
+
+本文不考虑向上散射，向下散射只散射到邻近的能群，则以上离散后的扩散方程可以写成如下形式
+\begin{align}
+  \begin{pmatrix}
+  A_{11} & D_{12} & \cdots & D_{1G}\\
+  D_{21} & A_{22} & &\\
+   & \ddots & \ddots &\\
+   & & D_{G-1,G} & A_{GG}
+  \end{pmatrix}
+  \begin{pmatrix}
+  \phi_1 \\ \phi_2 \\ \vdots \\ \phi_G
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+  S_1 \\ S_2 \\ \vdots \\ S_G
+  \end{pmatrix}
+\end{align}
+
+其中 $A_{gg}$是7对角对称阵，$D_{g_1g_2}$ 是对角阵。
+
+两群情况则简化为
+\begin{align}
+  \begin{pmatrix}
+  A_{11} & D_{12} \\
+  D_{21} & A_{22}
+  \end{pmatrix}
+  \begin{pmatrix}
+  \phi_1 \\ \phi_2
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+  S_1 \\ S_2
+  \end{pmatrix}
+\end{align}
+
+\TODO
+
+\section{程序结构}

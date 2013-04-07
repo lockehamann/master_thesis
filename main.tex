@@ -39,6 +39,12 @@ addfootnotetoref
 %\do\.\do\@\do\\\do\/\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\,%
 %\do\?\do\'\do+\do\=\do\#}
 
+\usepackage{rotating}
+\def\pdfrotate{\special{pdf: put @thispage <</Rotate 90>>}}
+
+\usepackage{multirow}
+
+\usepackage{asymptote}
 
 \newcommand{\TODO}{ \textcolor{blue}{TODO} }
 \colorlet{BLUE}{blue}
@@ -118,13 +124,12 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 \include{data/equsolve}
 
-\chapter{中子扩散时空动力学理论推导}
-\section{稳态公式推导}
-\section{动力学公式推导}
+\include{data/program}
 
 \chapter{数值结果验证}
 \section{基准算例}
 \subsection{静态三维IAEA PWR基准问题}
+\label{sec:result.test.iaea}
 \subsection{动态二维TWIGL基准问题}
 \subsection{动态三维LMW基准问题}
 \section{数值结果及验证}
@@ -149,6 +154,7 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 % 附录
 \begin{appendix}
 
+\iffalse
 \chapter{课题程序使用说明}
 \section{运行环境}
 \section{输入文件格式}
@@ -189,9 +195,8 @@ HDF5文件格式的读写库基于一种类似于BSD的协议开源，协议文�
 \subsection{后处理脚本示例}
 \section{编译说明}
 
-%\include{data/mathbasic}
+\fi
 
-%\include{data/math}
 %\include{data/program_io}
 \end{appendix}
 
