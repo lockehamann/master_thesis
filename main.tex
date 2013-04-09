@@ -46,6 +46,10 @@ addfootnotetoref
 
 \usepackage{asymptote}
 
+\usepackage{answers}
+\newenvironment{datasheetenv}[1]{}{}
+\Newassociation{datasheet}{datasheetenv}{datasheetfile}
+
 \newcommand{\TODO}{ \textcolor{blue}{TODO} }
 \colorlet{BLUE}{blue}
 
@@ -112,7 +116,7 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 % 符号对照表
 %\input{data/denotation}
 
-
+\Opensolutionfile{datasheetfile}
 %%% 正文部分
 \mainmatter
 \chapter{引言}
@@ -126,17 +130,11 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 \include{data/program}
 
-\chapter{数值结果验证}
-\section{基准算例}
-\subsection{静态三维IAEA PWR基准问题}
-\label{sec:result.test.iaea}
-\subsection{动态二维TWIGL基准问题}
-\subsection{动态三维LMW基准问题}
-\section{数值结果及验证}
-\section{参数影响对比}
+\include{data/testresults}
 
 \chapter{结论与展望}
 
+\Closesolutionfile{datasheetfile}
 
 %%% 其它部分
 \backmatter
@@ -154,7 +152,14 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 % 附录
 \begin{appendix}
 
+\chapter{原始数据表}
+
+\input{datasheetfile}
+
 \iffalse
+
+程序性能结果应使用几何平均数。\cite{fleming1986not}
+
 \chapter{课题程序使用说明}
 \section{运行环境}
 \section{输入文件格式}

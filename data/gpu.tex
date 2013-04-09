@@ -784,3 +784,182 @@ ADI\footnote{Alternating Direction Implicit，交替隐式迭代。} & $\mathcal
 \end{tabular}
 \end{minipage}
 \end{table}
+
+
+\subsection{常见存储格式介绍}
+
+\subsubsection{坐标格式(COO)}
+COO格式直接存储每个非零元素的位置和值，
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0\\
+0 & 2 & 0\\
+5 & 0 & 3
+\end{pmatrix}
+\end{align*}
+的COO格式表示为\footnote{下标从0开始计数，下同。}
+\begin{align*}
+\mathrm{rows}=\begin{pmatrix}
+0 & 0 & 1 & 2 & 2  
+\end{pmatrix}
+\\
+\mathrm{cols}=\begin{pmatrix}
+0 & 1 & 1 & 0 & 2
+\end{pmatrix}
+\\
+\mathrm{values}=\begin{pmatrix}
+1 & 7 & 2 & 5 & 3
+\end{pmatrix}
+\end{align*}
+
+
+
+\subsubsection{行压缩格式(CSC)}
+CSC格式把每行的非零元连续存放，相对于COO节省了存储行号的空间，
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0\\
+0 & 2 & 0\\
+5 & 0 & 3
+\end{pmatrix}
+\end{align*}
+的CSC格式表示为
+\begin{align*}
+\mathrm{ptr}&=\begin{pmatrix}
+0 & 2 & 3  
+\end{pmatrix}
+\\
+\mathrm{cols}&=\begin{pmatrix}
+0 & 1 & 1 & 0 & 2
+\end{pmatrix}
+\\
+\mathrm{values}&=\begin{pmatrix}
+1 & 7 & 2 & 5 & 3
+\end{pmatrix}
+\end{align*}
+
+如果把行列的存储方式调换，则可得到另一种格式，即列压缩格式(CSC)。
+
+\subsubsection{对角线格式(DIA)}
+对角线格式是专门用于存储对角线稀疏矩阵的一种格式，
+其思路是只存储有非零元素的对角线。
+如矩阵\cite{bell2008spmv}
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+的DIA格式表示为\footnote{其中$\_$表示DIA格式不使用的任意值，下同。}
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+\_ & 1 & 7\\
+\_ & 2 & 8\\
+5 & 3 & 9\\
+6 & 4 & \_
+\end{pmatrix}
+\quad
+\mathrm{offsets}=\begin{pmatrix}
+-2 & 0 & 1\\
+\end{pmatrix}
+\end{align*}
+
+
+\subsubsection{ELLPACK格式(ELL)}
+ELL是为向量机设计的一种稀疏矩阵存储格式，
+用于存储$M\times N$的矩阵且每行最多只有$k$个元素的情况。\cite{grimes1979itpack}
+如矩阵\cite{bell2008spmv}
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+的ELL格式表示为
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+1 & 7 & \_\\
+2 & 8 & \_\\
+5 & 3 & 9 \\
+6 & 4 & \_
+\end{pmatrix}
+\quad
+\mathrm{indices}=\begin{pmatrix}
+0 & 1 & \_\\
+1 & 2 & \_\\
+0 & 2 & 3\\
+1 & 4 & \_
+\end{pmatrix}
+\end{align*}
+
+\subsubsection{Hybrid格式(HYB)}
+由于ELL格式只适合每行元素个数相差不多的情况，
+所以又进一步出现了Hybrid格式，即同时使用ELL格式和COO格式，
+ELL格式存储系数矩阵中较为规整的部分（每行元素数量接近），
+COO格式则存储剩下的比较不规则的非零元。\cite{bell2008spmv}
+如矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 9\\
+0 & 6 & 0 & 4
+\end{pmatrix}
+\end{align*}
+可拆分为两个矩阵
+\begin{align*}
+\bm{A}=\begin{pmatrix}
+1 & 7 & 0 & 0\\
+0 & 2 & 8 & 0\\
+5 & 0 & 3 & 0\\
+0 & 6 & 0 & 4
+\end{pmatrix}
++
+\begin{pmatrix}
+0 &  &  & \\
+ & 0 &  & \\
+ &  & 0 & 9\\
+ &  &  & 0
+\end{pmatrix}
+\end{align*}
+分别使用ELL和COO格式进行存储，
+ELL格式部分为
+\begin{align*}
+\mathrm{data}=\begin{pmatrix}
+1 & 7\\
+2 & 8\\
+5 & 3\\
+6 & 4
+\end{pmatrix}
+\quad
+\mathrm{indices}=\begin{pmatrix}
+0 & 1\\
+1 & 2\\
+0 & 2\\
+1 & 4
+\end{pmatrix}
+\end{align*}
+COO格式部分为
+\begin{align*}
+\mathrm{rows}=\begin{pmatrix}
+2
+\end{pmatrix}
+\\
+\mathrm{cols}=\begin{pmatrix}
+3
+\end{pmatrix}
+\\
+\mathrm{values}=\begin{pmatrix}
+9
+\end{pmatrix}
+\end{align*}
+
+HYB格式中，ELL部分每行存储多少个元素不是固定的，
+可以根据需要进行变化。
+

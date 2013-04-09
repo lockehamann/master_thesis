@@ -70,7 +70,7 @@
   \newcommand{\para}{\pb{\bm{x},t}}
   \nu\Sigma'_{f,g'}\para = \frac{1}{k_\mathrm{eff}}\nu\Sigma_{f,g'}\para
 \end{align}
-修正后的问题的$k_\mathrm{eff}=1$，可以适用\eqref{equ:pro.diff.init.equ}，
+修正后的问题的$k_\mathrm{eff}=1$，可以适用\aeqref{equ:pro.diff.init.equ}，
 求得到初始条件的$C_i\pb{\bm{x},0}$
 \begin{align}
   \newcommand{\para}{\pb{\bm{x},0}}
@@ -129,6 +129,7 @@ $\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
   \end{aligned}
   \label{equ:dnabla2.equ0}
 \end{align}
+其中$\Delta w_{\bm{k}}$是网格$\bm{k}$在$w$方向上的长度。
 
 则\aeqref{equ:pro.diff.init.diff.equ1}的离散形式为
 \begin{align}
@@ -274,7 +275,8 @@ $\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
 
 \subsection{能群耦合}
 
-本文不考虑向上散射，向下散射只散射到邻近的能群，则以上离散后的扩散方程可以写成如下形式
+本文不考虑向上散射，向下散射只散射到邻近的能群，
+则以上离散后的固定源方程可以写成如下形式
 \begin{align}
   \begin{pmatrix}
   A_{11} & D_{12} & \cdots & D_{1G}\\
@@ -290,7 +292,6 @@ $\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
   S_1 \\ S_2 \\ \vdots \\ S_G
   \end{pmatrix}
 \end{align}
-
 其中 $A_{gg}$是7对角对称阵，$D_{g_1g_2}$ 是对角阵。
 
 两群情况则简化为
@@ -306,8 +307,63 @@ $\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
   \begin{pmatrix}
   S_1 \\ S_2
   \end{pmatrix}
+  \label{equ:program.group.g2equ.fixs}
 \end{align}
 
-\TODO
+对于\aeqref{equ:program.group.g2equ.fixs}，
+可直接使用支持非对称矩阵的迭代算法进行求解，
+如Jacobi迭代、BiCGStab、GMRES等。
 
-\section{程序结构}
+不过在实际计算中，如果能够更充分的利用$A_{ii}$、
+$D_{ij}$的实对称矩阵性质往往可以加速计算过程。
+这样就有逐群迭代求解过程
+\begin{align}
+  \left\{
+  \begin{aligned}
+    \phi_1^{(k+1)}&=A_{11}^{-1}\pb[B]{S_1-D_{12}\phi_2^{(k)}}\\
+    \phi_2^{(k+1)}&=A_{22}^{-1}\pb[B]{S_2-D_{21}\phi_1^{(k+1)}}
+  \end{aligned}
+  \right.
+\end{align}
+
+对于临界问题，则可写成如下形式的广义特征值问题
+\begin{align}
+  \begin{pmatrix}
+  A_{11} &  \\
+   & A_{22}
+  \end{pmatrix}
+  \begin{pmatrix}
+  \phi_1 \\ \phi_2
+  \end{pmatrix}
+  =
+    \begin{pmatrix}
+    F_{11} & F_{12} \\
+    S_{21} & 0
+    \end{pmatrix}
+  \begin{pmatrix}
+    \phi_1 \\ \phi_2
+  \end{pmatrix}
+\end{align}
+其中 $A_{gg}$是7对角对称阵，$F_{g_1g_2}$、$S_{g_1g_2}$ 是对角阵。
+
+如果使用源迭代进行求解，则分群迭代形式为
+\begin{align}
+  \left\{
+  \begin{aligned}
+    \phi_1^{(k+1)}&=A_{11}^{-1}\pb[B]{F_{11}\phi_1^{(k)}+F_{12}\phi_2^{(k)}}\\
+    \phi_2^{(k+1)}&=A_{22}^{-1}S_{21}\phi_1^{(k+1)}
+  \end{aligned}
+  \right.
+  \label{equ:program.group.g2equ.keff}
+\end{align}
+
+\aeqref{equ:program.group.g2equ.fixs}和\aeqref{equ:program.group.g2equ.keff}
+中的$A_{ii}^{-1}$项可以使用支持实对称正定的迭代算法进行求解，
+如Jacobi、CG等。
+
+
+\section{GPU程序开发}
+
+\subsection{主体架构}
+
+\subsection{title}

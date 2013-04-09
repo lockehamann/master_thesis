@@ -11,191 +11,11 @@
 
 \section{稀疏矩阵格式选择}
 
-\subsection{常见存储格式介绍}
-
-\subsubsection{坐标格式(COO)}
-COO格式直接存储每个非零元素的位置和值，
-如矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0\\
-0 & 2 & 0\\
-5 & 0 & 3
-\end{pmatrix}
-\end{align*}
-的COO格式表示为\footnote{下标从0开始计数，下同。}
-\begin{align*}
-\mathrm{rows}=\begin{pmatrix}
-0 & 0 & 1 & 2 & 2  
-\end{pmatrix}
-\\
-\mathrm{cols}=\begin{pmatrix}
-0 & 1 & 1 & 0 & 2
-\end{pmatrix}
-\\
-\mathrm{values}=\begin{pmatrix}
-1 & 7 & 2 & 5 & 3
-\end{pmatrix}
-\end{align*}
-
-
-
-\subsubsection{行压缩格式(CSC)}
-CSC格式把每行的非零元连续存放，相对于COO节省了存储行号的空间，
-如矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0\\
-0 & 2 & 0\\
-5 & 0 & 3
-\end{pmatrix}
-\end{align*}
-的CSC格式表示为
-\begin{align*}
-\mathrm{ptr}&=\begin{pmatrix}
-0 & 2 & 3  
-\end{pmatrix}
-\\
-\mathrm{cols}&=\begin{pmatrix}
-0 & 1 & 1 & 0 & 2
-\end{pmatrix}
-\\
-\mathrm{values}&=\begin{pmatrix}
-1 & 7 & 2 & 5 & 3
-\end{pmatrix}
-\end{align*}
-
-如果把行列的存储方式调换，则可得到另一种格式，即列压缩格式(CSC)。
-
-\subsubsection{对角线格式(DIA)}
-对角线格式是专门用于存储对角线稀疏矩阵的一种格式，
-其思路是只存储有非零元素的对角线。
-如矩阵\cite{bell2008spmv}
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 9\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-\end{align*}
-的DIA格式表示为\footnote{其中$\_$表示DIA格式不使用的任意值，下同。}
-\begin{align*}
-\mathrm{data}=\begin{pmatrix}
-\_ & 1 & 7\\
-\_ & 2 & 8\\
-5 & 3 & 9\\
-6 & 4 & \_
-\end{pmatrix}
-\quad
-\mathrm{offsets}=\begin{pmatrix}
--2 & 0 & 1\\
-\end{pmatrix}
-\end{align*}
-
-
-\subsubsection{ELLPACK格式(ELL)}
-ELL是为向量机设计的一种稀疏矩阵存储格式，
-用于存储$M\times N$的矩阵且每行最多只有$k$个元素的情况。\cite{grimes1979itpack}
-如矩阵\cite{bell2008spmv}
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 9\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-\end{align*}
-的ELL格式表示为
-\begin{align*}
-\mathrm{data}=\begin{pmatrix}
-1 & 7 & \_\\
-2 & 8 & \_\\
-5 & 3 & 9 \\
-6 & 4 & \_
-\end{pmatrix}
-\quad
-\mathrm{indices}=\begin{pmatrix}
-0 & 1 & \_\\
-1 & 2 & \_\\
-0 & 2 & 3\\
-1 & 4 & \_
-\end{pmatrix}
-\end{align*}
-
-\subsubsection{Hybrid格式(HYB)}
-由于ELL格式只适合每行元素个数相差不多的情况，
-所以又进一步出现了Hybrid格式，即同时使用ELL格式和COO格式，
-ELL格式存储系数矩阵中较为规整的部分（每行元素数量接近），
-COO格式则存储剩下的比较不规则的非零元。\cite{bell2008spmv}
-如矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 9\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-\end{align*}
-可拆分为两个矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 0\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-+
-\begin{pmatrix}
-0 &  &  & \\
- & 0 &  & \\
- &  & 0 & 9\\
- &  &  & 0
-\end{pmatrix}
-\end{align*}
-分别使用ELL和COO格式进行存储，
-ELL格式部分为
-\begin{align*}
-\mathrm{data}=\begin{pmatrix}
-1 & 7\\
-2 & 8\\
-5 & 3\\
-6 & 4
-\end{pmatrix}
-\quad
-\mathrm{indices}=\begin{pmatrix}
-0 & 1\\
-1 & 2\\
-0 & 2\\
-1 & 4
-\end{pmatrix}
-\end{align*}
-COO格式部分为
-\begin{align*}
-\mathrm{rows}=\begin{pmatrix}
-2
-\end{pmatrix}
-\\
-\mathrm{cols}=\begin{pmatrix}
-3
-\end{pmatrix}
-\\
-\mathrm{values}=\begin{pmatrix}
-9
-\end{pmatrix}
-\end{align*}
-
-HYB格式中，ELL部分每行存储多少个元素不是固定的，
-可以根据需要进行变化。
-
-
-\subsection{各存储格式性能比较}
-
 为了比较各种存储格式的速度，使用三维扩散临界计算程序来进行测试，
 测试算例为三维IAEA基准题（见\sectionref{sec:result.test.iaea}），
 各存储格式的计算时间见\floatref{tab:equsolve.spformat}及
 \floatref{fig:equsolve.spformat}，图中DM表示双层网格加速（见\sectionref{sec:equsolve.multimesh}），
-SP表示单精度、DP表示双精度。
+SP表示单精度、DP表示双精度，每种情况计算5次，时间取最小值。
 
 结果很清楚地显示：对于三维扩散方程，DIA和ELL格式明显优于CSR和COO格式，其中DIA性能最高。
 这主要是因为DIA和ELL较为适合向量机型处理器的运算和内存访问方式，
@@ -243,7 +63,7 @@ SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimi
 \centering
 \begin{asy}
 import graph;
-size(13cm,13cm,IgnoreAspect);
+size(13cm,15cm,IgnoreAspect);
 real[] x=sequence(8);
 real[] DIA={5.475, 7.956, 12.199, 19.391, 24.071, 43.415, 64.256, 116.922};
 real[] ELL={6.255, 8.596, 14.711, 20.997, 29.141, 47.362, 81.261, 133.599};
@@ -255,14 +75,14 @@ real[] CSRMM={5.975, 6.989, 11.513, 14.337, 19.734, 26.301, 38.438, 61.776};
 real[] COOMM={6.474, 7.660, 11.840, 13.712, 20.733, 26.364, 42.400, 65.910};
 scale(Linear,Log);
 string[] month={
-"2.5cm${}^3$ CG SP",
-"2.5cm${}^3$ CG DP",
-"2.5cm${}^3$ BiCGStab SP",
-"2.5cm${}^3$ BiCGStab DP",
-"1.25cm${}^3$ CG SP",
-"1.25cm${}^3$ CG DP",
-"1.25cm${}^3$ BiCGStab SP",
-"1.25cm${}^3$ BiCGStab DP",
+"2.5cm CG SP",
+"2.5cm CG DP",
+"2.5cm BiCGStab SP",
+"2.5cm BiCGStab DP",
+"1.25cm CG SP",
+"1.25cm CG DP",
+"1.25cm BiCGStab SP",
+"1.25cm BiCGStab DP",
 };
 transform markersize = scale(1.5mm);
 draw(graph(x,DIA),legend="DIA", marker(markersize*polygon(3)));
@@ -282,7 +102,447 @@ add(legend(),point(NW),10SE);
 \end{figure}
 
 
-\section{迭代算法选择}
-\section{预条件算法选择}
+\section{迭代及预条件算法选择}
+
+为了比较不同迭代求解方法和预处理器的效果，这里仍然选择用IAEA基准题进行测试，
+网格大小分别取5cm、2.5cm、1cm进行测试。
+
+选择的算法包括
+\begin{enumerate}
+\item Jacobi-SG，逐群使用Jacobi迭代进行求解。
+\item Jacobi-MG，使用Jacobi对所有能群统一求解。
+\item CG-SG，逐群使用CG迭代进行求解。
+\item BiCGStab-MG，使用BiCGStab对所有能群统一求解。
+\item GMRES-MG，使用GMRES对所有能群统一求解。
+\end{enumerate}
+
+由于在临界计算的源迭代中一般在每步内迭代中精确求解方程组，
+往往是迭代一个较少的次数，可以达到大幅减少计算时间的目的。
+这个内迭代次数和问题的规模和迭代算法、预条件算法都有关系，
+如何根据问题规模选择最优的内迭代次数不在文本的讨论之内，
+为了公平地比较各种算法，以下将分别寻找各种情况下最优的内迭代次数。
+
+\subsection{Jacobi-SG}
+\label{sec:equsolve.iter.jacobi-sg}
+
+Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
+见\floatref{tab:equsolve.iter.jacobi-sg.5cm}、%
+\floatref{tab:equsolve.iter.jacobi-sg.2.5cm}、%
+\floatref{tab:equsolve.iter.jacobi-sg.2cm}和%
+\floatref{tab:equsolve.iter.jacobi-sg.1cm}，
+从表中可见最优的内迭代次数分别为7、11、16、18。
+
+\begin{datasheet}
+\sectionref{sec:equsolve.iter.jacobi-sg}的数据表：
+\floatref{tab:equsolve.iter.jacobi-sg.5cm}、
+\floatref{tab:equsolve.iter.jacobi-sg.2.5cm}、
+\floatref{tab:equsolve.iter.jacobi-sg.2cm}、
+\floatref{tab:equsolve.iter.jacobi-sg.1cm}
+。
+
+\begin{table}
+\centering
+\caption{5cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-sg.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 2.855 & 4138 & 2069\\
+2 & 1.965 & 4180 & 1045\\
+3 & 1.701 & 4266 & 711\\
+4 & 1.576 & 4368 & 546\\
+5 & 1.513 & 4500 & 450\\
+6 & 1.497 & 4644 & 387\\
+7 & 1.420 & 4802 & 343\\
+8 & 1.435 & 4976 & 311\\
+9 & 1.482 & 5220 & 290\\
+10 & 1.607 & 5500 & 275\\
+20 & 2.012 & 8440 & 211\\
+30 & 2.683 & 11580 & 193\\
+40 & 3.463 & 14960 & 187\\
+50 & 4.181 & 18400 & 184\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2.5cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-sg.2.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2 & 12.870 & 15780 & 3945\\
+3 & 11.466 & 15810 & 2635\\
+4 & 10.889 & 15832 & 1979\\
+5 & 9.906 & 15880 & 1588\\
+6 & 9.547 & 15936 & 1328\\
+7 & 9.516 & 15988 & 1142\\
+8 & 9.391 & 16064 & 1004\\
+9 & 9.376 & 16146 & 897\\
+10 & 9.297 & 16240 & 812\\
+11 & 9.048 & 16324 & 742\\
+12 & 9.141 & 16440 & 685\\
+13 & 9.329 & 16536 & 636\\
+14 & 9.453 & 16660 & 595\\
+15 & 9.048 & 16770 & 559\\
+16 & 9.204 & 16896 & 528\\
+17 & 9.141 & 17034 & 501\\
+18 & 9.641 & 17172 & 477\\
+19 & 9.594 & 17328 & 456\\
+20 & 9.469 & 17480 & 437\\
+30 & 10.078 & 19080 & 318\\
+40 & 11.373 & 21840 & 273\\
+50 & 12.776 & 24700 & 247\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-sg.2cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+11 & 23.415 & 25256 & 1148\\
+12 & 23.072 & 25320 & 1055\\
+13 & 23.073 & 25428 & 978\\
+14 & 23.493 & 25480 & 910\\
+15 & 23.181 & 25590 & 853\\
+16 & 22.948 & 25664 & 802\\
+17 & 23.119 & 25772 & 758\\
+18 & 23.104 & 25884 & 719\\
+19 & 23.135 & 25992 & 684\\
+20 & 23.150 & 26120 & 653\\
+30 & 23.868 & 27420 & 457\\
+40 & 25.756 & 29040 & 363\\
+50 & 26.333 & 30800 & 308\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{1cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-sg.1cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+14 & 518.420 & 96768 & 3456\\
+16 & 511.619 & 96832 & 3026\\
+18 & 509.309 & 96804 & 2689\\
+20 & 512.507 & 96920 & 2423\\
+30 & 511.556 & 97260 & 1621\\
+40 & 510.714 & 97840 & 1223\\
+50 & 510.136 & 98600 & 986\\
+60 & 513.568 & 99480 & 829\\
+70 & 521.774 & 100520 & 718\\
+80 & 526.875 & 101600 & 635\\
+90 & 528.966 & 102780 & 571\\
+100 & 534.348 & 104000 & 520\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{datasheet}
+
+
+
+\subsection{CG-SG}
+\label{sec:equsolve.iter.cg-sg}
+
+CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
+见\floatref{tab:equsolve.iter.cg-sg.5cm}、%
+\floatref{tab:equsolve.iter.cg-sg.2.5cm}、%
+\floatref{tab:equsolve.iter.cg-sg.2cm}和%
+\floatref{tab:equsolve.iter.cg-sg.1cm}，
+从表中可见最优的内迭代次数分别为4、7、10、17。
+
+
+\begin{datasheet}
+\sectionref{sec:equsolve.iter.cg-sg}的数据表：
+\floatref{tab:equsolve.iter.cg-sg.5cm}、
+\floatref{tab:equsolve.iter.cg-sg.2.5cm}、
+\floatref{tab:equsolve.iter.cg-sg.2cm}、
+\floatref{tab:equsolve.iter.cg-sg.1cm}
+。
+
+\begin{table}
+\centering
+\caption{5cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.cg-sg.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 4.540 & 4048 & 2024\\
+2 & 1.576 & 1960 & 490\\
+3 & 1.046 & 1464 & 244\\
+4 & 0.920 & 1472 & 184\\
+5 & 1.092 & 1840 & 184\\
+6 & 1.186 & 2196 & 183\\
+7 & 1.342 & 2562 & 183\\
+8 & 1.467 & 2912 & 182\\
+9 & 1.622 & 3276 & 182\\
+10 & 1.685 & 3640 & 182\\
+11 & 1.841 & 3988 & 182\\
+12 & 1.966 & 4305 & 182\\
+13 & 2.138 & 4595 & 182\\
+14 & 2.246 & 4869 & 182\\
+15 & 2.450 & 5124 & 182\\
+16 & 2.372 & 5362 & 182\\
+17 & 2.512 & 5576 & 182\\
+18 & 2.559 & 5746 & 182\\
+19 & 2.684 & 5888 & 182\\
+20 & 2.792 & 6009 & 182\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2.5cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.cg-sg.2.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 31.309 & 16256 & 8128\\
+2 & 9.999 & 7472 & 1868\\
+3 & 5.694 & 4740 & 790\\
+4 & 3.837 & 3504 & 438\\
+5 & 3.120 & 2910 & 291\\
+6 & 2.855 & 2856 & 238\\
+7 & 2.761 & 2800 & 200\\
+8 & 2.792 & 2960 & 185\\
+9 & 3.042 & 3312 & 184\\
+10 & 3.385 & 3680 & 184\\
+11 & 3.572 & 4026 & 183\\
+12 & 3.947 & 4392 & 183\\
+13 & 4.181 & 4758 & 183\\
+14 & 4.493 & 5096 & 182\\
+15 & 4.727 & 5460 & 182\\
+16 & 5.070 & 5824 & 182\\
+17 & 5.460 & 6188 & 182\\
+18 & 5.787 & 6552 & 182\\
+19 & 5.912 & 6916 & 182\\
+20 & 6.146 & 7280 & 182\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.cg-sg.2cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 139.698 & 49450 & 24725\\
+2 & 23.384 & 10940 & 2735\\
+3 & 13.260 & 7410 & 1235\\
+4 & 9.048 & 5528 & 691\\
+5 & 6.927 & 4390 & 439\\
+6 & 6.068 & 3864 & 322\\
+7 & 5.757 & 3808 & 272\\
+8 & 5.367 & 3696 & 231\\
+9 & 5.726 & 3924 & 218\\
+10 & 5.476 & 3700 & 185\\
+11 & 5.897 & 4048 & 184\\
+12 & 6.396 & 4416 & 184\\
+13 & 6.739 & 4784 & 184\\
+14 & 7.067 & 5124 & 183\\
+15 & 7.395 & 5490 & 183\\
+16 & 7.831 & 5856 & 183\\
+17 & 8.611 & 6222 & 183\\
+18 & 8.939 & 6588 & 183\\
+19 & 8.939 & 6916 & 182\\
+20 & 9.376 & 7280 & 182\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{1cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.cg-sg.1cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2 & 445.958 & 43336 & 10834\\
+3 & 252.955 & 28458 & 4743\\
+4 & 186.670 & 22616 & 2827\\
+5 & 141.945 & 18000 & 1800\\
+6 & 113.818 & 14928 & 1244\\
+7 & 93.303 & 12558 & 897\\
+8 & 78.983 & 10784 & 674\\
+9 & 69.108 & 9594 & 533\\
+10 & 60.591 & 8480 & 424\\
+11 & 61.776 & 8580 & 390\\
+12 & 53.102 & 7536 & 314\\
+13 & 56.269 & 8034 & 309\\
+14 & 50.981 & 7336 & 262\\
+15 & 51.839 & 7500 & 250\\
+16 & 50.357 & 7200 & 225\\
+17 & 48.875 & 7106 & 209\\
+18 & 52.806 & 7740 & 215\\
+19 & 49.093 & 7106 & 187\\
+20 & 50.216 & 7400 & 185\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{datasheet}
+
+
+\subsection{BiCGStab-MG}
+\label{sec:equsolve.iter.bicgstab-mg}
+
+BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
+见\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、%
+\floatref{tab:equsolve.iter.bicgstab-mg.2.5cm}、%
+\floatref{tab:equsolve.iter.bicgstab-mg.2cm}和%
+\floatref{tab:equsolve.iter.bicgstab-mg.1cm}，
+从表中可见最优的内迭代次数分别为3、8、10、21。
+
+
+\begin{datasheet}
+\sectionref{sec:equsolve.iter.bicgstab-mg}的数据表：
+\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、
+\floatref{tab:equsolve.iter.bicgstab-mg.2.5cm}、
+\floatref{tab:equsolve.iter.bicgstab-mg.2cm}、
+\floatref{tab:equsolve.iter.bicgstab-mg.1cm}
+。
+
+\begin{table}
+\centering
+\caption{5cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.bicgstab-mg.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & \multicolumn{3}{c}{不收敛} \\ %\footnote{Fail:Nan: KeffErr, PhiErr, }
+2 & \multicolumn{3}{c}{不收敛} \\ %\footnote{Fail:Nan: KeffErr, PhiErr, }
+3 & 0.998 & 624 & 208\\
+4 & 1.108 & 752 & 188\\
+5 & 1.264 & 915 & 183\\
+6 & 1.419 & 1086 & 181\\
+7 & 1.607 & 1267 & 181\\
+8 & 1.763 & 1448 & 181\\
+9 & 1.919 & 1629 & 181\\
+10 & 2.091 & 1820 & 182\\
+11 & 2.340 & 2013 & 183\\
+12 & 2.434 & 2160 & 180\\
+13 & 2.589 & 2366 & 182\\
+14 & 2.777 & 2548 & 182\\
+15 & 2.980 & 2730 & 182\\
+16 & 3.214 & 2912 & 182\\
+17 & 3.292 & 3094 & 182\\
+18 & 3.448 & 3276 & 182\\
+19 & 3.572 & 3458 & 182\\
+20 & 3.869 & 3640 & 182\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2.5cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.bicgstab-mg.2.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 3.900 & 900 & 900\\
+2-5 & \multicolumn{3}{c}{不收敛} \\ %\footnote{Fail:Nan: KeffErr, PhiErr, }
+6(超时) & >600 & >241926 & >40321 \\ %\footnote{Fail:Solve Time exceeds 600.000}
+7 & 4.181 & 1638 & 234\\
+8 & 4.056 & 1600 & 200\\
+9 & 4.134 & 1647 & 183\\
+10 & 4.446 & 1800 & 180\\
+11 & 4.898 & 1991 & 181\\
+12 & 5.132 & 2124 & 177\\
+13 & 5.445 & 2275 & 175\\
+14 & 5.834 & 2450 & 175\\
+15 & 6.194 & 2625 & 175\\
+16 & 6.521 & 2800 & 175\\
+17 & 6.942 & 2992 & 176\\
+18 & 7.332 & 3186 & 177\\
+19 & 7.894 & 3401 & 179\\
+20 & 8.222 & 3600 & 180\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.bicgstab-mg.2cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 12.152 & 1766 & 1766\\
+2-7 & \multicolumn{3}{c}{不收敛} \\ %\footnote{Fail:Nan: KeffErr, PhiErr, }
+8(超时) & >600 & >142232 & >17779 \\ %\footnote{Fail:Solve Time exceeds 600.000}
+9 & 10.250 & 2412 & 268\\
+10 & 8.954 & 2120 & 212\\
+11 & 9.360 & 2233 & 203\\
+12 & 9.313 & 2232 & 186\\
+13 & 9.641 & 2301 & 177\\
+14 & 10.452 & 2534 & 181\\
+15 & 10.857 & 2655 & 177\\
+16 & 11.388 & 2784 & 174\\
+17 & 11.840 & 2941 & 173\\
+18 & 12.527 & 3114 & 173\\
+19 & 13.292 & 3287 & 173\\
+20 & 13.900 & 3460 & 173\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{1cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.bicgstab-mg.1cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+%1 & 600.929 & 16239 & 16239 \\ %Fail:Solve Time exceeds 600.000
+2-17 & \multicolumn{3}{c}{不收敛} \\ %Fail:Nan: KeffErr, PhiErr,
+18(超时) & >600 & >25650 & >1425 \\ %Fail:Solve Time exceeds 600.000
+19 & 258.804 & 11134 & 586\\
+20 & 154.456 & 6580 & 329\\
+21 & 100.339 & 4305 & 205\\
+22 & 105.627 & 4554 & 207\\
+23 & 106.673 & 4554 & 198\\
+24 & 107.936 & 4656 & 194\\
+25 & 109.965 & 4725 & 189\\
+26 & 115.472 & 4992 & 192\\
+27 & 112.991 & 4887 & 181\\
+28 & 120.354 & 5180 & 185\\
+29 & 124.020 & 5336 & 184\\
+30 & 129.511 & 5580 & 186\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{datasheet}
+
+
+
+
 \section{双层网格加速}
 \label{sec:equsolve.multimesh}
