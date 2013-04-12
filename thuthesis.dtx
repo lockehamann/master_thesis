@@ -252,7 +252,6 @@
 % figures/ & 示例文档图片路径\\
 % thutils.sty & 为示例文档加载其它宏包\\\hline
 % Makefile & self-explanation \\
-% msmake.cmd & Windows 批处理工具\\\hline
 % Readme & self-explanation\\
 % \textbf{thuthesis.pdf} & 用户手册（本文档）\\\hline
 %   \end{longtable}
@@ -276,7 +275,7 @@
 %   ifxetex & xunicode & CJK\footnote{版本要求：$\geq$ v4.8.1} & xeCJK & \pkg{CJKpunct} & \\
 %   array & booktabs & longtable  &  amsmath & amssymb & ntheorem \\
 %   indentfirst & paralist & txfonts & natbib & hyperref & \\
-%   graphicx & \pkg{subfig}\footnote{版本要求：$\geq$2005/06/28 ver: 1.3} &
+%   graphicx & \pkg{subcaption} &
 %   \pkg{caption}\footnote{版本要求：$\geq$2006/03/21 v3.0j} &
 %   \pkg{thubib.bst} & &\\\hline
 % \end{tabular}
@@ -386,17 +385,7 @@
 % $ make shuji     # 生成书脊 shuji.pdf
 % \end{shell}
 %
-% 如果使用 Windows 平台，可以试一试 Truel 编写的批处理脚
-% 本 \texttt{msmake.cmd}\footnote{尚不完善，亟需改进。}：
-% \begin{shell}
-% your_path $ msmake setup   # 生成宏包文件和说明文档
-% your_path $ msmake all     # 生成示例文档和书脊
-% your_path $ msmake main    # 生成示例文档
-% your_path $ msmake shuji   # 生成书脊
-% your_path $ msmake clean   # 清除临时文件
-% \end{shell}
-%
-% \texttt{Makefile} 和 \texttt{msmake.cmd} 默认采用 \LaTeX\ 编译，可以根据自己的
+% \texttt{Makefile} 默认采用 \LaTeX\ 编译，可以根据自己的
 % 需要修改命令。
 %
 %
@@ -1229,12 +1218,10 @@
 \RequirePackage{graphicx}
 %    \end{macrocode}
 %
-% 并排图形。\pkg{subfigure} 已经不再推荐，用新的 \pkg{subfig}。加入 |config| 选项
-% 以便兼容 \pkg{subfigure} 的命令。浮动图形和表格标题样式。\pkg{caption2} 已经不
-% 推荐使用，采用新的 \pkg{caption}。它会自动被 \pkg{subfig} 装载进来。所以可以在
-% 后面看到 \cs{captionsetup} 的命令。
+% 并排图形。\pkg{subfigure}、\pkg{subfig} 已经不再推荐，用新的 \pkg{subcaption}。
+% 浮动图形和表格标题样式。\pkg{caption2} 已经不推荐使用，采用新的 \pkg{caption}。
 %    \begin{macrocode}
-\RequirePackage[config]{subfig}
+\RequirePackage[labelformat=simple]{subcaption}
 %    \end{macrocode}
 %
 % 首行缩进宏包
@@ -1940,7 +1927,7 @@
 \captionsetup{labelformat=thu,labelsep=thu,font=thu}
 \captionsetup[table]{position=top,belowskip={12bp-\intextsep},aboveskip=6bp}
 \captionsetup[figure]{position=bottom,belowskip={12bp-\intextsep},aboveskip=6bp}
-\captionsetup[subfloat]{labelformat=simple,font=thu,captionskip=6bp,nearskip=6bp,farskip=0bp,topadjust=0bp}
+%\captionsetup[subfloat]{labelformat=simple,font=thu,captionskip=6bp,nearskip=6bp,farskip=0bp,topadjust=0bp}
 \renewcommand{\thesubfigure}{(\alph{subfigure})}
 \renewcommand{\thesubtable}{(\alph{subtable})}
 % \renewcommand{\p@subfigure}{:}
