@@ -24,10 +24,11 @@ SP表示单精度、DP表示双精度，每种情况计算5次，时间取最小
 SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimizing}\footnote{现在的GPU运算能力太强，使得显存带宽成为瓶颈。}，
 所以DIA性能最好是预料之中。
 
-\begin{sidewaystable}
-\pdfrotate
+%\begin{sidewaystable}
+%\pdfrotate
+\begin{table}
 \centering
-\begin{minipage}{.8\linewidth}
+\begin{minipage}{\linewidth}
 \centering
 \caption[不同稀疏矩阵格式求解三维临界扩散的时间表]
 {\label{tab:equsolve.spformat}%
@@ -35,6 +36,7 @@ SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimi
 \footnote{不同的存储格式对非零元有着不同的求和顺序，由于浮点误差存在，%
 不同的格式要达到收敛标准所需要的迭代次数可能有差别，并导致总计算时间的改变。}
 }
+\small
 \begin{tabular}{ccccccccc}
 \toprule
  \multirow {3}{*}{矩阵格式}  &
@@ -57,47 +59,12 @@ SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimi
 \bottomrule
 \end{tabular}
 \end{minipage}
-\end{sidewaystable}
+%\end{sidewaystable}
+\end{table}
 
 \begin{figure}
 \centering
-\begin{asy}
-import graph;
-size(13cm,15cm,IgnoreAspect);
-real[] x=sequence(8);
-real[] DIA={5.475, 7.956, 12.199, 19.391, 24.071, 43.415, 64.256, 116.922};
-real[] ELL={6.255, 8.596, 14.711, 20.997, 29.141, 47.362, 81.261, 133.599};
-real[] CSR={10.452, 13.042, 27.814, 34.960, 62.478, 82.929, 180.430, 238.462};
-real[] COO={11.232, 13.432, 30.934, 36.629, 64.303, 82.384, 197.263, 248.618};
-real[] DIAMM={3.838, 4.883, 6.349, 8.003, 9.266, 14.976, 14.165, 31.590};
-real[] ELLMM={4.399, 5.351, 7.363, 8.626, 10.920, 16.224, 17.503, 35.322};
-real[] CSRMM={5.975, 6.989, 11.513, 14.337, 19.734, 26.301, 38.438, 61.776};
-real[] COOMM={6.474, 7.660, 11.840, 13.712, 20.733, 26.364, 42.400, 65.910};
-scale(Linear,Log);
-string[] month={
-"2.5cm CG SP",
-"2.5cm CG DP",
-"2.5cm BiCGStab SP",
-"2.5cm BiCGStab DP",
-"1.25cm CG SP",
-"1.25cm CG DP",
-"1.25cm BiCGStab SP",
-"1.25cm BiCGStab DP",
-};
-transform markersize = scale(1.5mm);
-draw(graph(x,DIA),legend="DIA", marker(markersize*polygon(3)));
-draw(graph(x,ELL),legend="ELL", marker(markersize*polygon(4)));
-draw(graph(x,CSR),legend="CSR", marker(markersize*unitcircle));
-draw(graph(x,COO),legend="COO", marker(markersize*cross(4))  );
-draw(graph(x,DIAMM),legend="DIA DM", dashed, marker(markersize*polygon(3)));
-draw(graph(x,ELLMM),legend="ELL DM", dashed, marker(markersize*polygon(4)));
-draw(graph(x,CSRMM),legend="CSR DM", dashed, marker(markersize*unitcircle));
-draw(graph(x,COOMM),legend="COO DM", dashed, marker(markersize*cross(4))  );
-xaxis(BottomTop,LeftTicks(rotate(90)*Label(),new string(real x) {
-return month[round(x)];}));
-yaxis("$T/\mathrm{s}$",LeftRight,RightTicks);
-add(legend(),point(NW),10SE);
-\end{asy}
+\includegraphics{equsolve-spformat}
 \caption{\label{fig:equsolve.spformat}不同稀疏矩阵格式求解三维临界扩散的时间}
 \end{figure}
 
@@ -257,17 +224,169 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \end{datasheet}
 
 
+\subsection{Jacobi-MG}
+\label{sec:equsolve.iter.jacobi-mg}
+
+Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
+见\floatref{tab:equsolve.iter.jacobi-mg.5cm}、%
+\floatref{tab:equsolve.iter.jacobi-mg.2.5cm}、%
+\floatref{tab:equsolve.iter.jacobi-mg.2cm}和%
+\floatref{tab:equsolve.iter.jacobi-mg.1cm}，
+从中可见最优的内迭代次数分别为4\footnote{各迭代次数时间接近，这里取总内迭代次数最小的。}、8、11、38。
+
+\begin{datasheet}
+\sectionref{sec:equsolve.iter.jacobi-mg}的数据表：
+\floatref{tab:equsolve.iter.jacobi-mg.5cm}、
+\floatref{tab:equsolve.iter.jacobi-mg.2.5cm}、
+\floatref{tab:equsolve.iter.jacobi-mg.2cm}、
+\floatref{tab:equsolve.iter.jacobi-mg.1cm}
+。
+
+\begin{table}
+\centering
+\caption{5cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-mg.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2-3 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
+4 & 1.295 & 2436 & 609\\
+5 & 1.232 & 2510 & 502\\
+6 & 1.217 & 2586 & 431\\
+7 & 1.185 & 2660 & 380\\
+8 & 1.170 & 2736 & 342\\
+9 & 1.185 & 2817 & 313\\
+10 & 1.185 & 2930 & 293\\
+11 & 1.139 & 3069 & 279\\
+12 & 1.170 & 3204 & 267\\
+13 & 1.217 & 3341 & 257\\
+14 & 1.217 & 3486 & 249\\
+15 & 1.279 & 3615 & 241\\
+16 & 1.280 & 3760 & 235\\
+17 & 1.341 & 3910 & 230\\
+18 & 1.373 & 4050 & 225\\
+19 & 1.310 & 4180 & 220\\
+20 & 1.404 & 4340 & 217\\
+30 & 1.747 & 5850 & 195\\
+40 & 2.137 & 7480 & 187\\
+50 & 2.621 & 9200 & 184\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2.5cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-mg.2.5cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2-5 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
+6 & 30.654 & 29070 & 4845\\
+7 & 12.355 & 12166 & 1738\\
+8 & 6.708 & 6512 & 814\\
+9 & 8.627 & 8604 & 956\\
+10 & 8.486 & 8690 & 869\\
+11 & 8.439 & 8767 & 797\\
+12 & 8.346 & 8820 & 735\\
+13 & 8.377 & 8905 & 685\\
+14 & 8.549 & 8974 & 641\\
+15 & 8.658 & 9045 & 603\\
+16 & 8.533 & 9120 & 570\\
+17 & 8.517 & 9197 & 541\\
+18 & 8.533 & 9270 & 515\\
+19 & 8.736 & 9348 & 492\\
+20 & 8.752 & 9420 & 471\\
+30 & 9.282 & 10200 & 340\\
+40 & 9.999 & 11360 & 284\\
+50 & 11.232 & 12750 & 255\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{2cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-mg.2cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2-6 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
+7 & 174.721 & 98966 & 14138\\
+8 & 63.461 & 36336 & 4542\\
+9 & 37.596 & 21708 & 2412\\
+10 & 25.397 & 14700 & 1470\\
+11 & 17.238 & 10010 & 910\\
+12 & 22.667 & 13272 & 1106\\
+13 & 22.901 & 13468 & 1036\\
+14 & 22.979 & 13566 & 969\\
+15 & 23.228 & 13620 & 908\\
+16 & 23.244 & 13696 & 856\\
+17 & 23.010 & 13770 & 810\\
+18 & 23.010 & 13824 & 768\\
+19 & 23.337 & 13927 & 733\\
+20 & 23.384 & 13980 & 699\\
+30 & 23.993 & 14730 & 491\\
+40 & 24.960 & 15520 & 388\\
+50 & 26.535 & 16350 & 327\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{1cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
+\label{tab:equsolve.iter.jacobi-mg.1cm}
+\begin{tabular}{cccc}
+\toprule
+内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
+\midrule
+2-31(超时) & >600 & -- & -- \\ %Fail:Solve Time exceeds 600.000
+32 & 560.212 & 52800 & 1650\\
+33 & 512.289 & 48378 & 1466\\
+34 & 467.221 & 44132 & 1298\\
+35 & 427.035 & 40250 & 1150\\
+36 & 391.748 & 36864 & 1024\\
+37 & 360.011 & 33818 & 914\\
+38 & 332.083 & 31388 & 826\\
+39 & 530.947 & 50232 & 1288\\
+40 & 537.717 & 50880 & 1272\\
+41 & 538.803 & 51086 & 1246\\
+42 & 541.852 & 51324 & 1222\\
+43 & 542.958 & 51428 & 1196\\
+44 & 545.269 & 51568 & 1172\\
+45 & 542.681 & 51570 & 1146\\
+46 & 543.505 & 51704 & 1124\\
+47 & 546.406 & 51794 & 1102\\
+48 & 547.090 & 51792 & 1079\\
+49 & 547.062 & 51891 & 1059\\
+50 & 549.698 & 51950 & 1039\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{datasheet}
+
 
 \subsection{CG-SG}
 \label{sec:equsolve.iter.cg-sg}
 
 CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
-见\floatref{tab:equsolve.iter.cg-sg.5cm}、%
+见\floatref{fig:equsolve.iter.cg-sg}，
+原始数据表及各次结果的总内迭代次数、外迭代次数见
+\floatref{tab:equsolve.iter.cg-sg.5cm}、%
 \floatref{tab:equsolve.iter.cg-sg.2.5cm}、%
 \floatref{tab:equsolve.iter.cg-sg.2cm}和%
 \floatref{tab:equsolve.iter.cg-sg.1cm}，
-从表中可见最优的内迭代次数分别为4、7、10、17。
+从中可见最优的内迭代次数分别为4、7、10、17。
 
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -302,6 +421,10 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20 , 2.792 , 6009 , 182
   };
 \end{tikzpicture}
+\caption{5cm网格}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -336,6 +459,11 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20, 6.146, 7280, 182
   };
 \end{tikzpicture}
+\caption{2.5cm网格}
+\end{subfigure}
+\\[1cm]
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -370,11 +498,15 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20, 9.376, 7280, 182
   };
 \end{tikzpicture}
+\caption{2cm网格}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
    visualize as line,
-   x axis={ ticks={major={at={2,3,4,5,8,10,17,20}}},
+   x axis={ ticks={major={at={2,3,4,5,10,17,40}}},
             logarithmic, attribute=maxiter,
             label={内迭代次数} },
    y axis={ ticks=many, ticks={major={at={50,100,200,400}}},
@@ -402,8 +534,32 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   18, 52.806, 7740, 215
   19, 49.093, 7106, 187
   20, 50.216, 7400, 185
+  21, 52.416, 7770, 185
+  22, 55.785, 8140, 185
+  23, 57.002, 8464, 184
+  24, 59.521, 8832, 184
+  25, 61.932, 9200, 184
+  26, 64.849, 9568, 184
+  27, 66.019, 9882, 183
+  28, 68.266, 10248, 183
+  29, 70.855, 10614, 183
+  30, 73.710, 10980, 183
+  31, 74.802, 11346, 183
+  32, 77.703, 11712, 183
+  33, 79.654, 12078, 183
+  34, 83.226, 12444, 183
+  35, 84.521, 12810, 183
+  36, 87.953, 13176, 183
+  37, 88.967, 13542, 183
+  38, 92.149, 13832, 182
+  39, 94.302, 14196, 182
+  40, 96.642, 14560, 182
   };
 \end{tikzpicture}
+\caption{1cm网格}
+\end{subfigure}
+\caption{CG-SG 不同内迭代次数的计算时间\label{fig:equsolve.iter.cg-sg}}
+\end{figure}
 
 \begin{datasheet}
 \sectionref{sec:equsolve.iter.cg-sg}的数据表：
@@ -514,6 +670,7 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \centering
 \caption{1cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.cg-sg.1cm}
+\small
 \begin{tabular}{cccc}
 \toprule
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
@@ -537,23 +694,47 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 52.806 & 7740 & 215\\
 19 & 49.093 & 7106 & 187\\
 20 & 50.216 & 7400 & 185\\
+21 & 52.416 & 7770 & 185\\
+22 & 55.785 & 8140 & 185\\
+23 & 57.002 & 8464 & 184\\
+24 & 59.521 & 8832 & 184\\
+25 & 61.932 & 9200 & 184\\
+26 & 64.849 & 9568 & 184\\
+27 & 66.019 & 9882 & 183\\
+28 & 68.266 & 10248 & 183\\
+29 & 70.855 & 10614 & 183\\
+30 & 73.710 & 10980 & 183\\
+31 & 74.802 & 11346 & 183\\
+32 & 77.703 & 11712 & 183\\
+33 & 79.654 & 12078 & 183\\
+34 & 83.226 & 12444 & 183\\
+35 & 84.521 & 12810 & 183\\
+36 & 87.953 & 13176 & 183\\
+37 & 88.967 & 13542 & 183\\
+38 & 92.149 & 13832 & 182\\
+39 & 94.302 & 14196 & 182\\
+40 & 96.642 & 14560 & 182\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \end{datasheet}
 
-
 \subsection{BiCGStab-MG}
 \label{sec:equsolve.iter.bicgstab-mg}
 
 BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
-见\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、%
+见\floatref{fig:equsolve.iter.bicgstab-mg}，
+原始数据表及各次结果的总内迭代次数、外迭代次数见
+\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、%
 \floatref{tab:equsolve.iter.bicgstab-mg.2.5cm}、%
 \floatref{tab:equsolve.iter.bicgstab-mg.2cm}和%
 \floatref{tab:equsolve.iter.bicgstab-mg.1cm}，
-从表中可见最优的内迭代次数分别为3、8、10、21。
+从中可见最优的内迭代次数分别为3、8、10、21。
 
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -587,6 +768,10 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20, 3.869, 3640, 182
   };
 \end{tikzpicture}
+\caption{5cm网格}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -616,6 +801,11 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20, 8.222, 3600, 180
   };
 \end{tikzpicture}
+\caption{2.5cm网格}
+\end{subfigure}
+\\[1cm]
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -643,6 +833,10 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   20, 13.900, 3460, 173
   };
 \end{tikzpicture}
+\caption{2cm网格}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+\centering
 \begin{tikzpicture}
 \datavisualization
   [scientific axes,
@@ -670,6 +864,10 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
   30, 129.511, 5580, 186
   };
 \end{tikzpicture}
+\caption{1cm网格}
+\end{subfigure}
+\caption{BiCGStab-MG 不同内迭代次数的计算时间\label{fig:equsolve.iter.bicgstab-mg}}
+\end{figure}
 
 \begin{datasheet}
 \sectionref{sec:equsolve.iter.bicgstab-mg}的数据表：
@@ -800,131 +998,22 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \subsection{GMRES-MG}
 GMRES在实际计算中往往需要Restart过程，
 相对于前面的迭代算法增加了每隔多少次迭代进行Restart的参数（以下简记为Restart），
-这里Restart分别取1、5、10、15进行计算，
+这里Restart分别取5、10、15进行计算，
 计算结果见\floatref{tab:equsolve.iter.gmres}及
-\floatref{fig:fig:equsolve.iter.gmres.5cm}、
-\floatref{fig:fig:equsolve.iter.gmres.2.5cm}、
-\floatref{fig:fig:equsolve.iter.gmres.2cm}和
-\floatref{fig:fig:equsolve.iter.gmres.1cm}。
+\floatref{fig:fig:equsolve.iter.gmres}。
 
 \begin{figure}
 \centering
-\begin{asy}
-import graph;
-settings.tex="xelatex";
-texpreamble("\usepackage{xeCJK}");
-texpreamble("\setCJKmainfont{SimSun}");
-size(10cm,7cm,IgnoreAspect);
-real[][] restart1={sequence(6,20),
-{1.763, 2.870, 1.950, 2.886, 2.091, 2.840, 2.387, 2.855,
- 2.465, 2.746, 2.793, 2.761, 2.933, 2.949, 3.167}};
-real[][] restart2={sequence(5,20),
-{1.232, 1.076, 1.201, 1.263, 1.357, 1.373, 1.513, 1.685,
- 1.872, 1.997, 2.059, 2.246, 2.325, 2.262, 2.574, 2.527}}; 
-real[][] restart3={sequence(5,20),
-{1.248, 1.061, 1.201, 1.404, 1.576, 1.841, 1.965, 2.028,
-2.138, 2.215, 2.309, 2.496, 2.667, 2.840, 3.058, 3.338, }};
-real[][] restart4={sequence(5,20),
-{1.280, 1.123, 1.202, 1.342, 1.544, 1.809, 2.060, 2.340, 
-2.606, 2.902, 3.292, 3.401, 3.432, 3.604, 3.666, 3.822, }}; 
-scale(Linear,Log);
-transform markersize = scale(1.5mm);
-draw(graph(restart1[0],restart1[1]),legend="Restart=1",dashed);
-draw(graph(restart2[0],restart2[1]),legend="Restart=5", marker(markersize*polygon(3)));
-draw(graph(restart3[0],restart3[1]),legend="Restart=10", marker(markersize*unitcircle));
-draw(graph(restart4[0],restart4[1]),legend="Restart=15", marker(markersize*cross(4)));
-xaxis("内迭代次数",BottomTop,LeftTicks);
-yaxis("$T/\mathrm{s}$",LeftRight,RightTicks(ticklabel=new string(real x){return format("$\%f$",x);}, new real[]{1.5,2,3}));
-add(legend(linelength=20),point(SE),10NW);
-\end{asy}
-\caption{\label{fig:fig:equsolve.iter.gmres.5cm}5cm网格时GMRES算法计算时间表}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{asy}
-import graph;
-settings.tex="xelatex";
-texpreamble("\usepackage{xeCJK}");
-texpreamble("\setCJKmainfont{SimSun}");
-size(10cm,7cm,IgnoreAspect);
-real[][] restart1={sequence(12,20),
-{66.441, 110.042, 34.585, 62.213, 21.294, 41.823, 19.952, 27.721, 19.593}};
-real[][] restart2={sequence(9,20),
-{7.113, 4.852, 4.929, 5.070, 5.257, 5.616, 6.053, 6.115, 6.193, 6.505, 6.911, 7.238, }}; 
-real[][] restart3={sequence(10,20),
-{7.098, 5.647, 5.710, 5.959, 6.225, 6.412, 6.645, 6.973, 7.551, 8.065, 8.502,}};
-real[][] restart4={sequence(10,20),
-{7.160, 5.663, 6.287, 6.895, 7.675, 8.377, 8.455, 8.705, 8.970, 9.547, 9.937, }}; 
-scale(Linear,Log);
-transform markersize = scale(1.5mm);
-draw(graph(restart1[0],restart1[1]),legend="Restart=1",dashed);
-draw(graph(restart2[0],restart2[1]),legend="Restart=5", marker(markersize*polygon(3)));
-draw(graph(restart3[0],restart3[1]),legend="Restart=10", marker(markersize*unitcircle));
-draw(graph(restart4[0],restart4[1]),legend="Restart=15", marker(markersize*cross(4)));
-xaxis("内迭代次数",BottomTop,LeftTicks(new real[]{9,10,13,17,20}));
-yaxis("$T/\mathrm{s}$",LeftRight,RightTicks(ticklabel=new string(real x){return format("$\%f$",x);}, new real[]{5,10,20,50,100}));
-add(legend(linelength=20),point(W),10E);
-\end{asy}
-\caption{\label{fig:fig:equsolve.iter.gmres.2.5cm}2.5cm网格时GMRES算法计算时间表}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{asy}
-import graph;
-settings.tex="xelatex";
-texpreamble("\usepackage{xeCJK}");
-texpreamble("\setCJKmainfont{SimSun}");
-size(10cm,7cm,IgnoreAspect);
-real[][] restart1={sequence(16,20),
-{250.271, 365.883, 158.387, 244.000, 113.318}};
-real[][] restart2={sequence(12,20),
-{16.598, 13.260, 12.324, 13.822, 12.277, 12.231, 12.620, 13.806, 13.884}}; 
-real[][] restart3={sequence(13,20),
-{18.595, 12.277, 11.638, 12.558, 12.480, 12.995, 13.650, 14.274}};
-real[][] restart4={sequence(13,20),
-{13.884, 13.416, 14.337, 15.210, 15.116, 15.241, 16.442, 16.240}}; 
-scale(Linear,Log);
-transform markersize = scale(1.5mm);
-draw(graph(restart1[0],restart1[1]),legend="Restart=1",dashed);
-draw(graph(restart2[0],restart2[1]),legend="Restart=5", marker(markersize*polygon(3)));
-draw(graph(restart3[0],restart3[1]),legend="Restart=10", marker(markersize*unitcircle));
-draw(graph(restart4[0],restart4[1]),legend="Restart=15", marker(markersize*cross(4)));
-xaxis("内迭代次数",BottomTop,LeftTicks(4));
-yaxis("$T/\mathrm{s}$",LeftRight,RightTicks(ticklabel=new string(real x){return format("$\%f$",x);}, new real[]{15,20,50,100,200}));
-add(legend(linelength=20),point(W),10E);
-\end{asy}
-\caption{\label{fig:fig:equsolve.iter.gmres.2cm}2cm网格时GMRES算法计算时间表}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{asy}
-import graph;
-settings.tex="xelatex";
-texpreamble("\usepackage{xeCJK}");
-texpreamble("\setCJKmainfont{SimSun}");
-size(10cm,7cm,IgnoreAspect);
-real[][] restart1={sequence(16,20),
-{250.271, 365.883, 158.387, 244.000, 113.318}};
-real[][] restart2={sequence(12,20),
-{16.598, 13.260, 12.324, 13.822, 12.277, 12.231, 12.620, 13.806, 13.884}}; 
-real[][] restart3={sequence(13,20),
-{18.595, 12.277, 11.638, 12.558, 12.480, 12.995, 13.650, 14.274}};
-real[][] restart4={sequence(13,20),
-{13.884, 13.416, 14.337, 15.210, 15.116, 15.241, 16.442, 16.240}}; 
-scale(Linear,Log);
-transform markersize = scale(1.5mm);
-draw(graph(restart1[0],restart1[1]),legend="Restart=1",dashed);
-draw(graph(restart2[0],restart2[1]),legend="Restart=5", marker(markersize*polygon(3)));
-draw(graph(restart3[0],restart3[1]),legend="Restart=10", marker(markersize*unitcircle));
-draw(graph(restart4[0],restart4[1]),legend="Restart=15", marker(markersize*cross(4)));
-xaxis("内迭代次数",BottomTop,LeftTicks(4));
-yaxis("$T/\mathrm{s}$",LeftRight,RightTicks(ticklabel=new string(real x){return format("$\%f$",x);}, new real[]{15,20,50,100,200}));
-add(legend(linelength=20),point(W),10E);
-\end{asy}
-\caption{\label{fig:fig:equsolve.iter.gmres.1cm}1cm网格时GMRES算法计算时间表}
+\subcaptionbox{5cm网格}
+{\includegraphics[scale=0.8]{equsolve-iter-gmres-5cm}}
+\subcaptionbox{2.5cm网格}
+{\includegraphics[scale=0.8]{equsolve-iter-gmres-2-5cm}}
+\\[1cm]
+\subcaptionbox{2cm网格}
+{\includegraphics[scale=0.8]{equsolve-iter-gmres-2cm}}
+\subcaptionbox{1cm网格}
+{\includegraphics[scale=0.8]{equsolve-iter-gmres-1cm}}
+\caption{\label{fig:fig:equsolve.iter.gmres}GMRES算法计算时间}
 \end{figure}
 
 \begin{table}
@@ -934,23 +1023,19 @@ add(legend(linelength=20),point(W),10E);
 \toprule
 网格大小 & Restart & 最优内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
 \midrule
-\multirow{4}{*}{5cm}
- & 1 & 6 & 1.763 & 2076 & 346\\
+\multirow{3}{*}{5cm}
  & 5 & 6 & 1.076 & 1218 & 203\\
  & 10 & 6 & 1.061 & 1212 & 202\\
  & 15 & 6 & 1.123 & 1212 & 202\\
-\multirow{4}{*}{2.5cm}
- & 1 & 20 & 19.593 & 10020 & 501\\
+\multirow{3}{*}{2.5cm}
  & 5 & 10 & 4.852 & 2580 & 258\\
  & 10 & 11 & 5.647 & 2420 & 220\\
  & 15 & 11 & 5.663 & 2244 & 204\\
-\multirow{4}{*}{2cm}
- & 1 & 20 & 113.318 & 32760 & 1638\\
+\multirow{3}{*}{2cm}
  & 5 & 14 & 12.324 & 4004 & 286\\
  & 10 & 14 & 12.277 & 3388 & 242\\
  & 15 & 14 & 13.416 & 2926 & 209\\
-\multirow{4}{*}{1cm}
- & 1 & 10 & 339.082 & 15700 & 1570\\
+\multirow{3}{*}{1cm}
  & 5 & 28 & 224.079 & 12712 & 454\\
  & 10 & 27 & 171.382 & 7992 & 296\\
  & 15 & 27 & 161.804 & 6264 & 232\\
@@ -961,25 +1046,6 @@ add(legend(linelength=20),point(W),10E);
 %原始数据
 \begin{comment}
 1cm
-restart 1
-1-4 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
-5 & 600.227 & 675690 & 135138 \\ %Fail:Solve Time exceeds 600.000
-6 & 1.763 & 2076 & 346\\
-7 & 2.870 & 3472 & 496\\
-8 & 1.950 & 2288 & 286\\
-9 & 2.886 & 3654 & 406\\
-10 & 2.091 & 2600 & 260\\
-11 & 2.840 & 3685 & 335\\
-12 & 2.387 & 2940 & 245\\
-13 & 2.855 & 3718 & 286\\
-14 & 2.465 & 3276 & 234\\
-15 & 2.746 & 3735 & 249\\
-16 & 2.793 & 3616 & 226\\
-17 & 2.761 & 3689 & 217\\
-18 & 2.933 & 3960 & 220\\
-19 & 2.949 & 4009 & 211\\
-20 & 3.167 & 4300 & 215\\
-
 restart 5
 1-4 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 5 & 1.232 & 1390 & 278\\
@@ -1038,20 +1104,6 @@ restart 5
 
 
 
-res_gmres_size2.5_*restart1
-1-9 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
-10 & 600.226 & 293720 & 29372 \\ %Fail:Solve Time exceeds 60
-11 & 600.258 & 293073 & 26643 \\ %Fail:Solve Time exceeds 60
-12 & 66.441 & 32436 & 2703\\
-13 & 110.042 & 54847 & 4219\\
-14 & 34.585 & 17444 & 1246\\
-15 & 62.213 & 31215 & 2081\\
-16 & 21.294 & 10720 & 670\\
-17 & 41.823 & 20910 & 1230\\
-18 & 19.952 & 10152 & 564\\
-19 & 27.721 & 14098 & 742\\
-20 & 19.593 & 10020 & 501\\
-
 res_gmres_size2.5_*restart5
 1-8 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 9 & 7.113 & 3942 & 438\\
@@ -1097,19 +1149,6 @@ res_gmres_size2.5_*restart15
 
 
 
-res_gmres_size2_*restart1
-1-10 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
-11 & 600.274 & 169565 & 15415 \\ %Fail:Solve Time exceeds 600.000
-12 & 600.320 & 170076 & 14173 \\ %Fail:Solve Time exceeds 600.000
-13 & 600.321 & 170482 & 13114 \\ %Fail:Solve Time exceeds 600.000
-14 & 448.875 & 127974 & 9141\\
-15 & 600.289 & 171615 & 11441 \\ %Fail:Solve Time exceeds 600.000
-16 & 250.271 & 71888 & 4493\\
-17 & 365.883 & 104669 & 6157\\
-18 & 158.387 & 44388 & 2466\\
-19 & 244.000 & 68799 & 3621\\
-20 & 113.318 & 32760 & 1638\\
-
 res_gmres_size2_*restart5
 1-11 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 12 & 16.598 & 5400 & 450\\
@@ -1145,39 +1184,6 @@ res_gmres_size2_*restart15
 20 & 16.240 & 3780 & 189\\
 
 
-
-res_gmres_size1_*restart1
-1 & 600.929 & 22389 & 22389 \\ %Fail:Solve Time exceeds 600.000
-2 & 600.976 & 25196 & 12598 \\ %Fail:Solve Time exceeds 600.000
-3 & 600.960 & 26145 & 8715 \\ %Fail:Solve Time exceeds 600.000
-4 & 600.981 & 26604 & 6651 \\ %Fail:Solve Time exceeds 600.000
-5 & 601.038 & 26895 & 5379 \\ %Fail:Solve Time exceeds 600.000
-6 & 571.694 & 25860 & 4310\\
-7 & 348.427 & 15918 & 2274\\
-8 & 454.226 & 20864 & 2608\\
-9 & 601.100 & 27432 & 3048 \\ %Fail:Solve Time exceeds 600.000
-10 & 339.082 & 15700 & 1570\\
-11 & 600.975 & 27929 & 2539 \\ %Fail:Solve Time exceeds 600.000
-12 & 600.991 & 27732 & 2311 \\ %Fail:Solve Time exceeds 600.000
-13 & 601.147 & 27820 & 2140 \\ %Fail:Solve Time exceeds 600.000
-14 & 601.147 & 28084 & 2006 \\ %Fail:Solve Time exceeds 600.000
-15 & 601.147 & 28110 & 1874 \\ %Fail:Solve Time exceeds 600.000
-16 & 600.944 & 28080 & 1755 \\ %Fail:Solve Time exceeds 600.000
-17 & 601.209 & 27931 & 1643 \\ %Fail:Solve Time exceeds 600.000
-18 & 601.147 & 28206 & 1567 \\ %Fail:Solve Time exceeds 600.000
-19 & 601.084 & 28025 & 1475 \\ %Fail:Solve Time exceeds 600.000
-20 & 601.210 & 28040 & 1402 \\ %Fail:Solve Time exceeds 600.000
-21 & 601.225 & 28224 & 1344 \\ %Fail:Solve Time exceeds 600.000
-22 & 601.038 & 28028 & 1274 \\ %Fail:Solve Time exceeds 600.000
-23 & 600.928 & 28267 & 1229 \\ %Fail:Solve Time exceeds 600.000
-24 & 601.116 & 28272 & 1178 \\ %Fail:Solve Time exceeds 600.000
-25 & 601.209 & 28125 & 1125 \\ %Fail:Solve Time exceeds 600.000
-26 & 601.038 & 28106 & 1081 \\ %Fail:Solve Time exceeds 600.000
-27 & 601.194 & 28323 & 1049 \\ %Fail:Solve Time exceeds 600.000
-28 & 601.256 & 28084 & 1003 \\ %Fail:Solve Time exceeds 600.000
-29 & 601.537 & 28304 & 976 \\ %Fail:Solve Time exceeds 600.000
-30 & 601.163 & 28170 & 939 \\ %Fail:Solve Time exceeds 600.000
-
 res_gmres_size1_*restart5
 1 & 600.882 & 21444 & 21444 \\ %Fail:Solve Time exceeds 600.000
 2 & 600.928 & 28732 & 14366 \\ %Fail:Solve Time exceeds 600.000
@@ -1194,7 +1200,17 @@ res_gmres_size1_*restart5
 27 & 501.416 & 28377 & 1051\\
 28 & 224.079 & 12712 & 454\\
 29 & 231.770 & 12992 & 448\\
-30 & 229.071 & 12840 & 428\\
+30 & 227.308 & 12840 & 428\\
+31 & 246.465 & 13702 & 442\\
+32 & 234.984 & 13184 & 412\\
+33 & 252.986 & 14256 & 432\\
+34 & 281.019 & 15844 & 466\\
+35 & 302.750 & 17150 & 490\\
+36 & 279.739 & 15624 & 434\\
+37 & 248.134 & 13949 & 377\\
+38 & 229.804 & 12958 & 341\\
+39 & 242.065 & 13650 & 350\\
+40 & 253.376 & 14240 & 356\\
 
 res_gmres_size1_*restart10
 1 & 600.866 & 20165 & 20165 \\ %Fail:Solve Time exceeds 600.000
@@ -1208,7 +1224,17 @@ res_gmres_size1_*restart10
 27 & 171.382 & 7992 & 296\\
 28 & 174.986 & 8176 & 292\\
 29 & 185.375 & 8497 & 293\\
-30 & 201.069 & 9120 & 304\\
+30 & 200.242 & 9120 & 304\\
+31 & 184.314 & 8432 & 272\\
+32 & 180.430 & 8352 & 261\\
+33 & 173.051 & 8085 & 245\\
+34 & 171.553 & 8058 & 237\\
+35 & 175.142 & 8225 & 235\\
+36 & 180.586 & 8496 & 236\\
+37 & 185.593 & 8695 & 235\\
+38 & 191.319 & 8930 & 235\\
+39 & 199.524 & 9243 & 237\\
+40 & 207.137 & 9480 & 237\\
 
 res_gmres_size1_*restart15
 1 & 600.929 & 19030 & 19030 \\ %Fail:Solve Time exceeds 600.000
@@ -1223,8 +1249,17 @@ res_gmres_size1_*restart15
 27 & 161.804 & 6264 & 232\\
 28 & 166.328 & 6412 & 229\\
 29 & 175.844 & 6612 & 228\\
-30 & 188.386 & 6930 & 231\\
-
+30 & 185.750 & 6930 & 231\\
+31 & 184.314 & 6944 & 224\\
+32 & 185.750 & 7104 & 222\\
+33 & 187.013 & 7161 & 217\\
+34 & 185.983 & 7242 & 213\\
+35 & 192.192 & 7385 & 211\\
+36 & 192.255 & 7524 & 209\\
+37 & 192.816 & 7622 & 206\\
+38 & 197.792 & 7752 & 204\\
+39 & 198.604 & 7839 & 201\\
+40 & 204.251 & 8000 & 200\\
 \end{comment}
 
 \subsection{不同迭代算法对比}

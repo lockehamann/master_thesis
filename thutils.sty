@@ -43,7 +43,7 @@
 \providecommand\hyperref[2][]{}
 
 \renewcommand\figureautorefname{图}
-\newcommand\subfigureautorefname{图}
+\renewcommand\subfigureautorefname{图}
 \renewcommand\tableautorefname{表}
 \renewcommand\chapterautorefname{章}
 
@@ -92,7 +92,7 @@
 \def\secref@otherpage#1{%
   \secref@curpage{#1}%
   \footnote{\label{fn@#1@\curpage}%
-    \hyperref[#1]{\ref*{#1} 节}标题：\nameref{#1}，第 \refpage{} 页。}}
+    \hyperref[#1]{第 \ref*{#1} 节}见第 \refpage{} 页，标题：\nameref{#1}。}}
 \def\secref@moreotherpage#1{%
   \secref@curpage{#1}\footref{fn@#1@\curpage}}
 
@@ -107,7 +107,7 @@
 \def\floatref@otherpage#1{%
   \floatref@curpage{#1}%
   \footnote{\label{fn@#1@\curpage}%
-    \autoref{#1}：\hyperref[#1]{\nameref{#1}}，第 \refpage{} 页。}}
+    \autoref{#1} 见第 \refpage{} 页，标题：\hyperref[#1]{\nameref{#1}}。}}
 \def\floatref@moreotherpage#1{%
   \floatref@curpage{#1}\footref{fn@#1@\curpage}}
 

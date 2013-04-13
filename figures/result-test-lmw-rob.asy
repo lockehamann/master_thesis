@@ -1,0 +1,15 @@
+import graph;
+settings.tex="xelatex";
+texpreamble("\usepackage{xeCJK}");
+texpreamble("\setCJKmainfont{SimSun}");
+size(7cm,7cm,IgnoreAspect);
+real[] t1={0,80.0/3,50};
+real[] h1={100,180,180};
+real[] t2={0,7.5,47.5,50};
+real[] h2={180,180,60,60};
+ylimits(0,200);
+draw(graph(t1,h1),legend="第一组");
+draw(graph(t2,h2),legend="第二组", dashed);
+xaxis("t/s",BottomTop,LeftTicks);
+yaxis("控制棒底端高度/cm",LeftRight,RightTicks);
+add(legend(linelength=30),point(SW),10NE);
