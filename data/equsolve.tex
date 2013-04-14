@@ -24,6 +24,11 @@ SP表示单精度、DP表示双精度，每种情况计算5次，时间取最小
 SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimizing}\footnote{现在的GPU运算能力太强，使得显存带宽成为瓶颈。}，
 所以DIA性能最好是预料之中。
 
+在其他应用中，还有很多基于分块的系数矩阵存储格式，可以更进一步地匹配问题的特点，
+相对于单纯的使用某一种格式要好。但本文讨论的是结构网格离散的对角线矩阵，
+分块格式相对于对角线DIA格式并没有明显的优势，
+所以这里不再对分块系数矩阵存储格式进行讨论。
+
 %\begin{sidewaystable}
 %\pdfrotate
 \begin{table}
@@ -73,16 +78,19 @@ SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimi
 
 为了比较不同迭代求解方法和预处理器的效果，这里仍然选择用IAEA基准题进行测试，
 网格大小分别取5cm、2.5cm、2cm、1cm进行测试。
+为了去除迭代算法可能出现的假收敛情况（相邻两次的结果差别满足收敛条件，但实际并未收敛）
+，这里使用Citation的结果作为基准，
+收敛标准改为：$K_\mathrm{eff}$和Citation的结果偏差小于$5\times10^{-5}$。
 
 选择的算法包括
 \begin{enumerate}
 \item Jacobi-SG，逐群使用Jacobi迭代进行求解。
-%\item Jacobi-MG，使用Jacobi对所有能群统一求解。
+\item Jacobi-MG，使用Jacobi对所有能群统一求解。
 \item CG-SG，逐群使用CG迭代进行求解。
 \item BiCGStab-MG，使用BiCGStab对所有能群统一求解。
 \item GMRES-MG，使用GMRES对所有能群统一求解。
 \end{enumerate}
-以上算法中，除Jacobi-SG外都使用对角线预处理算法。
+以上算法中，除Jacobi-SG、Jacobi-MG外都使用对角线预处理算法。
 由于对于三维扩散计算，单精度浮点计算已经足够，
 所以这里的测试均使用单精度进行计算。
 经测试如果改用双精度对最优参数的影响很小。
@@ -1264,8 +1272,52 @@ res_gmres_size1_*restart15
 
 \subsection{不同迭代算法对比}
 
-以上各种迭代算法的最优参数及计算结果见\floatref{tab:equsolve.iter.compare}，
-可见对于三维扩散临界问题，CG-SG算法最为适合。
+以上各种迭代算法的最优参数及计算结果见\floatref{tab:equsolve.iter.compare}。
+
+首先传统的Jacobi算法的速度最慢，这是在意料之内的。
+对比Jacobi-SG和Jacobi-MG方法就会发现，
+把各能群联合求解的Jacobi-MG明显要比逐群求解的Jacobi-SG方法要快，
+这似乎与传统经验不一致，但仔细观察就会发现Jacobi-MG快的主要因素之一
+是总内迭代次数较小，大约只有Jacobi-SG方法的一半，
+这是因为Jacobi-SG方法需要对2群分别进行迭代，
+而Jacobi-MG方法迭代的矩阵阶数是Jacobi-SG方法的2倍，
+由于迭代矩阵是对角线系数矩阵，所以每次迭代的计算量也后者的2倍，
+总的计算量Jacobi-SG方法和Jacobi-MG方法接近。
+但两者的计算时间则有较大差别，
+这主要是因为这里使用的处理器是GPU，和CPU不同，
+GPU上程序的运行时间并不和计算量成正比，而是由如下部分组成
+\begin{align}
+  t_\mathrm{gpu,total} = t_\mathrm{init} + t_\mathrm{data} + t_\mathrm{calc} + t_\mathrm{sync}
+\end{align}
+其中$t_\mathrm{init}$是调用一个GPU函数所需要的启动时间，
+这个时间一般相对固定，和计算量无关；
+$t_\mathrm{data}$是从CPU向GPU传送数据的时间，
+一般随CPU-GPU间通讯的数据量增加而线性增长；
+$t_\mathrm{calc}$是GPU函数实际在GPU上执行的时间，和计算量有关；
+$t_\mathrm{sync}$是GPU函数内及CPU-GPU间的同步等待时间，
+和程序的行为模式有关。
+由于Jacobi-MG方法的总内迭代次数较少，
+所以在$t_\mathrm{init}$、$t_\mathrm{sync}$部分上的开销也相对较少。
+对于GPU本身来说计算量越大越有优势，
+所以$t_\mathrm{MG,calc}<2t_\mathrm{SG,calc}$。
+以上各种原因最终导致Jacobi-MG方法由于Jacobi-SG方法。
+
+CG-SG方法在本次测试中表现最好，和CG-SG方法同源的BiCGStab-MG方法和
+前者的关系类似于Jacobi-SG和Jacobi-MG的关系，
+结果显示BiCGStab-MG方法需要的内迭代次数是CG-SG方法的一半略多，
+但时间上和Jacobi-SG和Jacobi-MG的情况正好相反：
+BiCGStab-MG明显要慢于CG-SG方法。
+这是因为BiCGStab方法为了处理非对称的情况，
+每轮内迭代中要比CG方法多做一次矩阵-向量乘法
+操作\footnote{对角线预条件算法只需要做向量-向量乘法。}及其他运算
+（见\floatref{alg:gpu.pcg}及\floatref{alg:gpu.pbicgstab}），
+使得总计算时间大幅增加。
+这说明计算大规模线性代数问题时，充分利用问题的特点（如实对称的矩阵性质）
+可以加速计算过程。
+
+GMRES能够求解方程类型更多，相应的每轮内迭代计算开销也更大，
+而且这里并没有配合高效的预条件算法，所以GMRES相对BiCGStab来说效率更低，
+但仍好于Jacobi算法。
 
 \begin{table}
 \centering
@@ -1280,24 +1332,28 @@ res_gmres_size1_*restart15
 \midrule
 \multirow{4}{*}{5cm}
   & Jacobi-SG   & 1.420 & 4802 & 343 & 内迭代7次\\
+  & Jacobi-MG   & 1.295 & 2436 & 609 & 内迭代4次\\
   & CG-SG       & 0.920 & 1472 & 184 & 内迭代4次\\
   & BiCGStab-MG & 0.998 & 624 & 208 & 内迭代3次\\
   & GMRES-MG    & 1.061 & 1212 & 202 & 
     \begin{tabular}{c}内迭代6次，\\ Restart10 \end{tabular}\\
 \multirow{4}{*}{2.5cm}
   & Jacobi-SG   & 9.048 & 16324 & 742 & 内迭代11次\\
+  & Jacobi-MG   & 6.708 & 6512 & 814 & 内迭代8次\\
   & CG-SG       & 2.761 & 2800 & 200 & 内迭代7次\\
   & BiCGStab-MG & 4.056 & 1600 & 200 & 内迭代8次\\
   & GMRES-MG    & 4.852 & 2580 & 258 & 
     \begin{tabular}{c}内迭代10次，\\ Restart5 \end{tabular}\\
 \multirow{4}{*}{2cm}
   & Jacobi-SG   & 22.948 & 25664 & 802 & 内迭代16次\\
+  & Jacobi-MG   & 17.238 & 10010 & 910 & 内迭代11次\\
   & CG-SG       & 5.476 & 3700 & 185 & 内迭代10次\\
   & BiCGStab-MG & 8.954 & 2120 & 212 & 内迭代10次\\
   & GMRES-MG    & 12.277 & 3388 & 242 & 
     \begin{tabular}{c}内迭代14次，\\ Restart10 \end{tabular}\\
 \multirow{4}{*}{1cm}
   & Jacobi-SG   & 509.309 & 96804 & 2689 & 内迭代18次\\
+  & Jacobi-MG   & 332.083 & 31388 & 826 & 内迭代38次\\
   & CG-SG       & 48.875 & 7106 & 209 & 内迭代17次\\
   & BiCGStab-MG & 100.339 & 4305 & 205 & 内迭代21次\\
   & GMRES-MG    & 161.804 & 6264 & 232 & 
