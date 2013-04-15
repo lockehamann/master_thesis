@@ -27,10 +27,6 @@
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesClass{thuthesis}
 [2012/07/28 4.8dev Tsinghua University Thesis Template]
-\newif\ifthu@UTF
-\newif\ifthu@GBK
-\DeclareOption{utf}{\thu@UTFtrue\thu@GBKfalse}
-\DeclareOption{gbk}{\thu@GBKtrue\thu@UTFfalse}
 \hyphenation{Thu-Thesis}
 \def\thuthesis{\textsc{ThuThesis}}
 \def\version{4.8dev}
@@ -44,14 +40,6 @@
 \DeclareOption{doctor}{\thu@doctortrue}
 \DeclareOption{postdoctor}{\thu@postdoctortrue}
 \DeclareOption{secret}{\thu@secrettrue}
-\newif\ifthu@dvips
-\newif\ifthu@dvipdfm
-\newif\ifthu@xetex
-\newif\ifthu@pdftex
-\DeclareOption{dvips}{\thu@dvipstrue}
-\DeclareOption{dvipdfm}{\thu@dvipdfmtrue}
-\DeclareOption{pdftex}{\thu@pdftextrue}
-\DeclareOption{xetex}{\thu@xetextrue}
 \newif\ifthu@arial
 \DeclareOption{arial}{\thu@arialtrue}
 \newif\ifthu@arialtoc
@@ -60,10 +48,10 @@
 \DeclareOption{arialtitle}{\thu@arialtitletrue}
 \newif\ifthu@raggedbottom\thu@raggedbottomtrue
 \DeclareOption{noraggedbottom}{\thu@raggedbottomfalse}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
 \ExecuteOptions{utf,arialtitle}
 \ProcessOptions\relax
-\LoadClass[12pt,a4paper,openany]{book}
+\LoadClass[cs4size,a4paper,openany,UTF8]{ctexbook}
 \ifthu@bachelor\relax\else
   \ifthu@master\relax\else
     \ifthu@doctor\relax\else
@@ -74,73 +62,36 @@
     \fi
   \fi
 \fi
-\RequirePackage{ifpdf,ifxetex}
-\ifthu@xetex\RequireXeTeX\fi
-\def\RequirePDFTeX{%
-  \ifpdf\else
-    \ClassError{thuthesis}%
-               {pdflatex is required to compile this document!}{}
-  \fi}
-\ifthu@pdftex\RequirePDFTeX\fi
-\def\thu@checkoption#1#2{%
-  \@for\reserved@a:=#2\do{%
-    \csname ifthu@\reserved@a\endcsname
-      \ClassError{thuthesis}%
-                 {Please remove `\reserved@a' option when you run #1.}{}
-    \fi}}
-\ifpdf\thu@checkoption{pdflatex}{dvips,dvipdfm,xetex}\thu@pdftextrue\fi % force the option to be true
-\ifxetex\thu@checkoption{xelatex}{dvips,dvipdfm,pdftex}\thu@xetextrue\fi
+\RequirePackage{ifxetex}
 \RequirePackage{ifthen,calc}
-\RequirePackage{amsmath,amssymb}
+\RequirePackage{amsmath}
 \RequirePackage{txfonts}
 \RequirePackage{graphicx}
 \RequirePackage[labelformat=simple]{subcaption}
-\RequirePackage{indentfirst}
 \RequirePackage[neverdecrease]{paralist}
 \ifthu@raggedbottom
   \RequirePackage[bottom]{footmisc}
   \raggedbottom
 \fi
-\ifthu@xetex
-  \RequirePackage{mathptmx} % fontspec conflicts with txfonts now, so we have to load other times-math fonts.
-  \RequirePackage[CJKnumber=true,normalindentfirst]{xeCJK}
+\renewcommand{\baselinestretch}{1.0}
+\ifxetex
   \xeCJKsetup{AutoFakeBold=true,AutoFakeSlant=true}
   \punctstyle{quanjiao}
   % todo: minor fix of CJKnumb
   \def\CJK@null{\kern\CJKnullspace\Unicode{48}{7}\kern\CJKnullspace}
   \defaultfontfeatures{Mapping=tex-text} % use TeX --
-  \input{fontname.def}
-  \setCJKmainfont[BoldFont={\fonthei}, ItalicFont={\fontkai}]{\fontsong}
-  \setCJKsansfont{\fonthei}
-  \setCJKmonofont{\fontkai}
-  \setCJKfamilyfont{song}{\fontsong}
-  \setCJKfamilyfont{hei}{\fonthei}
-  \setCJKfamilyfont{fs}{\fontfs}
-  \setCJKfamilyfont{kai}{\fontkai}
-  \setCJKfamilyfont{li}{\fontli}
-  \setCJKfamilyfont{you}{\fontyou}
+  \ifCTEX@nofonts
+    \input{fontname.def}
+  \fi
 
   \setmainfont{Times New Roman}
   \setsansfont{Arial}
   \setmonofont{Courier New}
 \else
-  \RequirePackage{CJKutf8}
-  \RequirePackage{CJKnumb}
-  \ifthu@GBK % CJKpunct 在 UTF 下工作的不好。
-    \IfFileExists{CJKpunct.sty}%
-                 {\RequirePackage{CJKpunct}}%
-                 {\ClassWarning{thuthesis}{no CJKpunct.sty availiable!}}
-  \fi
-  \RequirePackage{CJKspace}
   \ifthu@arial
     \IfFileExists{arial.sty}%
                  {\RequirePackage{arial}}%
                  {\ClassWarning{thuthesis}{no arial.sty availiable!}}
-  \fi
-\fi
-\ifthu@dvips\else
-  \ifthu@xetex\else
-    \RequirePackage{ccmap}
   \fi
 \fi
 \RequirePackage[amsmath,thmmarks,hyperref]{ntheorem}
@@ -166,9 +117,6 @@
   plainpages=false,
   pdfpagelabels,
   pdfborder=0 0 0}
-\ifthu@dvips
-  \RequirePackage{breakurl}
-\fi
 \urlstyle{same}
 \renewcommand\frontmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
@@ -183,18 +131,6 @@
 \renewcommand\backmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
   \@mainmattertrue}
-\newcommand{\song}{\CJKfamily{song}}    % 宋体
-\def\songti{\song}
-\newcommand{\fs}{\CJKfamily{fs}}        % 仿宋体
-\def\fangsong{\fs}
-\newcommand{\kai}{\CJKfamily{kai}}      % 楷体
-\def\kaishu{\kai}
-\newcommand{\hei}{\CJKfamily{hei}}      % 黑体
-\def\heiti{\hei}
-\newcommand{\li}{\CJKfamily{li}}        % 隶书
-\def\lishu{\li}
-\newcommand{\you}{\CJKfamily{you}}      % 幼圆
-\def\youyuan{\you}
 \newlength\thu@linespace
 \newcommand{\thu@choosefont}[2]{%
    \setlength{\thu@linespace}{#2*\real{#1}}%
@@ -269,30 +205,16 @@
   \let\@evenfoot=\@oddfoot}
 \def\ps@thu@headings{%
   \def\@oddhead{\vbox to\headheight{%
-    \hb@xt@\textwidth{\hfill\wuhao\song\leftmark\ifthu@bachelor\relax\else\hfill\fi}%
+    \hb@xt@\textwidth{\hfill\wuhao\songti\leftmark\ifthu@bachelor\relax\else\hfill\fi}%
       \vskip2pt\hbox{\vrule width\textwidth height0.4pt depth0pt}}}
   \def\@evenhead{\vbox to\headheight{%
-      \hb@xt@\textwidth{\wuhao\song%
+      \hb@xt@\textwidth{\wuhao\songti%
       \ifthu@bachelor\thu@schoolname\thu@bachelor@subtitle%
        \else\hfill\leftmark\fi\hfill}%
       \vskip2pt\hbox{\vrule width\textwidth height0.4pt depth0pt}}}
   \def\@oddfoot{\hfil\wuhao\thepage\hfil}
   \let\@evenfoot=\@oddfoot}
 \renewcommand{\chaptermark}[1]{\@mkboth{\@chapapp\  ~~#1}{}}
-\newlength\CJK@twochars
-\ifxetex
-  \def\CJK@spaceChar{\Unicode{48}{7}}
-\else
-  \ifthu@UTF
-    \def\CJK@spaceChar{\CJKchar{"080}{"080}}
-  \fi
-  \ifthu@GBK
-    \def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}
-  \fi
-\fi
-\def\CJKindent{%
-  \settowidth\CJK@twochars{\CJK@spaceChar\CJK@spaceChar}%
-  \parindent\CJK@twochars}
 \setlength{\parskip}{0pt \@plus2pt \@minus0pt}
 \def\thu@item@space{%
   \let\itemize\compactitem
@@ -329,9 +251,10 @@
 \def\@makefnmark{\textsuperscript{\hbox{\normalfont\@thefnmark}}}
 \long\def\@makefntext#1{
   \bgroup
-    \setbox\@tempboxa\hbox{%
+    \newbox\thu@tempboxa
+    \setbox\thu@tempboxa\hbox{%
       \hb@xt@ 2em{\@thefnmark\hss}}
-    \leftmargin\wd\@tempboxa
+    \leftmargin\wd\thu@tempboxa
     \rightmargin\z@
     \linewidth \columnwidth
     \advance \linewidth -\leftmargin
@@ -339,7 +262,7 @@
     \footnotesize
     \@setpar{{\@@par}}%
     \leavevmode
-    \llap{\box\@tempboxa}%
+    \llap{\box\thu@tempboxa}%
     #1
   \par\egroup}
 \allowdisplaybreaks[4]
@@ -365,8 +288,8 @@
     \fi
     \@endparenv
   \fi #1}
-\theorembodyfont{\song\rmfamily}
-\theoremheaderfont{\hei\rmfamily}
+\theorembodyfont{\songti\rmfamily}
+\theoremheaderfont{\heiti\rmfamily}
 \setlength{\floatsep}{12bp \@plus4pt \@minus1pt}
 \setlength{\intextsep}{12bp \@plus4pt \@minus2pt}
 \setlength{\textfloatsep}{12bp \@plus4pt \@minus2pt}
@@ -379,7 +302,7 @@
 \renewcommand{\floatpagefraction}{0.60}
 \let\old@tabular\@tabular
 \def\thu@tabular{\dawu[1.5]\old@tabular}
-\DeclareCaptionLabelFormat{thu}{{\dawu[1.5]\song #1~\rmfamily #2}}
+\DeclareCaptionLabelFormat{thu}{{\dawu[1.5]\songti #1~\rmfamily #2}}
 \DeclareCaptionLabelSeparator{thu}{\hspace{1em}}
 \DeclareCaptionFont{thu}{\dawu[1.5]}
 \captionsetup{labelformat=thu,labelsep=thu,font=thu}
@@ -418,7 +341,7 @@
 \def\@makechapterhead#1{%
   \ifthu@bachelor\vspace*{24bp}\else\vspace*{20bp}\fi%
   {\parindent \z@ \centering
-    \hei\csname thu@title@font\endcsname\ifthu@bachelor\xiaosan\else\sanhao[1]\fi
+    \csname thu@title@font\endcsname\heiti\ifthu@bachelor\xiaosan\else\sanhao[1]\fi
     \ifnum \c@secnumdepth >\m@ne
       \@chapapp\hskip1em
     \fi
@@ -430,7 +353,7 @@
 \def\@makeschapterhead#1{%
   \ifthu@bachelor\vspace*{30bp}\else\vspace*{20bp}\fi%
   {\parindent \z@ \centering
-   \hei\csname thu@title@font\endcsname\sanhao[1]
+   \csname thu@title@font\endcsname\heiti\sanhao[1]
    \ifthu@bachelor\xiaosan\else
      \def\@tempa{#1}
      \def\@tempb{\eabstractname}
@@ -469,15 +392,15 @@
 \renewcommand\section{\@startsection {section}{1}{\z@}%
                      {\ifthu@bachelor -25bp\else -24bp\fi\@plus -1ex \@minus -.2ex}%
                      {\ifthu@bachelor 12bp\else 6bp\fi \@plus .2ex}%
-                     {\hei\csname thu@title@font\endcsname\sihao[1.429]}}
+                     {\csname thu@title@font\endcsname\heiti\sihao[1.429]}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
                         {\ifthu@bachelor -12bp\else -16bp\fi\@plus -1ex \@minus -.2ex}%
                         {6bp \@plus .2ex}%
-                        {\hei\csname thu@title@font\endcsname\ifthu@bachelor\xiaosi[1.667]\else\banxiaosi[1.538]\fi}}
+                        {\csname thu@title@font\endcsname\heiti\ifthu@bachelor\xiaosi[1.667]\else\banxiaosi[1.538]\fi}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
                            {\ifthu@bachelor -12bp\else -16bp\fi\@plus -1ex \@minus -.2ex}%
                            {6bp \@plus .2ex}%
-                           {\hei\csname thu@title@font\endcsname\xiaosi[1.667]}}
+                           {\csname thu@title@font\endcsname\heiti\xiaosi[1.667]}}
 \setcounter{secnumdepth}{3}
 \ifthu@doctor
   \setcounter{tocdepth}{2}
@@ -518,7 +441,7 @@
       \leavevmode
       \advance\leftskip\@tempdima
       \hskip -\leftskip
-      {\hei\ifthu@bachelor\sffamily\else\csname thu@toc@font\endcsname\fi #1} % numberline is called here, and it uses \@tempdima
+      {\ifthu@bachelor\sffamily\else\csname thu@toc@font\endcsname\fi\heiti #1} % numberline is called here, and it uses \@tempdima
       \leaders\hbox{$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
       \nobreak{\normalfont\normalcolor #2}\par
       \penalty\@highpenalty
@@ -598,19 +521,19 @@
     \thu@put@title{\thu@secretlevel}\expandafter\thu@underline\ifthu@secret\thu@secret@content\else\relax\fi\par
     \thu@put@title{U D C}\thu@underline\thu@udc\hfill%
     \thu@put@title{\thu@id@title}\thu@underline\thu@id\par\vskip3cm\endgroup
-    \begingroup\hei
-      {\xiaochu\ziju{1em}\thu@schoolname}\par\vskip2cm
-      {\xiaoyi\ziju{1em}\thu@postdoctor@report@title}\par\vskip3cm
+    \begingroup\heiti
+      {\xiaochu\ziju{1}\thu@schoolname}\par\vskip2cm
+      {\xiaoyi\ziju{1}\thu@postdoctor@report@title}\par\vskip3cm
       {\sanhao[1.5]\thu@ctitle}\par\vskip2cm
       {\xiaoer\thu@cauthor}
     \endgroup
     \par\vskip3cm
-    {\xiaosan[1.5]\ziju{1em}\thu@schoolname\par\vskip0.5em\CJK@todaysmall@short}
+    {\xiaosan[1.5]\ziju{1}\thu@schoolname\par\vskip0.5em\CJK@todaysmall@short}
   \end{center}
   \cleardoublepage
   \begin{center}
     \vspace*{2cm}
-    {\sihao\hei\thu@ctitle\par\thu@etitle}\par
+    {\sihao\heiti\thu@ctitle\par\thu@etitle}\par
     \parbox[t][7cm][b]{\textwidth-6cm}{\sihao[1.5]%
       \setlength{\thu@title@width}{11em}
       \setlength{\extrarowheight}{6pt}
@@ -635,11 +558,11 @@
       \ifthu@secret\hfill{\sihao\thu@secretlevel\thu@secret@content}\else\rule{1cm}{0cm}\fi}
     \ifthu@bachelor
       \vskip0.45cm
-      {\ziju{10bp}\yihao\li\thu@schoolname}
+      {\yihao\lishu\ziju{0.3846}\thu@schoolname}
       \par\vskip1.5cm
-      {\ziju{18bp}\xiaochu\hei\thu@bachelor@subtitle}
+      {\xiaochu\heiti\ziju{0.5}\thu@bachelor@subtitle}
       \vskip2.2cm
-      \noindent\hei\xiaoer\thu@bachelor@title@pre\thu@title@sep
+      \noindent\heiti\xiaoer\thu@bachelor@title@pre\thu@title@sep
       \parbox[t]{12cm}{%
         \setbox0=\hbox{{\yihao[1.55]\thu@ctitle}}
         \begin{picture}(0,0)(0,0)
@@ -660,15 +583,15 @@
       \parbox[t][9cm][t]{\paperwidth-8cm}{
       \renewcommand{\baselinestretch}{1.5}
       \begin{center}
-      \yihao[1.2]{\hei\sffamily\thu@ctitle}\par
+      \yihao[1.2]{\sffamily\heiti\thu@ctitle}\par
       \par\vskip 20bp
-      \xiaoer[1] \textrm{{\ziju{2bp}\thu@apply}}
+      \xiaoer[1] \textrm{{\ziju{0.1111}\thu@apply}}
       \end{center}}
     \fi
     \ifthu@bachelor
       \vskip1cm
       \parbox[t][7.0cm][t]{\textwidth}{{\sanhao[1.8]
-        \hspace*{1.65cm}\fs
+        \hspace*{1.65cm}\fangsong
           \setlength{\thu@title@width}{4em}
           \setlength{\extrarowheight}{6pt}
           \ifxetex % todo: ugly codes
@@ -687,7 +610,7 @@
         }}
     \else
       \parbox[t][7.8cm][t]{\textwidth}{{\sanhao[1.5]
-        \begin{center}\fs
+        \begin{center}\fangsong
           \setlength{\thu@title@width}{6em}
           \setlength{\extrarowheight}{4pt}
           \ifxetex % todo: ugly codes
@@ -695,21 +618,21 @@
           \else
             \begin{tabular}{p{\thu@title@width}c@{\extracolsep{4pt}}l}
           \fi
-              \thu@put@title{\thu@department@title}  & \thu@title@sep & {\ziju{3bp}\thu@cdepartment}\\
-              \thu@put@title{\thu@major@title}       & \thu@title@sep & {\ziju{3bp}\thu@cmajor}\\
-              \thu@put@title{\thu@author@title}      & \thu@title@sep & {\ziju{11bp}\thu@cauthor}\\
-              \thu@put@title{\thu@supervisor@title}  & \thu@title@sep & {\ziju{11bp}\thu@csupervisor}\\
+              \thu@put@title{\thu@department@title}  & \thu@title@sep & {\ziju{0.1875}\thu@cdepartment}\\
+              \thu@put@title{\thu@major@title}       & \thu@title@sep & {\ziju{0.1875}\thu@cmajor}\\
+              \thu@put@title{\thu@author@title}      & \thu@title@sep & {\ziju{0.6875}\thu@cauthor}\\
+              \thu@put@title{\thu@supervisor@title}  & \thu@title@sep & {\ziju{0.6875}\thu@csupervisor}\\
               \ifx\thu@cassosupervisor\@empty\else
-                \thu@put@title{\thu@assosuper@title} & \thu@title@sep & {\ziju{11bp}\thu@cassosupervisor}\\
+                \thu@put@title{\thu@assosuper@title} & \thu@title@sep & {\ziju{0.6875}\thu@cassosupervisor}\\
               \fi
               \ifx\thu@ccosupervisor\@empty\else
-                \thu@put@title{\thu@cosuper@title}   & \thu@title@sep & {\ziju{11bp}\thu@ccosupervisor}\\
+                \thu@put@title{\thu@cosuper@title}   & \thu@title@sep & {\ziju{0.6875}\thu@ccosupervisor}\\
               \fi
             \end{tabular}
         \end{center}}}
       \fi
      \begin{center}
-       {\ifthu@bachelor\vskip-1.0cm\hskip-1.2cm\xiaosi\else\sanhao\fi \song \thu@cdate}
+       {\ifthu@bachelor\vskip-1.0cm\hskip-1.2cm\xiaosi\else\sanhao\fi \songti \thu@cdate}
      \end{center}
     \end{center}} % end of titlepage
 \newcommand{\thu@engcover}{%
@@ -775,12 +698,12 @@
     \end{center}}
   \end{center}}
 \newcommand{\thu@authorization@mk}{%
-  \ifthu@bachelor\vspace*{0.5cm}\else\vspace*{-0.1cm}\fi % shit code!
-  \begin{center}\erhao\hei\thu@authtitle\end{center}
-  \ifthu@bachelor\vskip5pt\else\vskip18pt\sihao[2.03]\fi\par
+  \ifthu@bachelor\vspace*{0.5cm}\else\vspace*{0.72cm}\fi % shit code!
+  \begin{center}\erhao\heiti\thu@authtitle\end{center}
+  \ifthu@bachelor\vskip5pt\else\vskip40pt\sihao[2.03]\fi\par
   \thu@authorization\par
   \textbf{\thu@authorizationaddon}\par
-  \ifthu@bachelor\vskip0.7cm\else\vskip1.9cm\fi
+  \ifthu@bachelor\vskip0.7cm\else\vskip1.0cm\fi
   \ifthu@bachelor
     \indent\mbox{\thu@authorsig\thu@underline\relax%
     \thu@teachersig\thu@underline\relax\thu@frontdate\thu@underline\relax}
@@ -805,7 +728,16 @@
     \fi\fi
     \ifthu@postdoctor\relax\else%
       \ifthu@bachelor\clearpage\else\cleardoublepage\fi%
-      \thu@authorization@mk\fi
+      \ifthu@bachelor\thu@authorization@mk\else%
+      \begin{list}{}{%
+        \topsep\z@%
+        \listparindent\parindent%
+        \parsep\parskip%
+        \setlength{\leftmargin}{0.9mm}%
+        \setlength{\rightmargin}{0.9mm}}%
+      \item[]\thu@authorization@mk%
+      \end{list}\fi%
+    \fi
   \end{titlepage}
   \normalsize
   \thu@makeabstract
@@ -821,7 +753,7 @@
   \pagenumbering{Roman}
   \thu@cabstract
   \vskip12bp
-  \setbox0=\hbox{{\hei\thu@ckeywords@title}}
+  \setbox0=\hbox{{\heiti\thu@ckeywords@title}}
   \ifthu@bachelor\indent\else\noindent\hangindent\wd0\hangafter1\fi
     \box0\thu@ckeywords
   \thu@chapter*[]{\eabstractname} % no tocline
@@ -914,9 +846,9 @@
   }{}
 \newenvironment{resume}[1][\thu@resume@title]{%
   \thu@chapter*{#1}}{}
-\newcommand{\resumeitem}[1]{\vspace{2.5em}{\sihao\hei\centerline{#1}}\par}
+\newcommand{\resumeitem}[1]{\vspace{2.5em}{\sihao\heiti\centerline{#1}}\par}
 \newcommand{\shuji}[1][\thu@ctitle]{
-  \newpage\thispagestyle{empty}\ziju{0.4em}\fs\xiaosan
+  \newpage\thispagestyle{empty}\fangsong\xiaosan\ziju{0.4}
   \hfill\rotatebox{-90}{\hb@xt@ \textheight{#1\hfill\thu@cauthor}}}
 \iffalse
 \newcommand{\bs}{\symbol{'134}}%Print backslash
@@ -934,17 +866,8 @@
   \texttt{#1}}
 \newcommand{\wi}[1]{\index{#1}#1}
 \fi
-\newcommand*{\ziju}[1]{\renewcommand{\CJKglue}{\hskip #1}}
 \newcommand{\pozhehao}{\kern0.3ex\rule[0.8ex]{2em}{0.1ex}\kern0.3ex}
-\def\thu@active@cjk{
-  % Activate all >128 characters.
-  \count@=128
-  \@whilenum\count@<254 \do{%
-    \advance\count@ by 1
-    \lccode`\~=\count@
-    \catcode\count@=\active
-    \lowercase{\def~{\kern1ex}}}}
-\AtEndOfClass{\ifxetex\else\thu@active@cjk\fi\input{thuthesis.cfg}}
+\AtEndOfClass{\input{thuthesis.cfg}}
 \def\thu@fixselectfont{%
   \ifx\@EverySelectfont@EveryHook\@undefined\else% everysel package is loaded
     \DeclareRobustCommand{\selectfont}{%
@@ -973,20 +896,6 @@
     pdfkeywords={\thu@ckeywords},
     pdfcreator={\thu@cauthor},
     pdfproducer={\thuthesis}}}
-\ifxetex
-  \AtBeginDocument{\CJKindent}
-\else
-  \def\thu@beginCJK{%
-    \thu@fixselectfont%
-    \begin{CJK*}{UTF8}{song}\CJKindent}
-  \def\thu@endCJK{\clearpage\end{CJK*}}
-  \let\thu@begindocumenthook\@begindocumenthook
-  \let\thu@enddocumenthook\@enddocumenthook
-  \def\AtBeginDocument{\g@addto@macro\thu@begindocumenthook}
-  \def\AtEndDocument{\g@addto@macro\thu@enddocumenthook}
-  \def\@begindocumenthook{\thu@begindocumenthook\thu@beginCJK}
-  \def\@enddocumenthook{\thu@endCJK\thu@enddocumenthook}
-\fi
 \AtEndOfClass{\sloppy\thu@item@space}
 \endinput
 %%
