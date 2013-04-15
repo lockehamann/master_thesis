@@ -474,6 +474,7 @@ C++ AMP和CUDA类似，都是在已有的语言上增加了新的部分来对GPU
 2012年Intel公司展示了一个把C++ AMP代码编译到OpenCL的实现，使得C++ AMP跨系统跨平台成为可能。
 \cite{cppamp-opencl}
 不过暂时还没有该技术转化为产品的消息。
+在Intel之后，LLVM社区中也出现了一个把C++ AMP代码编译到OpenCL的开源实现\cite{llvm-amp-opencl-prototype}。
 
 
 \subsection{OpenACC与OpenMP}
@@ -623,39 +624,8 @@ $k:=k+1$\;
 \end{algorithm}
 
 \subsubsection{BiCGStab}
-对于非对称正定的方程组，可以把CG方法扩展为BiCG(BiConjugate Gradient)方法，
-见\floatref{alg:gpu.pbicg}。
+对于非对称正定的方程组，可以把CG方法扩展为BiCG(BiConjugate Gradient)方法。
 \cite{press2007numericalrecipes}
-
-\begin{algorithm}
-\KwIn{$\bm{A},\bm{x}_0,\bm{x}_0^*,\bm{b},\bm{b}^*,\bm{M}$}
-\KwOut{$\bm{x}_e,\bm{x}_e^*$}
-
-$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
-$\bm{r}_0^* = \bm{b}^*-\bm{x}_0^*\bm{A}$ \;
-$\bm{p}_0 = \bm{M}^{-1}\bm{r}_0$\;
-$\bm{p}_0^* = \bm{r}_0^*\bm{M}^{-1}$\;
-$k:=0$\;
-\While{ True }{
-$\displaystyle \alpha_k:=\frac{\bm{r}_k^*\bm{M}^{-1}\bm{r}_k}{\bm{p}_k^*\bm{A}\bm{p}_k}$\;
-$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
-$\bm{x}_{k+1}^*:=\bm{x}_k^*+\overline{\alpha_k}\bm{p}_k^*$\;
-$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
-$\bm{r}_{k+1}^*:=\bm{r}_k^*-\overline{\alpha_k}\bm{p}_k^*\bm{A}$\;
-\If{$\vb{\bm{r}_{k+1}}$ or $\vb{\bm{r}_{k+1}^*}$ is small}{
-  $\bm{x}_e := \bm{x}_{k+1}$\;
-  $\bm{x}_e^* := \bm{x}_{k+1}^*$\;
-  return \;
-}
-$\displaystyle \beta_k := \frac{\bm{r}_{k+1}^*\bm{M}^{-1}\bm{r}_{k+1}}{\bm{r}_k^*\bm{M}^{-1}\bm{r}_k}$\;
-$\bm{p}_{k+1}:=\bm{M}^{-1}\bm{r}_{k+1}+\beta_k\bm{p}_k$\;
-$\bm{p}_{k+1}^*:=\bm{r}_{k+1}^*\bm{M}^{-1}+\overline{\beta_k}\bm{p}_k^*$\;
-$k:=k+1$\;
-}
-\setlabelname{带预条件的BiCG方法}
-\caption{\label{alg:gpu.pbicg}带预条件的BiCG方法}
-\end{algorithm}
-
 但由于BiCG方法的数值稳定性较差，可能会遇到不收敛的情况，
 所以文献\onlinecite{van1992bicgstab}提出了BiCGStab方法，
 见\floatref{alg:gpu.pbicgstab}。
