@@ -6,20 +6,15 @@
 \RequirePackage{fancybox,fancyvrb}
 \RequirePackage{xcolor}
 \RequirePackage{ifxetex}
-\RequirePackage{hyperref}
 
 \ifxetex
-  \RequirePackage{xeCJK}
+  \RequirePackage[nofonts,UTF8,hyperref]{ctex}
   \input{fontname.def}
-  \setCJKmainfont[BoldFont={\fonthei}, ItalicFont={\fontkai}]{\fontsong}
 \else
+  \RequirePackage[winfonts,UTF8,hyperref]{ctex}
   \RequirePackage{txfonts}
-  \RequirePackage{CJKutf8}
-
-  \AtBeginDocument{\begin{CJK*}{UTF8}{song}}
-  \AtEndDocument{\end{CJK*}}
 \fi
-
+\RequirePackage{hyperref}
 \ifxetex
   \hypersetup{%
     CJKbookmarks=true}
@@ -50,9 +45,6 @@
 \addtolength{\headsep}{0.3cm}
 \addtolength{\textheight}{2.3cm}
 
-\newcommand\hei{\CJKfamily{hei}}
-\newcommand\fs{\CJKfamily{fs}}
-
 \renewcommand{\baselinestretch}{1.3}
 \setlength{\shadowsize}{3pt}
 \def\DescribeOption#1{\SpecialOptionIndex{#1}}
@@ -72,7 +64,7 @@
 \DefineVerbatimEnvironment{shell}{Verbatim}%
   {frame=single,framerule=0.3mm,rulecolor=\color{red!85!green!60},%
    fillcolor=\color{red!85!green!10},framesep=2mm,fontsize=\small,gobble=1}
-\long\def\myentry#1{\vskip5pt\par\noindent\llap{{\color{blue}\fs #1}}\marginpar{\strut}\hskip\parindent}
+\long\def\myentry#1{\vskip5pt\par\noindent\llap{{\color{blue}\fangsong #1}}\marginpar{\strut}\hskip\parindent}
 \def\tableofcontents{\renewcommand{\baselinestretch}{1.0}\@starttoc{toc}}
 \def\DescribeMacro{\Describe@Macro}
 \def\Describe@Macro#1{\PrintDescribeMacro{#1}\SpecialUsageIndex{#1}}
@@ -104,16 +96,16 @@
 \renewcommand\section{\@startsection{section}{1}{\z@}%
                                     {-3.5ex \@plus -1ex \@minus -.2ex}%
                                     {2.3ex \@plus.2ex}%
-                                    {\normalfont\Large\bfseries\hei}}
+                                    {\normalfont\Large\bfseries}}
 
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
                                        {-3.25ex\@plus -1ex \@minus -.2ex}%
                                        {1.5ex \@plus .2ex}%
-                                       {\normalfont\large\bfseries\hei}}
+                                       {\normalfont\large\bfseries}}
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
                                           {-3.25ex\@plus -1ex \@minus -.2ex}%
                                           {1.5ex \@plus .2ex}%
-                                          {\normalfont\normalsize\bfseries\hei}}
+                                          {\normalfont\normalsize\bfseries}}
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
                                       {3.25ex \@plus1ex \@minus.2ex}%
                                       {-1em}%
