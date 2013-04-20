@@ -91,10 +91,9 @@
 \def\secref@curpage#1{\hyperref[#1]{第 \ref*{#1} 节}}
 \def\secref@otherpage#1{%
   \secref@curpage{#1}%
-  \footnote{\label{fn@#1@\curpage}%
-    \hyperref[#1]{第 \ref*{#1} 节}见第 \refpage{} 页，标题：\nameref{#1}。}}
+  （第 \refpage{} 页）}
 \def\secref@moreotherpage#1{%
-  \secref@curpage{#1}\footref{fn@#1@\curpage}}
+  \secref@curpage{#1}}
 
 \newcommand\sectionref[1]{\varref
   {\secref@curpage{#1}}
@@ -106,24 +105,22 @@
 
 \def\floatref@otherpage#1{%
   \floatref@curpage{#1}%
-  \footnote{\label{fn@#1@\curpage}%
-    \autoref{#1} 见第 \refpage{} 页，标题：\hyperref[#1]{\nameref{#1}}。}}
+  （第 \refpage{} 页）}
 \def\floatref@moreotherpage#1{%
-  \floatref@curpage{#1}\footref{fn@#1@\curpage}}
+  \floatref@curpage{#1}}
 
 \newcommand\floatref[1]{\varref
   {\floatref@curpage{#1}\,}
-  {\floatref@otherpage{#1}\!}
-  {\floatref@moreotherpage{#1}\!}{#1}}
+  {\floatref@otherpage{#1}}
+  {\floatref@moreotherpage{#1}}{#1}}
 
 
-\def\aeqref@curpage#1{\hyperref[#1]{ \eqref{#1} }}
+\def\aeqref@curpage#1{\hyperref[#1]{ \eqref{#1} 式}}
 \def\aeqref@otherpage#1{%
   \aeqref@curpage{#1}%
-  \footnote{\label{fn@#1@\curpage}%
-    \hyperref[#1]{ \eqref{#1} 式}，见第 \refpage{} 页。}}
+  （第 \refpage{} 页）}
 \def\aeqref@moreotherpage#1{%
-  \aeqref@curpage{#1}\footref{fn@#1@\curpage}}
+  \aeqref@curpage{#1}}
 
 \def\ateqref@otherpage#1{%
   \aeqref@curpage{#1}%
@@ -133,12 +130,12 @@
 \newcommand\aeqref[1]{\varref
   {\aeqref@curpage{#1}}
   {\aeqref@otherpage{#1}}
-  {\aeqref@moreotherpage{#1}}{#1}\!}
+  {\aeqref@moreotherpage{#1}}{#1}}
 
 \newcommand\ateqref[1]{\varref
   {\aeqref@curpage{#1}}
   {\ateqref@otherpage{#1}}
-  {\aeqref@moreotherpage{#1}}{#1}\!}
+  {\aeqref@moreotherpage{#1}}{#1}}
 
 
 \else
