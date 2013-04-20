@@ -335,7 +335,7 @@ $D_{ij}$的实对称矩阵性质往往可以加速计算过程。
   \begin{pmatrix}
   \phi_1 \\ \phi_2
   \end{pmatrix}
-  =
+  =\frac{1}{k_\mathrm{eff}}
     \begin{pmatrix}
     F_{11} & F_{12} \\
     S_{21} & 0
@@ -501,9 +501,9 @@ HDF5是一种分层的、带有元数据的、支持多种数据格式的、针�
 它最早由美国国家超级计算应用中心（NCSA）提出，
 现在由非营利的HDF Group管理和维护。
 HDF5文件格式的读写库基于一种类似于BSD的协议开源\footnote{协议文本可以从
-\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取}，
+\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取。}，
 当前版本为HDF5 1.8.10 patch1\footnote{可
-从 \url{http://www.hdfgroup.org/downloads/index.html} 获取}。
+从 \url{http://www.hdfgroup.org/downloads/index.html} 获取。}。
 
 由于\ProgramName 程序使用人不能直接读取的HDF5格式进行输出，所以需要额外的工具进行数据后处理。
 支持HDF5格式的第三方工具和编程语言比较丰富，本文则推荐Python语言作为后处理语言，
@@ -757,8 +757,8 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 如果仅仅使用临界计算的通量作为初始通量分布并用\aeqref{equ:pro.diff.init.c}计算缓发中子源的话，
 在第一个时间步中相当于材料截面有一个阶跃，使得总通量分布在第一个时间步会有一个明显的跳跃，
 而且这也不符合\aeqref{equ:pro.diff.init.c}的计算条件。
-所以一般计算中会对问题的参数进行修正，使修正后的问题满足$k_\mathrm{eff}=1$，
-一般对裂变项进行修正
+所以一般计算中会对问题的参数进行修正（如程序NGFMN-K\cite{zhaowenbo}），使修正后的问题满足$k_\mathrm{eff}=1$，
+本文对裂变项进行修正
 \begin{align}
   \newcommand{\para}{\pb{\bm{x},t}}
   \nu\Sigma'_{f,g'}\para = \frac{1}{k_\mathrm{eff}}\nu\Sigma_{f,g'}\para

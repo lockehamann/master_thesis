@@ -582,12 +582,13 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 \ProgramName 的通量收敛精度取$\epsilon'_\phi=10^{-5}$，
 需要注意的是\ProgramName 和Citation的收敛精度计算方式不同，
 计算结果见\floatref{tab:result.iaea.self}，
-其中$\max\epsilon_{\phi_{A,g}}$表示按各组件通量的最大相对误差。
-可见在该精度下\ProgramName 计算的$k_\mathrm{eff}$ 偏差小于$10^{-5}$，
+其中$\max\epsilon_{\phi_{A,g}}$表示各组件通量的最大相对误差。
+可见在该精度下\ProgramName 计算的$k_\mathrm{eff}$ 偏差小于$1\times10^{-5}$，
 细网通量最大相对误差小于$4\times10^{-3}$，对于
-粗网预求解方法(DM)，通量最大相对误差小于$2.5\times10^{-3}$。
-1cm网格$1/8$堆芯的组件通量相对偏差结果见\floatref{fig:result.iaea.aphitable}，
-其中$\phi_R$是\ProgramName 计算结果，$\phi_C$是Citation的计算结果，
+粗网预求解方法（记为DM），通量最大相对误差小于$2.5\times10^{-3}$。
+CG-SG DM方法1cm网格$1/8$堆芯的组件
+通量相对偏差结果见\floatref{fig:result.iaea.aphitable}，
+其中$\phi_R$是\ProgramName 的计算结果，$\phi_C$是Citation的计算结果，
 $\epsilon(\phi)$是两者的相对偏差。
 
 
@@ -604,10 +605,10 @@ $\epsilon(\phi)$是两者的相对偏差。
  & $k_\mathrm{eff}$ & 计算时间/s & $k_\mathrm{eff}$ & 计算时间/s 
  & \\
 \midrule
-5.0 & 1.0288101 &    5.16 & 1.0288101 &     4.2 & $1.0\times10^{-3}$\\
-2.5 & 1.0290707 &    74.1 & 1.0290709 &   41.46 & $1.0\times10^{-3}$\\
-2.0 & 1.0291338 &   497.9 & 1.0291338 &  149.04 & $2.1\times10^{-3}$\\
-1.0 & 1.0292318 & 21437.0 & 1.0292313 & 2143.08 & $6.2\times10^{-3}$\\
+5.0 & 1.0288101 &    5.2 & 1.0288101 &     4.2 & $1.0\times10^{-3}$\\
+2.5 & 1.0290707 &    74.1 & 1.0290709 &   41.5 & $1.0\times10^{-3}$\\
+2.0 & 1.0291338 &   497.9 & 1.0291338 &  149.0 & $2.1\times10^{-3}$\\
+1.0 & 1.0292318 & 21437.0 & 1.0292313 & 2143.1 & $6.2\times10^{-3}$\\
 \bottomrule
 \end{tabular}
 \\[1cm]
@@ -725,6 +726,103 @@ $\epsilon(\phi)$是两者的相对偏差。
 
 \subsection{动态TWIGL二维基准问题}
 
+动态TWIGL二维基准题的计算结果及对比见\floatref{tab:result.twigl.power-compare}，
+可见\ProgramName 和各种节块程序的结果符合的较好。
+
+\begin{table}
+\centering
+\begin{minipage}{\textwidth}
+\centering
+\caption{动态TWIGL二维基准问题计算结果（堆芯相对功率）\label{tab:result.twigl.power-compare}}
+\subcaptionbox{阶跃反应性基准题\label{tab:result.twigl.power-compare.1}}
+{
+\begin{tabular}{cccccc}
+\toprule
+系统时刻/s & QUANDRY\footnote{使用解析节块法，时间步长0.01s，
+             数据来源\onlinecite{smith1979analytic,zhaowenbo}。}
+         & NEM\footnote{使用节块展开法，网格8cm$\times$8cm，时间步长0.005s，
+             数据来源\onlinecite{bandini1990three,zhaowenbo}。}
+         & NGFMN-K\footnote{使用节块格林函数法，网格8cm$\times$8cm，计算方法DIRK(5,4)-E，
+             计算精度1e-5，数据来源\onlinecite{zhaowenbo}。}
+         & SPANDEX\footnote{使用变时间步节块展开法，网格4cm$\times$4cm，时间步长0.0001s，
+             数据来源\onlinecite{aviles1993development,sutton1996diffusion}。}
+         & \ProgramName \footnote{本文工作，细网有限差分法，
+             网格划分1cm$\times$1cm，时间步长$0.01$s。}
+         \\
+\midrule
+0.1 & 2.064 & 2.060 & 2.061 & 2.062 & 2.060 \\
+0.2 & 2.076 & 2.078 & 2.079 & 2.079 & 2.079 \\
+0.3 & 2.095 & 2.095 & 2.096 & 2.096 & 2.096 \\
+0.4 & 2.112 & 2.113 & 2.114 & 2.114 & 2.114 \\
+0.5 & 2.130 & 2.131 & 2.131 & 2.131 & 2.131 \\
+\bottomrule
+\end{tabular}
+}
+\\[1cm]
+\subcaptionbox{线性反应性基准题\label{tab:result.twigl.power-compare.2}}
+{
+\begin{tabular}{cccccc}
+\toprule
+系统时刻/s & QUANDRY\footnote{时间步长0.005s，
+             数据来源\onlinecite{smith1979analytic,zhaowenbo}。}
+         & NEM\footnote{网格8cm$\times$8cm，时间步长0.005s，
+             数据来源\onlinecite{bandini1990three,zhaowenbo}。}
+         & NGFMN-K\footnote{网格8cm$\times$8cm，计算方法DIRK(5,4)-E，
+             计算精度1e-5，数据来源\onlinecite{zhaowenbo}。}
+         & SPANDEX\footnote{网格4cm$\times$4cm，时间步长0.0001s，
+             数据来源\onlinecite{aviles1993development,sutton1996diffusion}。}
+         & \ProgramName \footnote{网格划分1cm$\times$1cm，时间步长$0.005$s。}
+         \\
+\midrule
+0.1 & 1.305 & 1.309 & 1.309 & 1.309 & 1.309 \\
+0.2 & 1.954 & 1.962 & 1.960 & 1.960 & 1.962 \\
+0.3 & 2.074 & 2.075 & 2.075 & 2.075 & 2.076 \\
+0.4 & 2.092 & 2.092 & 2.092 & 2.092 & 2.093 \\
+0.5 & 2.109 & 2.110 & 2.110 & 2.110 & 2.111 \\
+\bottomrule
+\end{tabular}
+}
+\end{minipage}
+\end{table}
+
+
 \subsection{动态LMW三维基准问题}
+
+动态LMW三维基准题的计算结果及对比见\floatref{tab:result.lmw.power-compare}。
+
+\begin{sidewaystable}
+\pdfrotate
+\centering
+\begin{minipage}{0.8\textwidth}
+\centering
+\caption{动态LMW三维基准问题计算结果（堆芯相对功率）}
+\label{tab:result.lmw.power-compare}
+\begin{tabular}{ccccccc}
+\toprule
+系统时刻/s & SKETCH-N\footnote{使用基于非线性迭代策略的CMFD方法，网格10cm$\times$10cm$\times$5cm，时间步长0.25s，
+             数据来源\onlinecite{zimin1998nodal}。}
+         & PANTHER\footnote{使用基于非线性迭代策略的解析节块法，网格10cm$\times$10cm$\times$5cm，时间步长0.25s，
+             数据来源\onlinecite{sutton1996diffusion}。}
+         & NGFMN-K\footnote{使用节块格林函数法，网格10cm$\times$10cm$\times$5cm，计算方法DIRK(5,4)-E，
+             计算精度1e-5，数据来源\onlinecite{zhaowenbo}。}
+         & SPANDEX\footnote{使用变时间步节块展开法，网格5cm$\times$5cm$\times$2.5cm，计算精度5e-2，
+             数据来源\onlinecite{aviles1993development,sutton1996diffusion}。}
+         & NLSANMT\footnote{使用基于非线性迭代策略的CMFD方法，网格10cm$\times$10cm$\times$5cm，时间步长0.25s，
+             数据来源\onlinecite{liaochengkui,zhaowenbo}。}
+         & \ProgramName \footnote{本文工作，细网有限差分法，
+             网格划分1cm$\times$1cm$\times$1cm，时间步长$1/12$s。} 
+         \\
+\midrule
+10 & 1.338 & 1.347 & 1.341 & 1.341 & 1.339 & 1.341\\
+20 & 1.705 & 1.726 & 1.720 & 1.713 & 1.706 & 1.705\\
+30 & 1.369 & 1.382 & 1.381 & 1.373 & 1.368 & 1.362\\
+40 & 0.809 & 1.813 & 0.814 & 0.809 & 0.808 & 0.804\\
+50 & 0.502 & 0.505 & 0.504 & 0.503 & 0.502 & 0.501\\
+60 & 0.385 & 0.387 & 0.387 & 0.386 & 0.385 & 0.385\\ 
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{sidewaystable}
+
 
 \section{参数影响对比}
