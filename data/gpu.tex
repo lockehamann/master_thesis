@@ -570,26 +570,29 @@ Gauss-Seidel迭代在传统CPU求解线性方程组中使用广泛，
 该迭代方法在GPU上面临和Gauss-Seidel迭代同样的问题。
 
 \subsection{Krylov子空间类算法简介}
+\def\algoend{;\hspace{0.4cm}}
 \subsubsection{CG(Conjugate gradient)共轭梯度法}
 CG方法可以用于求解$\bm{A}$对称正定时的线性方程，
-其求解过程见\floatref{alg:gpu.cg}。\cite{golub2012matrix}
+其求解过程见\floatref{alg:gpu.cg}%
+\footnote{由于本节的伪代码每行长度较短，
+为节省版面故将多行放在一行内，用;号分隔。}。\cite{golub2012matrix}
 
 \begin{algorithm}
 \KwIn{$\bm{A},\bm{x}_0,\bm{b}$}
 \KwOut{$\bm{x}_e$}
-$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
-$\bm{p}_0 := \bm{r}_0$\;
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \algoend
+$\bm{p}_0 := \bm{r}_0$ \algoend
 $k:=0$\;
 
 \While{ True }{
-$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{r}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$\;
-$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
+$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{r}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$\algoend
+$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$ \algoend
 $\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
-\If{$\vb{\bm{r}_{k+1}}$ is small}{
+\If{$\vb{\bm{r}_{k+1}}$ 足够小}{
   return $\bm{x}_e := \bm{x}_{k+1}$\;
 }
-$\displaystyle \beta_k := \frac{\bm{r}_{k+1}^T\bm{r}_{k+1}}{\bm{r}_k^T\bm{r}_k}$\;
-$\bm{p}_{k+1}:=\bm{r}_{k+1}+\beta_k\bm{p}_k$\;
+$\displaystyle \beta_k := \frac{\bm{r}_{k+1}^T\bm{r}_{k+1}}{\bm{r}_k^T\bm{r}_k}$ \algoend
+$\bm{p}_{k+1}:=\bm{r}_{k+1}+\beta_k\bm{p}_k$ \algoend
 $k:=k+1$\;
 }
 \setlabelname{CG方法}
@@ -603,20 +606,20 @@ $k:=k+1$\;
 \begin{algorithm}
 \KwIn{$\bm{A},\bm{x}_0,\bm{b},\bm{M}$}
 \KwOut{$\bm{x}_e$}
-$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
-$\bm{z}_0 := \bm{M}^{-1}\bm{r}_0$\;
-$\bm{p}_0 := \bm{r}_0$\;
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \algoend
+$\bm{z}_0 := \bm{M}^{-1}\bm{r}_0$ \algoend
+$\bm{p}_0 := \bm{r}_0$ \algoend
 $k:=0$\;
 \While{ True }{
-$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{z}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$\;
-$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$\;
-$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$\;
-\If{$\vb{\bm{r}_{k+1}}$ is small}{
+$\displaystyle \alpha_k:=\frac{\bm{r}_k^T\bm{z}_k}{\bm{p}_k^T\bm{A}\bm{p}_k}$ \algoend
+$\bm{x}_{k+1}:=\bm{x}_k+\alpha_k\bm{p}_k$ \algoend
+$\bm{r}_{k+1}:=\bm{r}_k-\alpha_k\bm{A}\bm{p}_k$ \;
+\If{$\vb{\bm{r}_{k+1}}$ 足够小}{
   return $\bm{x}_e := \bm{x}_{k+1}$\;
 }
-$\bm{z}_{k+1}:=\bm{M}^{-1}\bm{r}_{k+1}$\;
-$\displaystyle \beta_k := \frac{\bm{z}_{k+1}^T\bm{r}_{k+1}}{\bm{z}_k^T\bm{r}_k}$\;
-$\bm{p}_{k+1}:=\bm{z}_{k+1}+\beta_k\bm{p}_k$\;
+$\bm{z}_{k+1}:=\bm{M}^{-1}\bm{r}_{k+1}$ \algoend
+$\displaystyle \beta_k := \frac{\bm{z}_{k+1}^T\bm{r}_{k+1}}{\bm{z}_k^T\bm{r}_k}$ \algoend
+$\bm{p}_{k+1}:=\bm{z}_{k+1}+\beta_k\bm{p}_k$ \algoend
 $k:=k+1$\;
 }
 \setlabelname{带预条件的CG方法}
@@ -634,28 +637,27 @@ $k:=k+1$\;
 \KwIn{$\bm{A},\bm{x}_0,\bm{b},\bm{K}$}
 \KwOut{$\bm{x}_e$}
 
-$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
-任取$\bm{r}_0^*$使得$\bm{r}_0^*\cdot\bm{r}_0\neq 0$\;
-$\rho_0:=\alpha:=\omega_0:=1$\;
-$\bm{v}_0:=\bm{p}_0 := \bm{0}$\;
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \algoend
+任取$\bm{r}_0^*$使得$\bm{r}_0^*\cdot\bm{r}_0\neq 0$ \algoend
+$\rho_0:=\alpha:=\omega_0:=1$ \;
+$\bm{v}_0:=\bm{p}_0 := \bm{0}$ \algoend
 $k:=1$\;
 \While{ True }{
-$\rho_k:=\bm{r}_0^*\cdot\bm{r}_{k-1}$\;
-$\displaystyle \beta:=\frac{\rho_k}{\rho_{k-1}}\frac{\alpha}{\omega_{k-1}}$\;
-$\bm{p}_k:=\bm{r}_{k-1}+\beta\pb{\bm{p}_{k-1}-\omega_{k-1}\bm{v}_{k-1}}$\;
-$\bm{y}:=\bm{K}^{-1}\bm{p}_k$\;
-$\bm{v}_k:=\bm{Ay}$\;
-$\displaystyle \alpha:=\frac{\rho_k}{\bm{r}_0^*\cdot\bm{v}_k}$\;
-$\bm{s}:=\bm{r}_{k-1}-\alpha\bm{v}_k$\;
-$\bm{z}:=\bm{K}^{-1}\bm{s}$\;
-$\bm{t}:=\bm{Az}$\;
-$\displaystyle \omega_k:=\frac{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{s})}{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{t})}$\;
-$\bm{x}_{k}:=\bm{x}_{k-1}+\alpha\bm{y}+\omega_k\bm{z}$\;
-end\;
+$\rho_k:=\bm{r}_0^*\cdot\bm{r}_{k-1}$ \algoend
+$\displaystyle \beta:=\frac{\rho_k}{\rho_{k-1}}\frac{\alpha}{\omega_{k-1}}$ \algoend
+$\bm{p}_k:=\bm{r}_{k-1}+\beta\pb{\bm{p}_{k-1}-\omega_{k-1}\bm{v}_{k-1}}$ \;
+$\bm{y}:=\bm{K}^{-1}\bm{p}_k$ \algoend
+$\bm{v}_k:=\bm{Ay}$ \algoend
+$\displaystyle \alpha:=\frac{\rho_k}{\bm{r}_0^*\cdot\bm{v}_k}$ \algoend
+$\bm{s}:=\bm{r}_{k-1}-\alpha\bm{v}_k$ \algoend
+$\bm{z}:=\bm{K}^{-1}\bm{s}$ \;
+$\bm{t}:=\bm{Az}$ \algoend
+$\displaystyle \omega_k:=\frac{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{s})}{(\bm{K}^{-1}\bm{t})\cdot(\bm{K}^{-1}\bm{t})}$ \algoend
+$\bm{x}_{k}:=\bm{x}_{k-1}+\alpha\bm{y}+\omega_k\bm{z}$ \;
 \If{$\bm{x}_{k}$收敛}{
   return $\bm{x}_e := \bm{x}_{k}$\;
 }
-$\bm{r}_k:=\bm{s}-\omega_k\bm{t}$\;
+$\bm{r}_k:=\bm{s}-\omega_k\bm{t}$ \algoend
 $k:=k+1$\;
 }
 \setlabelname{带预条件的BiCGStab方法}
@@ -673,19 +675,19 @@ GMRES是一种可以用于求解非对阵矩阵的Krylov子空间方法，
 \KwIn{$\bm{A},\bm{x}_0,\bm{b}\text{，并有}\bm{A}\bm{x}_0\approx\bm{b}$}
 \KwOut{$\bm{x}_e$}
 
-$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \;
-$h_{10}:=\| \bm{r}_0\|_2$\;
+$\bm{r}_0 := \bm{b}-\bm{A}\bm{x}_0$ \algoend
+$h_{10}:=\| \bm{r}_0\|_2$ \algoend
 $k:=0$\;
 \While{ $h_{k+1,k}>0$ }{
-$\displaystyle \bm{q}_{k+1}:=\frac{\bm{r}_k}{h_{k+1,k}}$\;
-$k:=k+1$\;
+$\displaystyle \bm{q}_{k+1}:=\frac{\bm{r}_k}{h_{k+1,k}}$ \algoend
+$k:=k+1$ \algoend
 $\bm{r}_k:=\bm{A}\bm{q}_k$\;
 \For{$i:=1 \  \mathrm{to} \   k$}
 {
-$h_{ik}:=\bm{q}_i^T\cdot\bm{r}_k$\;
+$h_{ik}:=\bm{q}_i^T\cdot\bm{r}_k$ \algoend
 $\bm{r}_k:=\bm{r}_k-h_{ik}\bm{q}_i$\;
 }
-$h_{k+1,k}:=\| \bm{r}_k\|_2$\;
+$h_{k+1,k}:=\| \bm{r}_k\|_2$ \;
 $\bm{x}=\bm{x}_0+\bm{Q}_k\bm{y}_k$
 其中$\bm{y}_k$使$\left\| h_{10}e_1-\overline{\bm{H}_m}\bm{y}_k \right\|_2$最小\;
 }
@@ -696,6 +698,7 @@ $\bm{x}_e:=\bm{x}_k$\;
 
 
 \subsection{预条件处理简介}
+\label{sec:gpu.krylov-precond}
 当矩阵$\bm{A}$的条件数较大时，以上的各种迭代方法的收敛速度往往并不理想，
 为了改善在大条件数情况下的收敛速度，Krylov往往和预条件处理共同使用。
 预条件处理的思路是把原始问题同解变换为一个条件数较小的问题。
@@ -817,6 +820,8 @@ CSC格式把每行的非零元连续存放，相对于COO节省了存储行号�
 如果把行列的存储方式调换，则可得到另一种格式，即列压缩格式(CSC)。
 
 \subsubsection{对角线格式(DIA)}
+\label{sec:gpu.sparseformat.dia}
+
 对角线格式是专门用于存储对角线稀疏矩阵的一种格式，
 其思路是只存储有非零元素的对角线。
 如矩阵\cite{bell2008spmv}

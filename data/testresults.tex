@@ -3,6 +3,13 @@
 \chapter{数值结果验证}
 
 \section{基准算例}
+
+为了验证\ProgramName 程序的临界计算及时空动力学计算功能，
+本章使用业界常用的若干基准题对程序的结果进行验证。
+临界计算的对比程序选用业内经典且广泛使用的Citation程序，
+Citation程序是细网有限差分多群扩散临界计算程序。
+\TODO
+
 \subsection{静态IAEA PWR三维基准问题}
 \label{sec:result.test.iaea}
 
@@ -341,7 +348,7 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 \def\lenscale{0.06}
 
 \def\x#1{#1*\lenscale}
-\def\zz#1{#1*\lenscale-0}
+\def\zz#1{#1*\lenscale}
 \def\z#1{#1*\lenscale}
 
 \draw [very thick] (0,0) -- (\x{110},0) 
@@ -397,7 +404,7 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 \def\lenscale{0.06}
 
 \def\x#1{#1*\lenscale}
-\def\zz#1{#1*\lenscale-0}
+\def\zz#1{#1*\lenscale}
 \def\z#1{#1*\lenscale}
 
 \draw [very thick] (0,0) -- (\x{110},0) 
@@ -515,5 +522,209 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 \end{tabular}
 \end{table}
 
+
 \section{数值结果及验证}
+
+在比较\ProgramName 的计算结果和参考结果之前，
+先介绍本文使用的通量误差的计算方式。
+
+对于临界问题，程序计算得到的通量分布结果的绝对值无意义，
+有意义的是各网格上通量的相对大小关系，
+所以一般都需要对结果进行归一化，
+再比较归一化后的通量结果。
+那么选择的归一化方法就会影响到计算结果的对比，
+常见的归一化方式是总功率归一化和最大通量归一化，
+但这两种方法都有各自的问题：
+由于堆芯中通量分布在不同的网格上可相差数个量级，
+如果按照堆芯总功率进行归一化，那么堆芯中部功率较高的部分对归一化系数影响很大，
+高通量区域的误差会通过归一化系数转移到到低通量区域上；
+同理使用最大通量归一化时，通量最高处的误差会影响到其他所有点的误差结果。
+在常见的组件级通量统计中，这种问题并不明显，
+但在细网结果的相对误差比较中，这种影响就被放大了。
+
+为了减小高通量网格对归一化系数的影响，本文使用所有网格上的相对幅值的均值作为
+归一化系数，即待验证的通量分布$\phi$和参考通量分布$\psi$见的相对归一化系数取为
+\begin{align}
+  \eta = \frac{\ \displaystyle\sum_{\bm{k},g}\frac{\phi_{\bm{k},g}}{\psi_{\bm{k},g}}\ }
+              {\displaystyle\sum_{\bm{k},g}1}
+\end{align}
+其中$\bm{k}$为空间网格编号，
+则归一化后的各网格的最大相对误差为
+\begin{align}
+  e_\mathrm{max} = \max_{\bm{k},g}
+      \left|
+        \frac{\phi_{\bm{k},g}}{\eta\cdot\psi_{\bm{k},g}} - 1
+      \right|
+\end{align}
+本文以后提到的最大相对误差均是指上式所定义的最大相对误差，
+而且为了更好地反映有实际意义的堆芯内的通量的相对误差，
+一般把堆芯活性区以外的水反射层处通量极低的网格滤掉。
+
+本文中如无特殊声明，计算环境均为
+\begin{itemize}
+\item CPU： 2$\times$ Intel Xeon CPU X5670 2.93GHz (双路服务器)
+\item 内存：24GB
+\item GPU：NVIDIA GeForce GTX TITAN，6GB显存
+\item 操作系统：Windows 7 SP1 64位
+\end{itemize}
+
+\subsection{静态IAEA PWR三维基准题}
+
+使用Citation的计算结果作为参考解，
+通量收敛精度$\epsilon_\phi$取$10^{-6}$和$10^{-5}$，
+对于5cm、2.5cm、2cm、1cm的$k_\mathrm{eff}$计算结果
+见\floatref{tab:result.iaea.citation}。
+以下对比中使用Citation通量收敛精度$\epsilon_\phi$取$10^{-6}$的
+结果作为基准解，
+并记$10^{-5}$精度的结果相对$10^{-6}$精度结果的通量最大相对偏差为$\epsilon_{5}$。
+可见对于Citation，精度取$10^{-5}$时对于细网情况仍有较大误差。
+
+\ProgramName 的通量收敛精度取$\epsilon'_\phi=10^{-5}$，
+需要注意的是\ProgramName 和Citation的收敛精度计算方式不同，
+计算结果见\floatref{tab:result.iaea.self}，
+其中$\max\epsilon_{\phi_{A,g}}$表示按各组件通量的最大相对误差。
+可见在该精度下\ProgramName 计算的$k_\mathrm{eff}$ 偏差小于$10^{-5}$，
+细网通量最大相对误差小于$4\times10^{-3}$，对于
+粗网预求解方法(DM)，通量最大相对误差小于$2.5\times10^{-3}$。
+1cm网格$1/8$堆芯的组件通量相对偏差结果见\floatref{fig:result.iaea.aphitable}，
+其中$\phi_R$是\ProgramName 计算结果，$\phi_C$是Citation的计算结果，
+$\epsilon(\phi)$是两者的相对偏差。
+
+
+\begin{sidewaystable}
+\pdfrotate
+\centering
+\caption{静态IAEA PWR三维基准题Citation计算结果}
+\label{tab:result.iaea.citation}
+\begin{tabular}{cccccc}
+\toprule
+\multirow{2}{*}{网格尺寸/cm}
+   & \multicolumn{2}{c}{$\epsilon_\phi=10^{-6}$}  
+   & \multicolumn{2}{c}{$\epsilon_\phi=10^{-5}$}  & \multirow{2}{*}{$\epsilon_{5}$}\\
+ & $k_\mathrm{eff}$ & 计算时间/s & $k_\mathrm{eff}$ & 计算时间/s 
+ & \\
+\midrule
+5.0 & 1.0288101 &    5.16 & 1.0288101 &     4.2 & $1.0\times10^{-3}$\\
+2.5 & 1.0290707 &    74.1 & 1.0290709 &   41.46 & $1.0\times10^{-3}$\\
+2.0 & 1.0291338 &   497.9 & 1.0291338 &  149.04 & $2.1\times10^{-3}$\\
+1.0 & 1.0292318 & 21437.0 & 1.0292313 & 2143.08 & $6.2\times10^{-3}$\\
+\bottomrule
+\end{tabular}
+\\[1cm]
+\caption{静态IAEA PWR三维基准题\ProgramName 计算结果及误差}
+\label{tab:result.iaea.self}
+\begin{tabular}{ccccccc}
+\toprule
+网格尺寸/cm & 求解算法 
+        & 计算时间/s & $k_\mathrm{eff}$ 
+        & $\epsilon_{k_\mathrm{eff}}$
+        & $\max\epsilon_{\phi_{\bm{k},g}}$
+        & $\max\epsilon_{\phi_{A,g}}$\\
+\midrule
+5.0 & CG-SG    &   1.701 & 1.0288096 & $5.4\times10^{-7}$ & $1.9\times10^{-3}$ & $1.5\times10^{-4}$\\
+2.5 & CG-SG    &   5.210 & 1.0290717 & $9.7\times10^{-7}$ & $2.0\times10^{-3}$ & $1.5\times10^{-4}$\\
+2.5 & CG-SG DM &   3.885 & 1.0290747 & $4.0\times10^{-6}$ & $1.0\times10^{-3}$ & $3.0\times10^{-4}$\\
+2.0 & CG-SG    &   9.719 & 1.0291336 & $2.4\times10^{-7}$ & $1.5\times10^{-3}$ & $1.1\times10^{-4}$\\
+1.0 & CG-SG    & 100.994 & 1.0292392 & $7.4\times10^{-6}$ & $3.3\times10^{-3}$ & $2.5\times10^{-4}$\\
+1.0 & CG-SG DM &  40.794 & 1.0292418 & $1.0\times10^{-5}$ & $2.3\times10^{-3}$ & $2.6\times10^{-4}$\\
+\bottomrule
+\end{tabular}
+\end{sidewaystable}
+
+
+\begin{figure}
+\centering
+\subcaptionbox{快群}{
+\begin{tikzpicture}
+\def\di#1#2#3#4#5{
+\def\boxx{1.6}
+\def\boxy{1.3}
+\draw (#1*\boxx, #2*\boxy) -- +(\boxx,0) -- +(\boxx,\boxy) -- +(0,\boxy) -- +(0,0);
+\node [right] at (#1*\boxx,#2*\boxy+1) {#3};
+\node [right]  at (#1*\boxx,#2*\boxy+0.65) {#4};
+\node [right]  at (#1*\boxx,#2*\boxy+0.25) {#5\textperthousand};
+}
+\di{0}{5}{$\phi_R$}{$\phi_C$}{$\epsilon(\phi)$}
+\di{0}{0}{0.70280}{0.70262}{0.258}
+\di{1}{0}{0.90569}{0.90547}{0.248}
+\di{1}{1}{0.97539}{0.97518}{0.215}
+\di{2}{0}{0.99249}{0.99227}{0.225}
+\di{2}{1}{1.00019}{1.00000}{0.188}
+\di{2}{2}{0.97517}{0.97506}{0.118}
+\di{3}{0}{0.84499}{0.84486}{0.156}
+\di{3}{1}{0.90302}{0.90294}{0.096}
+\di{3}{2}{0.91793}{0.91789}{0.050}
+\di{3}{3}{0.82553}{0.82551}{0.022}
+\di{4}{0}{0.59193}{0.59189}{0.066}
+\di{4}{1}{0.76173}{0.76169}{0.046}
+\di{4}{2}{0.82799}{0.82799}{0.001}
+\di{4}{3}{0.69021}{0.69020}{0.008}
+\di{4}{4}{0.45965}{0.45966}{0.015}
+\di{5}{0}{0.68217}{0.68219}{0.028}
+\di{5}{1}{0.74408}{0.74411}{0.042}
+\di{5}{2}{0.76464}{0.76468}{0.050}
+\di{5}{3}{0.64700}{0.64703}{0.037}
+\di{5}{4}{0.47272}{0.47276}{0.093}
+\di{5}{5}{0.31974}{0.31976}{0.065}
+\di{6}{0}{0.67956}{0.67961}{0.084}
+\di{6}{1}{0.68837}{0.68843}{0.079}
+\di{6}{2}{0.66871}{0.66876}{0.074}
+\di{6}{3}{0.51765}{0.51769}{0.087}
+\di{6}{4}{0.33054}{0.33057}{0.088}
+\di{7}{0}{0.47711}{0.47717}{0.134}
+\di{7}{1}{0.46504}{0.46510}{0.141}
+\di{7}{2}{0.38819}{0.38823}{0.110}
+\end{tikzpicture}
+}
+
+\subcaptionbox{热群}{
+\begin{tikzpicture}
+\def\di#1#2#3#4#5{
+\def\boxx{1.6}
+\def\boxy{1.3}
+\draw (#1*\boxx, #2*\boxy) -- +(\boxx,0) -- +(\boxx,\boxy) -- +(0,\boxy) -- +(0,0);
+\node [right] at (#1*\boxx,#2*\boxy+1) {#3};
+\node [right] at (#1*\boxx,#2*\boxy+0.65) {#4};
+\node [right] at (#1*\boxx,#2*\boxy+0.25) {#5\textperthousand};
+}
+\di{0}{5}{$\phi_R$}{$\phi_C$}{$\epsilon(\phi)$}
+\di{0}{0}{0.12725}{0.12723}{0.189}
+\di{1}{0}{0.22100}{0.22095}{0.206}
+\di{1}{1}{0.24056}{0.24051}{0.190}
+\di{2}{0}{0.24518}{0.24514}{0.181}
+\di{2}{1}{0.24626}{0.24622}{0.150}
+\di{2}{2}{0.23380}{0.23379}{0.042}
+\di{3}{0}{0.20643}{0.20640}{0.124}
+\di{3}{1}{0.22288}{0.22286}{0.106}
+\di{3}{2}{0.22614}{0.22613}{0.063}
+\di{3}{3}{0.20387}{0.20386}{0.025}
+\di{4}{0}{0.10719}{0.10719}{0.000}
+\di{4}{1}{0.18627}{0.18626}{0.023}
+\di{4}{2}{0.20503}{0.20503}{0.013}
+\di{4}{3}{0.16895}{0.16896}{0.019}
+\di{4}{4}{0.08353}{0.08354}{0.080}
+\di{5}{0}{0.16697}{0.16698}{0.061}
+\di{5}{1}{0.18441}{0.18442}{0.054}
+\di{5}{2}{0.19000}{0.19001}{0.058}
+\di{5}{3}{0.16089}{0.16090}{0.062}
+\di{5}{4}{0.12165}{0.12166}{0.094}
+\di{5}{5}{0.10274}{0.10275}{0.108}
+\di{6}{0}{0.16901}{0.16903}{0.115}
+\di{6}{1}{0.17151}{0.17153}{0.119}
+\di{6}{2}{0.17468}{0.17470}{0.103}
+\di{6}{3}{0.15021}{0.15023}{0.100}
+\di{6}{4}{0.10539}{0.10540}{0.110}
+\di{7}{0}{0.13789}{0.13791}{0.133}
+\di{7}{1}{0.13408}{0.13410}{0.134}
+\di{7}{2}{0.12455}{0.12456}{0.134}
+\end{tikzpicture}
+}
+\caption{\ProgramName 静态IAEA三维基准题1cm网格$1/8$堆芯组件通量相对偏差}
+\label{fig:result.iaea.aphitable}
+\end{figure}
+
+\subsection{动态TWIGL二维基准问题}
+
+\subsection{动态LMW三维基准问题}
+
 \section{参数影响对比}

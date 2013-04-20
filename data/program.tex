@@ -1,7 +1,7 @@
 
 
 
-\chapter{三维扩散临界及动力学程序开发}
+\chapter{\ProgramName 程序理论推导及开发}
 \section{中子扩散时空动力学理论推导}
 
 \subsection{稳态公式推导}
@@ -362,69 +362,13 @@ $D_{ij}$的实对称矩阵性质往往可以加速计算过程。
 如Jacobi、CG等。
 
 
-\section{GPU程序开发}
+\section{\ProgramName 程序开发}
 
-\subsection{主体架构}
-
-\begin{figure}
-\centering
-
-\begin{tikzpicture}[scale=0.8, transform shape]
-\draw  (-2.5,-4) rectangle (12,-5);
-\node at (5,-4.5) { GPU};
-
-\draw  (-2.5,-2.5) rectangle (12,-3.5);
-\node at (5,-3) {显卡驱动};
-
-\draw  (-2.5,-1) rectangle (12,-2);
-\node at (5,-1.5) {CUDA};
-
-\draw  (-2.5,2) rectangle (8,-0.5);
-\node [right] at (-2,1.5) {Thrust};
-\draw  (-2,1) rectangle (1,0);
-\draw  (1.5,1) rectangle (4.5,0);
-\draw  (5,1) rectangle (7.5,0);
-\node [right] at (-1.5,0.5) {辅助函数};
-\node at (3,0.75) { \small Global函数};
-\node at (3,0.25) { \small 启动参数配置};
-\node at (6.25,0.5) {显存管理};
-
-\draw  (-2.5,6.5) rectangle (5,2.5);
-\node [right] at (-2,6) {CUSP};
-\draw (-2,4) rectangle (4.5,3);
-\node at (1,3.5) {稀疏矩阵格式: DIA, ELL等};
-\draw (-2,5.5) rectangle (4,4.5);
-\node at (1,5) {迭代算法：CG, BiCGStab等};
-
-\node at (10.25,1.25) {改进的};
-\node at (10.25,0.75) {显存管理};
-\draw [-latex new, arrow head=3mm] (7.5,0.5) -- (9,0.5);
-
-\draw [very thick] (12,-0.5) -- (8.5,-0.5) 
-     -- (8.5,2.5) -- (5.5,2.5) -- (5.5,7) 
-     -- (-2.5,7) -- (-2.5,12.5) -- (12,12.5) 
-     -- (12,-0.5);
-\node at (-1.5,12) {程序核心};
-\draw  (6,6.5) rectangle (11.5,4.5);
-\node at (8.75,5.5) {能群间耦合处理};
-
-\draw  (9,2) rectangle (11.5,0);
-\draw  (6,4) rectangle (11.5,3);
-\node at (8.75,3.5) {GPU端在线矩阵生成};
-
-\draw  (-2,8.5) rectangle (11.5,7.5);
-\node at (5,8) {本征值求解(源迭代)、固定源求解};
-\draw  (-2,10) rectangle (11.5,9);
-\node at (5,9.5) {双层网格加速};
-
-\draw  (-2,11.5) rectangle (4.5,10.5);
-\draw  (5,11.5) rectangle (11.5,10.5);
-\node at (1,11) {临界计算};
-\node at (8,11) {时空动力学计算};
-
-\end{tikzpicture}
-\caption{\label{fig:program.structure.core}程序内核结构}
-\end{figure}
+\subsection{整体介绍}
+在以上推导的基础上，本文开发了三维扩散时空动力学程序\ProgramName ，
+程序主体结构见\floatref{fig:program.structure.whole}，
+其中内核部分是程序的主要部分，结构见\floatref{fig:program.structure.core}。
+程序的主体流程见
 
 \begin{figure}
 \centering
@@ -460,5 +404,529 @@ $D_{ij}$的实对称矩阵性质往往可以加速计算过程。
 \draw [latex new-, arrow head=3mm] (-2,-1.5) -- (-1,-1.5) ;
 
 \end{tikzpicture}
-\caption{\label{fig:program.structure.whole}程序整体结构}
+\caption{\label{fig:program.structure.whole}\ProgramName 程序整体结构}
 \end{figure}
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[scale=0.8, transform shape]
+\draw  (-2.5,-4) rectangle (12,-5);
+\node at (5,-4.5) { GPU};
+
+\draw  (-2.5,-2.5) rectangle (12,-3.5);
+\node at (5,-3) {显卡驱动};
+
+\draw  (-2.5,-1) rectangle (12,-2);
+\node at (5,-1.5) {CUDA};
+
+\draw  (-2.5,2) rectangle (8,-0.5);
+\node [right] at (-2,1.5) {Thrust};
+\draw  (-2,1) rectangle (1,0);
+\draw  (1.5,1) rectangle (4.5,0);
+\draw  (5,1) rectangle (7.5,0);
+\node [right] at (-1.5,0.5) {辅助函数};
+\node at (3,0.75) { \small Global函数};
+\node at (3,0.25) { \small 启动参数配置};
+\node at (6.25,0.5) {显存管理};
+
+\draw  (-2.5,6.5) rectangle (5,2.5);
+\node [right] at (-2,6) {CUSP};
+\draw (-2,4) rectangle (4.5,3);
+\node at (1,3.5) {稀疏矩阵格式: DIA, ELL等};
+\draw (-2,5.5) rectangle (4,4.5);
+\node at (1,5) {迭代算法：CG, BiCGStab等};
+
+\node at (10.25,1.25) {改进的};
+\node at (10.25,0.75) {显存管理};
+\draw [-latex new, arrow head=3mm] (7.5,0.5) -- (9,0.5);
+
+\draw [very thick] (12,-0.5) -- (8.5,-0.5) 
+     -- (8.5,2.5) -- (5.5,2.5) -- (5.5,7) 
+     -- (-2.5,7) -- (-2.5,12.5) -- (12,12.5) 
+     -- (12,-0.5);
+\node [right] at (-2,12) {\ProgramName 程序内核};
+\draw  (6,6.5) rectangle (11.5,4.5);
+\node at (8.75,5.5) {能群间耦合处理};
+
+\draw  (9,2) rectangle (11.5,0);
+\draw  (6,4) rectangle (11.5,3);
+\node at (8.75,3.5) {GPU端在线矩阵生成};
+
+\draw  (-2,8.5) rectangle (11.5,7.5);
+\node at (5,8) {本征值求解(源迭代)、固定源求解};
+\draw  (-2,10) rectangle (11.5,9);
+\node at (5,9.5) {双层网格加速};
+
+\draw  (-2,11.5) rectangle (4.5,10.5);
+\draw  (5,11.5) rectangle (11.5,10.5);
+\node at (1,11) {临界计算};
+\node at (8,11) {时空动力学计算};
+
+\end{tikzpicture}
+\caption{\label{fig:program.structure.core}\ProgramName 程序内核结构}
+\end{figure}
+
+GPU部分使用现在最为通用的CUDA框架进行开发，版本为CUDA 5.0，
+并使用了CUDA自带的Thrust通用C++模板库简化和GPU配置相关的代码。
+在线性代数库方面，现在业界尚没有较为完整、稳定、高效的稀疏矩阵库，
+\ProgramName 程序使用了NVIDIA公司开发的开源稀疏矩阵库CUSP，
+因为CUSP支持文本需要的DIA稀疏矩阵存储格式，并且实现较为高效。
+CUSP在实现上也是一个C++模板库，大量依赖Thrust的实现，
+并且使用了Thrust的显存管理模块，出于性能考虑本文替换了Thrust的显存管理模块。
+由于现在Thrust和CUSP并不支持多GPU并行，
+所以本程序也仅限使用单GPU进行加速。
+
+在稀疏矩阵格式方面主要使用DIA格式（见\sectionref{sec:gpu.sparseformat.dia}），
+并针对扩散方程离散的特点开发了扩散方程矩阵GPU端动态DIA格式生成功能，
+以缩短程序总计算时间。
+为了对比其他格式，还添加了ELL、CSR、COO格式的实现，
+DIA、ELL、CSR、COO格式的线性代数计算功能和各格式间的转化功能使用CUSP库的实现，
+本文对其显存管理进行了改进。
+
+在输入文件格式方面，\ProgramName 和一般科学计算程序不同，
+使用了Lua语言作为输入文件格式。
+Lua是一种快速、轻量级的嵌入式动态语言，设计目标即为容易嵌入到C语言中使用，
+方便与C等语言交互，现已在PC游戏界广泛使用。
+Lua当前版本5.2.2，基于MIT开源协议开源，
+可从 \url{http://www.lua.org/download.html} 获得。
+使用Lua语言作为输入文件不光可以显著减少解析输入文件的工作量，
+而且还允许用户通过输入文件输入带有控制逻辑的Lua程序以对程序行为进行更为精细的控制，
+\ProgramName 基于Lua提供了一种方面地输入动力学问题中材料、截面随时间变化的方式。
+
+由于\ProgramName 程序是三维时空动力学程序，产生的数据包含5个维度（空间3维、能群1维、时间1维），
+如果使用传统的纯文本格式输出，用户对数据进行后处理时则会十分不便，
+所以\ProgramName 使用国际上较流行的一种针对科学计算的数据交换格式——HDF5作为直接输出格式。
+HDF5是一种分层的、带有元数据的、支持多种数据格式的、针对科学计算的数据文件存储格式及相关技术。
+它最早由美国国家超级计算应用中心（NCSA）提出，
+现在由非营利的HDF Group管理和维护。
+HDF5文件格式的读写库基于一种类似于BSD的协议开源\footnote{协议文本可以从
+\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取}，
+当前版本为HDF5 1.8.10 patch1\footnote{可
+从 \url{http://www.hdfgroup.org/downloads/index.html} 获取}。
+
+由于\ProgramName 程序使用人不能直接读取的HDF5格式进行输出，所以需要额外的工具进行数据后处理。
+支持HDF5格式的第三方工具和编程语言比较丰富，本文则推荐Python语言作为后处理语言，
+并提供一些Python程序作为示例。
+Python语言是一种面向对象的动态语言，现在在学术界和工业界都十分流行，
+不少GPU加速工具和科学可视化工具都使用Python编写，
+所以本文也使用Python作为主要数据前处理、
+后处理工具语言。\footnote{Python可以从
+\url{http://www.Python.org} 免费获取，本文使用 Python2.7.x 的语法。}
+
+
+\subsection{材料反应截面的输入}
+
+对于扩散程序，输入数据中占主要部分的是各截面在不同空间网格上的取值，
+\ProgramName 和传统确定论成程序一样，采用两段式的输入方式，
+即引入材料概念，输入分为两部分：每个材料的各个截面和材料在空间网格上的分布，
+前者一般用列表形式给出，后者一般用粗网格上的材料矩阵给出。
+这种方式主要针对扩散计算中问题的常见特点：单个组件尺度内往往只有一种材料，
+不同组件间的材料也往往有重复的。
+但对于全堆均匀化后的截面参数，即各个组件材料不同的情况，这种方式略显冗余。
+
+对于临界计算来说，以上这种两段式的输入方式已经能偶满足实际计算需求，
+但对于时空力学问题尚缺乏统一的材料描述方式。
+对于时空动力学来说，材料的定义的主体仍然和临界相同，
+实际问题中往往大部分区域的材料、截面并不随时间变化，可以用两段式输入描述。
+材料、截面随时间变化的部分基本可以分为两种模式：
+\begin{enumerate}
+\item
+某个或某些材料的某些截面发生变化，即材料$M_i$的某截面$\Sigma_{M_i,j}$不再是定值，
+而是随时间变化的函数$\Sigma_{M_i,j}(t)$。
+在常见基准算例中，这种中情况常见于材料的部分成分发生改变时。
+对于空间是一维、二维等低维形式的算例，由于计算中常取反应堆横截面，
+高度方向被简化，控制棒移动的效果只能通过连续或阶跃改变固定网格处的材料反应截面来反映。
+
+\item
+材料在空间网格上的分布发生改变，如三维问题中，控制棒移动会改变控制棒路径上各网格的材料，
+这时各网格上的截面从一种材料阶跃或连续地变为另一种材料的。
+\end{enumerate}
+实际计算中可能会出现以上两种模式的混合需求：
+\begin{enumerate}
+\setcounter{enumi}{2}
+
+\item 只有某些固定区域上的某材料的截面发生变化。
+这种情况在计算中一般通过人为地把改变的区域和不改变的区域指定成不同材料，
+这样就可以隔离不同区域间的影响，使用上面模式1的输入方式。
+
+\item
+在三维问题中，控制棒从某网格某一侧进入并逐渐填满网格的过程是连续的，
+但如果只使用上面第二种模式的方式则只能描述为阶跃变化（或是额外定义大量中间状态的材料），
+带来的额外的误差。为了提高精度，往往会对这些处于过度状态的网格（甚至包括它们附近的网格），
+进行一定的均匀化或插值处理，得到某种过度状态的截面。
+而如何进行这方面的均匀化或插值则有多种方法，如按体积加权或按通量加权等，
+这些方法并不属于本文的研究范围，所以\ProgramName 最好能提供某种接口来让用户控制
+这些网格上的截面计算工作。
+
+\end{enumerate}
+
+为了给予用户精细地控制材料输入的方式，\ProgramName 选择了Lua这种动态语言作为材料输入的方式。
+动态语言的特点是在运行时可以直接读取程序源代码并执行而不需要显式的编译过程，
+这样就可以让用户把均匀化代码放在输入文件中，在运行时根据条件计算各网格上的材料。
+如果不考虑效率问题，完全可以用这种动态语言的方式替换掉之前的二段式材料输入方式，
+把材料在空间网格上的离散（及可能涉及的均匀化）过程暴露给用户，以增强程序的通用性。
+
+但实际程序中很难使用这种方式，原因是程序运行速度的问题。
+动态语言在一般经验中比编译型的语言慢两个数量级，
+比较快的动态语言速度大约也比编译型语言慢一个数量级，
+如果语言设计时就考虑到性能问题，而且动态语言的实现也经过充分优化，
+并使用JIT这样的技术后，其性能才能够勉强接近C语言。
+现在这方面的动态语言只有少数的几个，如Lua的LuaJIT实现，
+它是目前为止世界上最快的动态语言实现之一\cite{LuaJITHomepage}；
+还有最近刚出现的类Matlab语法的开源科学计算语言Julia（\url{http://julialang.org/}），
+它使用了较为先进的LLVM的JIT在线编译器，性能也接近C语言的效率，
+性能比较见Julia项目主页，但Julia项目现在并不成熟，而且不便于嵌入到\ProgramName 中。
+
+而对于\ProgramName 程序这种细网有限差分程序，空间网格数量可达$10^7$的量级
+\footnote{对于静态IAEA PWR三维基准问题（见第 \ref{sec:result.test.iaea} 节），
+如果空间网格尺寸取1cm，则网格数量为$170\times170\times380=1.1\times10^7$。}，
+可能的方案有
+\begin{enumerate}
+\item
+使用Lua的LuaJIT实现，性能接近C语言，但由于LuaJIT自身的限制只能适用于使用的内存不超过1G的情况。
+
+\item
+使用TinyCC（项目主页\url{http://bellard.org/tcc/}）这种能嵌入到其他程序中的C编译器，
+在运行时编译用户输入的材料处理函数以实现高速计算。
+\end{enumerate}
+但这两种方案都较为复杂，并有自己的不足。更为重要的是，
+这两种方式只能在CPU端产生所有网格的截面数据，
+在GPU计算前需要再复制到GPU显存上，大量数据的传输开销无法避免，
+对于时空动力学问题，需要每个时间步都要产生截面数据并进行传输，时间上的开销太大。
+根据前面的思路，也可以根据用户的输入在运行时编译为可直接在GPU上运行的PTX指令，
+以避免数据传输问题，但这种方式的技术尚不成熟，而且对于开发人员和用户来说难度和工作量都要大的多，
+目前基本没有实际应用的价值。
+
+综合考虑以上各方面因素，\ProgramName 程序最后仍然采用了二段式的方式进行
+数据输入，在时空动力学的材料输入上采用了动态语言的方式来实现功能上的可扩展性，
+同时避免了大量的截面信息在CPU端产生的问题。主要方式为：
+每个时间步开始时，由用户通过输入文件的Lua代码给出本时间步和初始时间步的材料在网格分布
+信息的差分信息，即那些网格上的材料发生了改变，并给出本时间步的新材料截面信息。
+程序根据材料分布的差分信息和初始材料分布信息在CPU端产生新的材料分布矩阵，
+新材料分布矩阵和新材料截面信息传送至GPU上，
+GPU端程序根据信息直接在显存产生完整的材料分布数据。
+在考虑到程序速度的情况下最大限度地照顾到前面提出的各种需求。
+此外\ProgramName 还真对需要临时改变全部或某些材料截面的需求
+添加了相应接口，简化输入文件修改的工作量。
+每个时间步\ProgramName 对材料截面更新过程见\floatref{alg:program.material.update}。
+
+\begin{algorithm}
+\ForEach(\tcc*[f]{遍历每种材料的截面信息}){输入文件中的材料截面信息}
+{
+  \If{截面信息通过时间相关函数生成}
+  {
+  调用该材料截面生成函数获得该时间步的截面定义\;
+  }
+  \Else
+  {
+  直接获取该材料的固定截面\;
+}
+}
+预处理截面信息，并传输到GPU显存\;
+\If{存在材料分布更新函数MatChange}
+{
+  \If{上一时间步中，材料分布信息被更新过}
+  {
+    恢复初始的材料分布信息\;
+  }
+  在Lua环境内调用材料更新函数MatChange，产生材料分布差分数据\;
+  从Lua环境中取回材料分布差分数据\;
+  根据材料分布差分数据更新材料分布信息\;
+  更新GPU显存上的材料分布信息\;
+}
+在GPU端跟据材料的截面信息和材料分布信息产生截面在空间网格上的分布\;
+\setlabelname{每个时间步\ProgramName 对材料截面更新过程}
+\caption{\label{alg:program.material.update}每个时间步\ProgramName 对材料截面更新过程}
+\end{algorithm}
+
+需要说明的是，以上的材料更新过程和空间网格定义是关联的，
+当需要在不同网格上进行计算时，程序会对不同网格上的材料信息分开处理，
+允许用户在粗网和细网上分别定义不同的材料更新及均匀化方式。
+
+
+\subsection{临界计算}
+\label{sec:program.eigen}
+
+临界计算是反应堆物理设计中常见的计算需求，同时也是动力学中计算通量初值所必需的，
+所以\ProgramName 程序首先实现了临界计算功能。
+
+临界计算部分，\ProgramName 主要使用:
+\begin{enumerate}
+\item CG-SG，使用CG方法从高能群到低能群逐群求解单群方程组。
+\item BiCGStab-MG，使用BiCGStab方法直接求解所有能群联合方程组。
+\end{enumerate}
+两种方法。为了对比其他方法，程序还实现了如下求解方法:
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item Jacobi-SG，使用Jacobi迭代逐群求解。
+\item Jacobi-MG，使用Jacobi对所有能群统一求解。
+\item GMRES-MG，使用GMRES对所有能群统一求解。
+\end{enumerate}
+以上各迭代算法中，CG、BiCGStab、GMRES使用CUSP库的实现，
+本文对其显存管理进行了改进。预条件算法使用对角线预条件算法，
+见\sectionref{sec:gpu.krylov-precond}。
+
+此外\ProgramName 为了加速细网问题的求解速度，
+使用了粗网预求解方法改进迭代过程的初值，显著减少了迭代次数，
+详见\sectionref{sec:equsolve.multimesh}。
+
+临界部分的求解流程见\floatref{alg:program.eigen.main}。
+以上各求解算法的实现可以分为两大类，逐群求解和联合求解，
+这两类中的算法过程基本相近，所以只以CG-SG和BiCGStab-MG
+为代表进行介绍。
+CG-SG算法的伪代码见\floatref{alg:program.eigen.cg-sg}，
+BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
+
+
+\begin{algorithm}
+读取输入文件的临界部分\;
+配置内核稀疏矩阵格式\;
+初始化网格信息\;
+\If{需要进行粗网预求解}
+{
+  初始化粗网网格信息\;
+  初始化粗网通量\;
+  配置粗网求解算法及参数\;
+  求解粗网临界问题\;
+  将粗网通量插值为细网通量\;
+}
+\Else
+{
+  初始化细网通量\;
+}
+配置求解算法及参数\;
+求解临界问题\;
+通量归一化，输出结果\;
+\setlabelname{\ProgramName 程序临界功能主流程伪代码}
+\caption{\label{alg:program.eigen.main}\ProgramName 程序临界功能主流程伪代码}
+\end{algorithm}
+
+
+\begin{algorithm}
+初始化CPU端和GPU端数据\;
+根据材料定义和截面信息在GPU端直接产生的空间网格上的截面信息\;
+根据网格信息配置DIA格式的迭代矩阵需要的空间\;
+根据空间离散方式在GPU上填充各群迭代矩阵\;
+
+根据当前通量计算第1群源项\;
+计算对角线预条件算法的对角线矩阵\;
+源迭代过程初始化\;
+\Repeat{源迭代收敛}
+{
+  使用CG求解第1群通量\;
+  计算第2群源项\;
+  使用CG求解第2群通量\;
+  更新第1群源项\;
+  计算下一代的$K_\mathrm{eff}$\;
+  估计$K_\mathrm{eff}$和通量的误差\;
+}
+\setlabelname{\ProgramName 程序临界功能CG-SG算法伪代码}
+\caption{\label{alg:program.eigen.cg-sg}\ProgramName 程序临界功能CG-SG算法伪代码}
+\end{algorithm}
+
+
+\begin{algorithm}
+初始化CPU端和GPU端数据\;
+根据材料定义和截面信息在GPU端直接产生的空间网格上的截面信息\;
+根据网格信息配置DIA格式的迭代矩阵需要的空间\;
+根据空间离散方式在GPU上填充迭代矩阵\;
+
+根据当前通量计算源项\;
+计算对角线预条件算法的对角线矩阵\;
+源迭代过程初始化\;
+\Repeat{源迭代收敛}
+{
+  使用BiCGStab求解各群通量\;
+  更新源项\;
+  计算下一代的$K_\mathrm{eff}$\;
+  估计$K_\mathrm{eff}$和通量的误差\;
+}
+\setlabelname{\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
+\caption{\label{alg:program.eigen.bicgstab-mg}\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
+\end{algorithm}
+
+\subsection{时空动力学计算}
+
+\subsubsection{时空动力学问题初值}
+\label{sec:program.kinetics.keff-fix}
+
+要计算时空动力学问题，首先要解决的是初值如何计算的问题，
+实际中一般取刚好临界时的稳定状态为初始状态，
+而实际算例中很少有恰好$k_\mathrm{eff}=1$的时候，
+如果仅仅使用临界计算的通量作为初始通量分布并用\aeqref{equ:pro.diff.init.c}计算缓发中子源的话，
+在第一个时间步中相当于材料截面有一个阶跃，使得总通量分布在第一个时间步会有一个明显的跳跃，
+而且这也不符合\aeqref{equ:pro.diff.init.c}的计算条件。
+所以一般计算中会对问题的参数进行修正，使修正后的问题满足$k_\mathrm{eff}=1$，
+一般对裂变项进行修正
+\begin{align}
+  \newcommand{\para}{\pb{\bm{x},t}}
+  \nu\Sigma'_{f,g'}\para = \frac{1}{k_\mathrm{eff}}\nu\Sigma_{f,g'}\para
+\end{align}
+但实际计算中，$k_\mathrm{eff}$是由临界计算得到的，实际临界计算往往会有少量误差，
+使得$k_\mathrm{eff}$的计算值和实际值之间有微小的差别，这跟根源迭代收敛条件有关。
+但这个微小的误差会在后续的动力学过程中表现出来，即第一个时间步中总体通量会有一个小的阶跃，
+后续时间步中，总体通量也会有小指数上升或小指数下降的趋势，影响时空动力学的计算和结果比较。
+所以本文采用多次试算、修正的方式直至最终$k_\mathrm{eff}$足够接近于1，
+算法伪代码见\floatref{alg:program.kinetics.keff-fix}。
+
+\begin{algorithm}
+初始化$c_L:=0.1, c_U:=10, c:=1, n:=0$\;
+\While{$k_\mathrm{eff}^{(n)}$足够接近于$1$或$c_U-c_L$足够小}
+{
+  \lIf(\tcc*[f]{更新系数$c$的上下界})
+  {$k>1$}{$\displaystyle c_U:=\frac{c+c_U}{2}$}
+  \lElse(\tcc*[f]{每次减半是考虑到$k_\mathrm{eff}$的计算可能有误差})
+  {$\displaystyle c_L:=\frac{c+c_L}{2}$}
+  $\displaystyle c:=\frac{c}{\ k_\mathrm{eff}^{(n)}\ }$\;
+  \If(\tcc*[f]{确保$c$不会发散})
+  {$c>c_U$或$c<c_L$}
+  {$\displaystyle c:=\frac{c_L+c_U}{2}$}
+  使用$c$对裂变截面进行修正
+  $\nu\Sigma'_{f,g',\bm{k}}\Big|_{t=0} := c\cdot\nu\Sigma_{f,g',\bm{k}}\Big|_{t=0}$\;
+  重新计算临界问题，得到$k_\mathrm{eff}^{(n+1)}$\;
+  $n:=n+1$\;
+}
+\setlabelname{\ProgramName 程序时空动力学临界修正伪代码}
+\caption{\label{alg:program.kinetics.keff-fix}
+\ProgramName 程序时空动力学临界修正伪代码}
+\end{algorithm}
+
+\subsubsection{时空动力学计算}
+
+前面已经介绍，本文的时空动力学计算中，时间离散采用隐式向后差分格式，
+每个时间步的通量只由上一步的通量及缓发中子源决定，
+由于是隐式迭代，所以每个时间步要求解一个固定源扩散方程。
+时空动力学计算流程见\floatref{alg:program.kinetics.loop}。
+
+\begin{algorithm}
+读取时空动力学计算参数并初始化\;
+\If{需要进行粗网预求解}
+{
+  初始化粗网网格信息\;
+}
+计算时空动力学初值
+\tcc*[f]{见第 \ref{sec:program.eigen}
+节及第 \ref{sec:program.kinetics.keff-fix} 节}
+\;
+\Repeat{完成所有时间步}
+{
+  初始化下一个时间步\;
+  更新本时间步的材料、截面信息\;
+  \If{需要进行粗网预求解}
+  {
+    将上一时间步的细网通量及缓发中子源映射到粗网\;
+    更新粗网网格材料、截面信息\;
+    求解粗网上的固定源问题并计算缓发中子源\;
+    将粗网通量及缓发中子源插值到细网网格\;
+  }
+  求解细网网格上的固定源问题并计算缓发中子源\;
+  计算当前时间步的最大通量及总功率\;
+  将本时间步计算结果从GPU显存传送至内存\;
+}
+
+\setlabelname{\ProgramName 程序时空动力学主要过程伪代码}
+\caption{\label{alg:program.kinetics.loop}
+\ProgramName 程序时空动力学主要过程伪代码}
+\end{algorithm}
+
+同临界部分一样，固定源的多群扩散方程可以根据对能群处理的不同而又不同的求解方式，
+本文实现了CG-SG和BiCGStab-MG两种固定源方程求解算法，
+分别对应逐群求解和联合求解，
+伪代码分别见\floatref{alg:program.kinetics.cg-sg}及%
+\floatref{alg:program.kinetics.bicgstab-mg}。
+
+\begin{algorithm}
+根据网格及截面信息在GPU显存上直接生成各群的迭代矩阵\;
+初始化预条件算法的对角线矩阵\;
+\Repeat{各群通量收敛}
+{
+  计算第1群的源项\;
+  使用CG算法求解第1群通量\;
+  计算第2群的源项\;
+  使用CG算法求解第2群通量\;
+  估算各群通量的误差\;
+}
+\setlabelname{\ProgramName 程序固定源CG-SG算法伪代码}
+\caption{\label{alg:program.kinetics.cg-sg}
+\ProgramName 程序固定源CG-SG算法伪代码}
+\end{algorithm}
+
+
+\begin{algorithm}
+根据网格及截面信息在GPU显存上直接生成迭代矩阵\;
+初始化预条件算法的对角线矩阵\;
+计算源项\;
+使用BiCGStab算法直接求解各群通量\;
+\setlabelname{\ProgramName 程序固定源BiCGStab-MG算法伪代码}
+\caption{\label{alg:program.kinetics.bicgstab-mg}
+\ProgramName 程序固定源BiCGStab-MG算法伪代码}
+\end{algorithm}
+
+
+\subsubsection{显存管理}
+
+CUSP的显存管理部分继承自Thrust的显存管理方式，
+而Thrust的显存管理策略为需要时向CUDA申请，
+不需要时向CUDA释放，CUDA本身的显存申请释放速度略慢。
+虽然这种策略对于一般需求时能够应付，
+但把CG、BiCGStab等算法放在源迭代过程中时会导致每次源迭代
+开始及结束时都会进行显存的申请及释放，
+会明显增加程序的运行时间。
+
+为了消除这种无谓的时间开销，本文对Thrust的显存管理策略进行了修改，
+增加缓存功能，即当上层算法对显存用完释放时，
+不是直接调用CUDA释放，而是先放如一个可用显存池中。
+这样当以后上层算法需要重新申请显存时，
+可以直接从可用显存池中查找是否有适合的显存块，如果发现可用的，
+则直接返回给上层算法，没有时才向CUDA进行申请。
+通过这种方式，可以消除外迭代反复调用CUSP算法时出现的反复申请释放同样大小的显存的情况，
+而从显存池中查找适合的显存的时间开销要明显小于向CUDA申请显存的开销，
+从而达到了缩短程序运行时间的效果。
+
+对了观察显存分配缓存的影响，这里使用静态IAEA PWR三维算例进行计算，
+不同情况下的计算时间和显存占用峰值见\floatref{tab:program.cached_alloc}。
+可见，带缓存的显存管理策略以少量显存占用峰值增加为代价
+（不使用粗网预求解时峰值显存增加很小）
+减少了约1-2s的计算时间，对于小规模问题效果十分明显。
+
+\begin{table}
+\centering
+\caption{不同显存管理策略下临界计算时间和显存占用峰值表}
+\label{tab:program.cached_alloc}
+\begin{tabular}{cccc}
+\toprule
+计算条件 & 显存管理策略 & 计算时间/s & 显存占用峰值/MB\\
+\midrule
+\multirow{2}{*}{5cm网格}
+ & 无缓存 & 3.994 & 11.23\\
+ & 有缓存 & 2.652 & 11.23\\
+\multirow{2}{*}{2.5cm网格}
+ & 无缓存 & 7.052 & 89.82\\
+ & 有缓存 & 5.819 & 89.82\\
+\multirow{2}{*}{2cm网格}
+ & 无缓存 & 9.938 & 175.43\\
+ & 有缓存 & 8.549 & 175.43\\
+\multirow{2}{*}{1cm网格}
+ & 无缓存 & 55.630 & 1403.42\\
+ & 有缓存 & 53.430 & 1403.42\\
+
+\multirow{2}{*}{2.5cm网格+粗网预求解}
+ & 无缓存 & 4.790 & 93.00\\
+ & 有缓存 & 3.338 & 101.05\\
+\multirow{2}{*}{1cm网格+粗网预求解}
+ & 无缓存 & 14.212 & 1453.17\\
+ & 有缓存 & 12.512 & 1578.85\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{迭代收敛条件}
+
+在迭代过程中，需要不断地对当前迭代的收敛程度进行估计，
+本文使用本次迭代通量和上次迭代通量的绝对偏差的最大值进行对收敛程度进行估计，
+为了排除通量幅值的影响，使用本次迭代的最大通量进行归一化，即
+\begin{align}
+e_k=\frac{\displaystyle \max_{\bm{k},g}\left|\phi_{\bm{k},g}^{(k)}-\phi_{\bm{k},g}^{(k-1)}\right|}
+         {\displaystyle \max_{\bm{k},g}\phi_{\bm{k},g}^{(k)}}
+\end{align}

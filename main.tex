@@ -43,7 +43,7 @@ addfootnotetoref
 %\do\.\do\@\do\\\do\/\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\,%
 %\do\?\do\'\do+\do\=\do\#}
 
-\usepackage{rotating}
+\usepackage[figuresright]{rotating}
 \def\pdfrotate{\special{pdf: put @thispage <</Rotate 90>>}}
 
 \usepackage{multirow}
@@ -55,6 +55,8 @@ addfootnotetoref
 \usepackage{placeins}
 
 \usepackage{multicol}
+
+\usepackage{textcomp} %千分号
 
 \newcommand{\TODO}{ \textcolor{blue}{TODO} }
 \colorlet{BLUE}{blue}
@@ -125,6 +127,10 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 \Opensolutionfile{datasheetfile}
 %%% 正文部分
 \mainmatter
+
+\def\ProgramName{RDGS}
+\def\ProgramFullName{Real Diffusion GPU Solver}
+
 \chapter{引言}
 \section{研究背景}
 \section{国内外研究现状}
@@ -134,10 +140,11 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 \include{data/program}
 
+\include{data/testresults}
+
 \include{data/equsolve}
 
 
-\include{data/testresults}
 
 \chapter{结论与展望}
 
@@ -170,36 +177,10 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 \chapter{课题程序使用说明}
 \section{运行环境}
 \section{输入文件格式}
-\subsection{Lua语法简介}
-
-Lua是一种快速、轻量级的嵌入式脚本语言，
-在1993年由巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）
-计算机图形技术组（Computer Graphics Technology Group）的成员
-Roberto Ierusalimschy、 Luiz Henrique de Figueiredo和 Waldemar Celes所开发。
-
-Lua很容易嵌入到其他程序中作为内嵌的解释器使用，已在PC游戏界广泛使用。
-当前版本5.2.2，基于MIT开源协议开源，
-可从 \url{http://www.lua.org/download.html}获得。
-
-LuaJIT是Lua语言的非官方JIT(Just-In-Time Compiler)实现，由Mike Pall开发。
-LuaJIT基于MIT开源协议开源，当前版本LuaJIT 2.0.1，可以从\url{luajit.org/download.html}获取。
-LuaJIT是当前世界上最快的动态语言实现之一。\cite{LuaJITHomepage}
-
-\TODO
-
 \section{输出文件格式}
 \subsection{HDF5简介}
 
-HDF5是一种分层的、带有元数据的、支持多种数据格式的、针对科学计算的数据文件存储格式及相关技术。
-它最早由美国国家超级计算应用中心（NCSA， 
-National Center for Supercomputing Applications）提出，
-现在由非营利的HDF Group管理和维护。
 
-HDF5文件格式的读写库基于一种类似于BSD的协议开源，协议文本可以从
-\url{http://www.hdfgroup.org/HDF5/doc/Copyright.html} 获取。
-
-当前版本为HDF5 1.8.10 patch1，
-可从\url{http://www.hdfgroup.org/downloads/index.html} 获取。
 
 \TODO 使用简介
 
