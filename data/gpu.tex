@@ -447,7 +447,9 @@ C语言为蓝本\footnote{现在也有为OpenCL增加C++支持的提议，%
 但并不和普通的C代码混在一起，
 而是直接以文本形式保存于程序或其他数据文件中，
 在运行时由硬件驱动进行编译生成实际硬件代码运行。
-所以说OpenCL程序的编译过程主要发生在运行时。
+所以说OpenCL程序的编译过程主要发生在运行时，
+这种方式称为JIT，CUDA未来也计划引入JIT\cite{MarkGTC2013}。
+
 
 现在支持OpenCL的主要硬件/厂商有：\cite{opencl-conformant-products}
 \begin{enumerate}[1)]
@@ -468,7 +470,7 @@ C++ AMP全称C++ Accelerated Massive Parallelism，是微软提出的一个开�
 并给出了Windows平台上基于DirectX 11的实现。
 C++ AMP的标准文本见文献\onlinecite{cppamp}。
 C++ AMP和CUDA类似，都是在已有的语言上增加了新的部分来对GPU进行编程。
-\cite{cppamp-overview}
+\cite{cppamp-overview,AdeGTC2013}
 
 由于C++ AMP是一个开放标准，所以也可能会有进一步的发展。
 2012年Intel公司展示了一个把C++ AMP代码编译到OpenCL的实现，使得C++ AMP跨系统跨平台成为可能。

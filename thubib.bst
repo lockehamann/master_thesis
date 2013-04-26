@@ -966,7 +966,7 @@ FUNCTION {manual}
 
 FUNCTION {masterthesis.type}
 { lang empty$
-    { "[D]" }
+    { "[硕士学位论文]" }
     { "\thumasterbib" }
   if$
 }
