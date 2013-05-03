@@ -21,8 +21,9 @@ SP表示单精度、DP表示双精度，每种情况计算5次，时间取最小
 这主要是因为DIA和ELL较为适合向量机型处理器的运算和内存访问方式，
 而且DIA格式占用的空间最少（因为矩阵正好是7对角线矩阵）。
 在CG和BiCGStab计算中，矩阵参与的部分是稀疏矩阵-向量乘法（以下简称为SpMV），
-SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimizing}\footnote{现在的GPU运算能力太强，使得显存带宽成为瓶颈。}，
-所以DIA性能最好是预料之中。
+SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,
+baskaran2008optimizing}\footnote{现在的GPU运算能力太强，使得显存带宽成为瓶颈。}，
+所以DIA格式性能相对较好。
 
 在其他应用中，还有很多基于分块的系数矩阵存储格式，可以更进一步地匹配问题的特点，
 相对于单纯的使用某一种格式要好。但本文讨论的是结构网格离散的对角线矩阵，
@@ -45,8 +46,8 @@ SpMV在GPU上的主要瓶颈是显存带宽\cite{bell2008spmv,baskaran2008optimi
 \begin{tabular}{ccccccccc}
 \toprule
  \multirow {3}{*}{矩阵格式}  &
-       \multicolumn{4}{c}{2.5cm $\times$ 2.5cm $\times$ 2.5cm}
-       &\multicolumn{4}{c}{1.25cm $\times$ 1.25cm $\times$ 1.25cm} \\
+       \multicolumn{4}{c}{网格大小$2.5^3\mathrm{cm}^3$}
+       &\multicolumn{4}{c}{网格大小$1.25^3\mathrm{cm}^3$} \\
  &\multicolumn{2}{c}{CG\footnote{内迭代每轮18次，下同。}}
  	   &\multicolumn{2}{c}{BiCGStab\footnote{内迭代每轮30次，下同。}}
        & \multicolumn{2}{c}{CG}& \multicolumn{2}{c}{BiCGStab}\\

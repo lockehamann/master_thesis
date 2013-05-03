@@ -2,13 +2,11 @@
 
 \chapter{数值结果验证}
 
-\section{基准算例}
+\section{基准算例概述}
 
 为了验证\ProgramName 程序的临界计算及时空动力学计算功能，
-本章使用业界常用的若干基准题对程序的结果进行验证。
-临界计算的对比程序选用业内经典且广泛使用的Citation程序，
-Citation程序是细网有限差分多群扩散临界计算程序。
-\TODO
+本章使用常用的三个不含热工反馈的时空动力学基准题对程序的结果进行验证。
+临界计算的对比程序选用广泛使用的细网有限差分多群扩散程序——Citation。
 
 \subsection{静态IAEA PWR三维基准问题}
 \label{sec:result.test.iaea}
@@ -188,7 +186,7 @@ TWIGL是二维两群扩散时空动力学基准题，
 堆芯的几何结构见\floatref{fig:result.test.twigl}，
 堆芯中心为对称边界条件，外侧边界入流为0。
 
-各材料界面见\floatref{tab:result.test.twigl.mat}，
+各材料截面见\floatref{tab:result.test.twigl.mat}，
 裂变谱和缓发中子谱取$\chi_1=1$，$\chi_2=0$。
 群速度为
 \begin{align}
@@ -523,10 +521,10 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 \end{table}
 
 
-\section{数值结果及验证}
+\section{数值结果验证}
 
 在比较\ProgramName 的计算结果和参考结果之前，
-先介绍本文使用的通量误差的计算方式。
+先介绍本文使用的通量结果偏差的计算方式。
 
 对于临界问题，程序计算得到的通量分布结果的绝对值无意义，
 有意义的是各网格上通量的相对大小关系，
@@ -543,7 +541,7 @@ LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}
 但在细网结果的相对误差比较中，这种影响就被放大了。
 
 为了减小高通量网格对归一化系数的影响，本文使用所有网格上的相对幅值的均值作为
-归一化系数，即待验证的通量分布$\phi$和参考通量分布$\psi$见的相对归一化系数取为
+归一化系数，即待验证的通量分布$\phi$和参考通量分布$\psi$间的相对归一化系数取为
 \begin{align}
   \eta = \frac{\ \displaystyle\sum_{\bm{k},g}\frac{\phi_{\bm{k},g}}{\psi_{\bm{k},g}}\ }
               {\displaystyle\sum_{\bm{k},g}1}
@@ -823,5 +821,8 @@ $\epsilon(\phi)$是两者的相对偏差。
 \end{tabular}
 \end{minipage}
 \end{sidewaystable}
+
+
+\section{加速效果}
 
 

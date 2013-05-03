@@ -3,55 +3,6 @@
 
 \chapter{GPU科学计算简介}
 
-\section{GPU通用计算发展历史简述}
-
-\subsection{GPU发展历史简述}
-GPU全称Graphics Processing Unit，译作图形处理单元，
-是现在个人电脑中显卡的核心部分。
-显卡最初是作为图形加速卡出现的，所以GPU和CPU不同，
-是专门为图形处理中大量重复计算的处理进行设计的。
-
-GPU的编程方式最初由GPU的生产厂商决定，
-缺乏统一的标准（现在的手机GPU正处于这样的状态）。
-为了统一众多的标准，先后出现了两套的图形编程API(Application Programming Interface)：
-微软的DirectX和开放的OpenGL，现在这两套API已经被广泛接受和认可。
-DirectX和OpenGL是针对图形应用的API，
-所以其中支持的运算也都是图形处理领域的运算，
-并不适合一般的科学计算和通用计算。
-各公司为了追求利润，GPU硬件本身也是针对DirectX/OpenGL进行设计，
-内部划分为若干种特化的运算单元。
-
-随着用户需求的不断提高和技术的不断发展，
-在GPU中实现各种功能单一的特化单元遇到了一些问题：
-一是各种单元的比例分配，不同的游戏对于不同的硬件资源有着不同的需求，
-在设计时固化一种比例很难适应所有游戏的需要，并会造成计算资源的浪费；
-二是游戏开发人员更进一步控制、定制图形处理过程的需求也在不断增长，
-特化的硬件不能适应这种需求。
-所以从2001年左右开始，GPU的硬件设计由特化的运算单元转为通用运算单元，
-DirectX/OpenGL等也提供了通用编程的方式，
-为GPU的通用计算打下了基础。
-
-\subsection{GPU通用计算历史简述}
-
-早在DirectX/OpenGL提供通用编程方式以前，
-就有科学工作者试图在GPU上进行科学计算等非图形计算，
-其方式主要是：把计算任务转化或伪装为一个普通的图形计算任务，
-交给图形API进行计算。这种方式对能够转化的计算任务的类型有着相当大的限制，
-而且这种转化过程较为繁琐，所以该方法并未得到广泛的使用。
-
-等DirectX/OpenGL提供通用编程方式以后，虽然各种限制有所放松，
-但由于DirectX/OpenGL本身并非针对通用计算设计，
-所以对于一般的科学工作者来说，编程仍非常不便。
-
-直到2007年NVIDIA公司提出了CUDA(Compute Unified Device Architecture)编程模型，
-并进行大力推广后，GPU的通用计算才逐渐走入科学工作者的视野。
-目前除了某些对计算能力要求特别高的领域以外，
-GPU进行通用计算仍在学术界领域，尚未大量进入工业界。
-
-\section{GPU通用计算的优势}
-
-\TODO
-
 \section{CUDA简介}
 
 \subsection{CUDA总体设计}
@@ -420,6 +371,7 @@ Global函数和device函数可以通过指针直接访问共享存储区、显�
 
 \section{其他GPU编程技术简介}
 
+\label{sec:gpu.other}
 \subsection{OpenCL}
 
 在以CUDA为代表的各种硬件相关的GPU、众核编程技术发展之后，
@@ -476,20 +428,21 @@ C++ AMP和CUDA类似，都是在已有的语言上增加了新的部分来对GPU
 2012年Intel公司展示了一个把C++ AMP代码编译到OpenCL的实现，使得C++ AMP跨系统跨平台成为可能。
 \cite{cppamp-opencl}
 不过暂时还没有该技术转化为产品的消息。
-在Intel之后，LLVM社区中也出现了一个把C++ AMP代码编译到OpenCL的开源实现\cite{llvm-amp-opencl-prototype}。
+在Intel之后，LLVM\footnote{LLVM(Low Level Virtual Machine)，
+是一套开源的编译器基础构建，Mac系统的编译器如Clang大多基于LLVM构建。}社区中也出现了一个把C++ AMP代码编译到OpenCL的开源实现\cite{llvm-amp-opencl-prototype}。
 
 
 \subsection{OpenACC与OpenMP}
 
 由于之前的GPU编程技术需要程序员管理的细节过多，
-在2011年11月有CAPS、CRAY、NVIDIA和PGI等公司联合提出了并行计算标准OpenACC。
+在2011年11月CAPS、CRAY、NVIDIA和PGI等公司联合提出了并行计算标准OpenACC。
 \cite{reyes2012comparative}
 OpenACC标准文本可以从\url{http://www.openacc-standard.org/Downloads}下载。
 OpenACC与OpenMP类似，是一种基于用户制导语句的半自动并行化标准。
 OpenMP主要针对于共享存储器的CPU多核环境，
 而OpenACC则主要面向CPU+GPU异构环境。
 
-当前支持OpenACC的编译器主要为CAPS、CRAY、PGI等公司提供的也商业编译器。
+当前支持OpenACC的编译器主要为CAPS、CRAY、PGI等公司提供的商业编译器。
 
 OpenACC已计划被纳入OpenMP 4.0标准。\cite{beyer2011openmp}
 
@@ -500,6 +453,8 @@ OpenACC已计划被纳入OpenMP 4.0标准。\cite{beyer2011openmp}
 数值计算中线性方程组的求解方法基本可以分为两大类：直接解法和迭代解法。
 直接解法的计算量固定且容易估计，没有迭代收敛性问题，但算法本身并行度太低，
 很难适合GPU这样的类向量机型处理器，所以以下主要介绍迭代解法。
+
+\TODO 增加说明
 
 \subsection{传统迭代算法简介}
 考虑如下形式的线性方程组
@@ -558,7 +513,7 @@ Gauss-Seidel迭代的形式为
 当$\bm{A}$对称正定时，Gauss-Seidel迭代收敛。\cite{golub2012matrix}
 
 Gauss-Seidel迭代在传统CPU求解线性方程组中使用广泛，
-但其主要步骤$\pb{\bm{L}+\bm{D}}^{-1}$项的计算是一个串行过程，
+但其主要步骤$\pb{\bm{L}+\bm{D}}^{-1}$项的计算是一个串行过程，（\TODO 解释）
 较难在GPU这种向量机上实现，所以在GPU求解线性方程组中使用不多。
 
 \subsubsection{逐次超松弛迭代}
@@ -602,7 +557,7 @@ $k:=k+1$\;
 \end{algorithm}
 
 带预条件的CG方法见\floatref{alg:gpu.pcg}。\cite{golub2012matrix}
-由于只需在在\floatref{alg:gpu.pcg}中令$\bm{M}=\bm{I}$即可得到\floatref{alg:gpu.cg}，
+由于只需在\floatref{alg:gpu.pcg}中令$\bm{M}=\bm{I}$即可得到\floatref{alg:gpu.cg}，
 所以以下只给出带预条件的迭代算法。
 
 \begin{algorithm}
@@ -702,7 +657,7 @@ $\bm{x}_e:=\bm{x}_k$\;
 \subsection{预条件处理简介}
 \label{sec:gpu.krylov-precond}
 当矩阵$\bm{A}$的条件数较大时，以上的各种迭代方法的收敛速度往往并不理想，
-为了改善在大条件数情况下的收敛速度，Krylov往往和预条件处理共同使用。
+为了改善在大条件数情况下的收敛速度，Krylov方法往往和预条件处理共同使用。
 预条件处理的思路是把原始问题同解变换为一个条件数较小的问题。
 预条件的方法一般是找到一个矩阵$\bm{P}$使得$\bm{P^{-1}A}$的条件数较小，
 且方程组$\bm{Px}=\bm{b}$较容易求解。\cite{saad2003iterative}
@@ -765,7 +720,12 @@ ADI\footnote{Alternating Direction Implicit，交替隐式迭代。} & $\mathcal
 \end{table}
 
 
-\subsection{常见存储格式介绍}
+\subsection{常见稀疏矩阵存储格式介绍}
+
+稀疏矩阵的特点是矩阵中大量元素为0，非零元素比例较小，
+分布有时具有一定的规律，如何快速高效地读写稀疏矩阵就是一个需要研究的方向。
+目前这方面的研究已经较为完善，对应的稀疏矩阵表示、存储方法一般称为系数矩阵存储格式，
+下面介绍一些常见的系数矩阵存储格式。
 
 \subsubsection{坐标格式(COO)}
 COO格式直接存储每个非零元素的位置和值，
