@@ -454,7 +454,7 @@ OpenACC已计划被纳入OpenMP 4.0标准。\cite{beyer2011openmp}
 直接解法的计算量固定且容易估计，没有迭代收敛性问题，但算法本身并行度太低，
 很难适合GPU这样的类向量机型处理器，所以以下主要介绍迭代解法。
 
-\TODO 增加说明
+%\TODO 增加说明
 
 \subsection{传统迭代算法简介}
 考虑如下形式的线性方程组
@@ -513,7 +513,7 @@ Gauss-Seidel迭代的形式为
 当$\bm{A}$对称正定时，Gauss-Seidel迭代收敛。\cite{golub2012matrix}
 
 Gauss-Seidel迭代在传统CPU求解线性方程组中使用广泛，
-但其主要步骤$\pb{\bm{L}+\bm{D}}^{-1}$项的计算是一个串行过程，（\TODO 解释）
+但其主要步骤$\pb{\bm{L}+\bm{D}}^{-1}$项的计算是一个串行过程， %（\TODO 解释）
 较难在GPU这种向量机上实现，所以在GPU求解线性方程组中使用不多。
 
 \subsubsection{逐次超松弛迭代}
@@ -712,7 +712,7 @@ Gauss-Seidel迭代 & $\mathcal{O}(N^2\log\epsilon)$\\
 超松弛迭代 & $\mathcal{O}(N^{3/2}\log\epsilon)$\\
 CG & $\mathcal{O}(N^{3/2}\log\epsilon)$\\
 IC CG & $\mathcal{O}(N^{5/4}\log\epsilon)$\\
-ADI\footnote{Alternating Direction Implicit，交替隐式迭代。} & $\mathcal{O}(N\log N)$\\
+ADI & $\mathcal{O}(N\log N)$\\
 完全多重网格法 & $\mathcal{O}(N)$\\
 \bottomrule
 \end{tabular}
