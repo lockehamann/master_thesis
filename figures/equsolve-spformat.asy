@@ -25,10 +25,10 @@ draw(graph(x,DIA),legend="DIA", marker(markersize*polygon(3)));
 draw(graph(x,ELL),legend="ELL", marker(markersize*polygon(4)));
 draw(graph(x,CSR),legend="CSR", marker(markersize*unitcircle));
 draw(graph(x,COO),legend="COO", marker(markersize*cross(4))  );
-draw(graph(x,DIAMM),legend="DIA DM", dashed, marker(markersize*polygon(3)));
-draw(graph(x,ELLMM),legend="ELL DM", dashed, marker(markersize*polygon(4)));
-draw(graph(x,CSRMM),legend="CSR DM", dashed, marker(markersize*unitcircle));
-draw(graph(x,COOMM),legend="COO DM", dashed, marker(markersize*cross(4))  );
+draw(graph(x,DIAMM),legend="DIA ML", dashed, marker(markersize*polygon(3)));
+draw(graph(x,ELLMM),legend="ELL ML", dashed, marker(markersize*polygon(4)));
+draw(graph(x,CSRMM),legend="CSR ML", dashed, marker(markersize*unitcircle));
+draw(graph(x,COOMM),legend="COO ML", dashed, marker(markersize*cross(4))  );
 xaxis(BottomTop,LeftTicks(rotate(45)*Label(),new string(real x) {
 return month[round(x)];},8));
 yaxis("$T/\mathrm{s}$",LeftRight,RightTicks);
