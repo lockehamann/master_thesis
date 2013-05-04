@@ -107,6 +107,9 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 %只显示三层目录
 \setcounter{tocdepth}{2}
 
+\def\ProgramName{RDGS}
+\def\ProgramFullName{Real Diffusion GPU Solver}
+
 \begin{document}
 
 % 定义所有的eps文件在 figures 子目录下
@@ -128,9 +131,6 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 %%% 正文部分
 \mainmatter
 
-\def\ProgramName{RDGS}
-\def\ProgramFullName{Real Diffusion GPU Solver}
-
 \include{data/intro}
 
 \include{data/gpu}
@@ -141,9 +141,8 @@ mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
 
 \include{data/equsolve}
 
+\include{data/last}
 
-
-\chapter{结论与展望}
 
 \Closesolutionfile{datasheetfile}
 

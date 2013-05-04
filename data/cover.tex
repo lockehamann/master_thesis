@@ -16,7 +16,7 @@
 % 日期自动生成，如果你要自己写就改这个cdate
 %\cdate{\CJKdigits{\the\year}年\CJKnumber{\the\month}月}
 
-\etitle{\TODO} 
+\etitle{Research on GPU Acceleration Method of Reactor Physics Calculation} 
 % 这块比较复杂，需要分情况讨论：
 % 1. 学术型硕士
 %    \edegree：必须为Master of Arts或Master of Science（注意大小写）
@@ -40,13 +40,58 @@
 
 % 定义中英文摘要和关键字
 \begin{cabstract}
-\TODO
+GPU（Graphics Processing Unit，图形处理单元）是个人电脑的主要部件之一，
+近些年来由于其计算能力大幅提高，成为新兴的科学计算加速途径之一，
+甚至出现了包含有GPU的超级计算机。
+
+本文介绍了GPU加速科学计算的发展和它在反应堆物理计算中的应用，
+并对目前较为成熟的GPU编程技术——CUDA(Compute Unified Device Architecture)
+和目前计算能力最高的GPU核心GK110的结构进行了介绍，
+还介绍了针对GPU加速的系数矩阵存储格式和线性方程组迭代算法。
+
+本文编写了基于GPU加速的三维扩散有限差分临界/时空动力学求解
+程序\ProgramName(\ProgramFullName) ，
+程序使用CG算法和源迭代方法求解临界问题，并使用了MultiLevel加速方法，
+使用BiCGStab算法求解隐式向后差分离散的时空动力学方程。
+其中临界计算部分相对于Citation程序在某些条件下取得了最高272倍的加速效果。
+此外，还介绍了\ProgramName 程序使用的基于Lua语言的动力学材料截面输入方式，
+并讨论了在兼顾性能和灵活性的条件下时空动力学的输入模块应该如何设计。
+
+本文讨论了不同稀疏矩阵存储格式对程序计算性能的影响，
+并比较了在GPU加速条件下，不同迭代算法求解临界问题的优劣。
+
+本文的工作进一步论证了GPU加速技术的优势，并对于三维扩散计算
+的GPU加速和相关参数对应性能的影响进行了讨论，
+对反应堆物理计算领域的GPU加速方法研究的进展起到了推动作用。
+
 \end{cabstract}
 
-\ckeywords{\TeX, \LaTeX, CJK, 模板, 论文}
+\ckeywords{GPU, 扩散方程, 共轭梯度法, 时空动力学}
 
-\begin{eabstract} 
-\TODO
+\begin{eabstract}
+GPU (Graphics Processing Unit, the graphics processing unit) is one of the main components of the personal computer,
+In recent years a substantial increase in computing power, becoming one of the ways emerging scientific computing speed,
+Even a GPU supercomputer.
+
+This article describes the development of GPU-accelerated scientific computing and applications in reactor physics calculations,
+The more mature GPU programming techniques - CUDA (Compute Unified Device Architecture)
+And the highest computing power GK110 GPU core structure were introduced,
+Also introduced the coefficient matrix storage format for GPU-accelerated linear equations iterative algorithm.
+
+This article was written based on GPU accelerated the spread of the three-dimensional finite-difference critical / spatial and temporal dynamics solving
+The program \ProgramName (the \ProgramFullName)
+The program uses the CG algorithm and source iteration method for solving critical problems and use Multilevel accelerate methods,
+Use BiCGStab algorithm for solving the implicit backward difference discrete spatiotemporal dynamics equation.
+Wherein critical calculating portion with respect Citation program achieved under certain conditions up to 272 times the acceleration effect.
+In addition, the \ProgramName program uses the dynamics material cross-section based on the Lua language input mode,
+And discusses how to design spatiotemporal dynamics in both performance and flexibility of input module.
+
+This article discusses the impact of the performance of the different sparse matrix storage format of the program,
+And compare the pros and cons of GPU-accelerated conditions, iterative algorithm to solve the critical problem.
+
+This work further demonstrates the advantages of GPU acceleration technology for three-dimensional diffusion
+GPU acceleration and related parameters corresponding to the performance were discussed,
+GPU-accelerated method research progress has played a catalytic role in the field of reactor physics calculations.
 \end{eabstract}
 
-\ekeywords{\TeX, \LaTeX, CJK, template, thesis}
+\ekeywords{GPU, Diffusion Equation, Conjugate Gradient, Space-time Kinetics}
