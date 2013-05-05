@@ -37,7 +37,7 @@ baskaran2008optimizing}，所以DIA格式性能相对较好。
 }
 \small
 \begin{tabular}{ccccccccc}
-\toprule
+\topline
  \multirow {3}{*}{矩阵格式}  &
        \multicolumn{4}{c}{网格大小$2.5^3\mathrm{cm}^3$}
        &\multicolumn{4}{c}{网格大小$1.25^3\mathrm{cm}^3$} \\
@@ -45,7 +45,7 @@ baskaran2008optimizing}，所以DIA格式性能相对较好。
  	   &\multicolumn{2}{c}{BiCGStab\footnote{内迭代每轮30次，下同。}}
        & \multicolumn{2}{c}{CG}& \multicolumn{2}{c}{BiCGStab}\\
  & SP& DP& SP& DP& SP& DP& SP& DP\\
-\midrule
+\midline
  DIA&  5.475&  7.956& 12.199& 19.391& 24.071& 43.415&  64.256& 116.922\\
  ELL&  6.255&  8.596& 14.711& 20.997& 29.141& 47.362&  81.261& 133.599\\
  CSR& 10.452& 13.042& 27.814& 34.960& 62.478& 82.929& 180.430& 238.462\\
@@ -55,7 +55,7 @@ baskaran2008optimizing}，所以DIA格式性能相对较好。
  ELL ML&  4.399&  5.351&  7.363&  8.626& 10.920& 16.224&  17.503&  35.322\\
  CSR ML&  5.975&  6.989& 11.513& 14.337& 19.734& 26.301&  38.438&  61.776\\
  COO ML&  6.474&  7.660& 11.840& 13.712& 20.733& 26.364&  42.400&  65.910\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{minipage}
 %\end{sidewaystable}
@@ -116,9 +116,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{5cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-sg.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 2.294 & 4724 & 1181\\
 3 & 1.872 & 4818 & 803\\
 4 & 1.778 & 4944 & 618\\
@@ -138,7 +138,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 2.028 & 7956 & 221\\
 19 & 2.153 & 8208 & 216\\
 20 & 2.138 & 8440 & 211\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -147,9 +147,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2.5cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-sg.2.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 14.898 & 18064 & 4516\\
 3 & 12.870 & 18096 & 3016\\
 4 & 11.965 & 18136 & 2267\\
@@ -169,7 +169,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 10.562 & 19764 & 549\\
 19 & 10.686 & 19950 & 525\\
 20 & 10.749 & 20120 & 503\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -178,9 +178,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-sg.2cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 33.899 & 27600 & 6900\\
 3 & 30.560 & 27618 & 4603\\
 4 & 28.704 & 27648 & 3456\\
@@ -200,7 +200,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 25.865 & 28800 & 800\\
 19 & 25.803 & 28918 & 761\\
 20 & 25.912 & 29080 & 727\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -210,9 +210,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{1cm 网格时 Jacobi-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-sg.1cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 604.423 & 87288 & 21822 \\ %Fail:Solve Time exceeds 600.000
 3 & 602.754 & 94824 & 15804 \\ %Fail:Solve Time exceeds 600.000
 4 & 602.536 & 100728 & 12591 \\ %Fail:Solve Time exceeds 600.000
@@ -244,7 +244,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 30 & 602.878 & 115080 & 1918 \\ %Fail:Solve Time exceeds 600.000
 40 & 602.816 & 114880 & 1436 \\ %Fail:Solve Time exceeds 600.000
 50 & 602.878 & 116100 & 1161 \\ %Fail:Solve Time exceeds 600.000
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -274,9 +274,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{5cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-mg.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-3 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 4 & 1.420 & 2760 & 690\\
 5 & 1.342 & 2845 & 569\\
@@ -295,7 +295,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 1.404 & 4158 & 231\\
 19 & 1.404 & 4275 & 225\\
 20 & 1.451 & 4400 & 220\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -304,9 +304,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2.5cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-mg.2.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-5 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 6 & 29.734 & 29070 & 4845\\
 7 & 12.246 & 12166 & 1738\\
@@ -323,7 +323,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 9.750 & 10674 & 593\\
 19 & 9.813 & 10773 & 567\\
 20 & 9.843 & 10860 & 543\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -332,9 +332,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-mg.2cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-6 & \multicolumn{3}{c}{不收敛} \\ %Fail:PhiErr exceeds 10
 7 & 176.671 & 98966 & 14138\\
 8 & 63.258 & 36336 & 4542\\
@@ -350,7 +350,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 25.569 & 15408 & 856\\
 19 & 25.646 & 15504 & 816\\
 20 & 25.694 & 15580 & 779\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -360,9 +360,9 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{1cm 网格时 Jacobi-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.jacobi-mg.1cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-31(超时) & >600 & -- & -- \\ %Fail:Solve Time exceeds 600.000
 2 & 602.676 & 44126 & 22063 \\ %Fail:Solve Time exceeds 600.000
 3 & 602.739 & 48057 & 16019 \\ %Fail:Solve Time exceeds 600.000
@@ -395,7 +395,7 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 30 & 602.817 & 54300 & 1810 \\ %Fail:Solve Time exceeds 600.000
 40 & 602.895 & 54720 & 1368 \\ %Fail:Solve Time exceeds 600.000
 50 & 603.129 & 55250 & 1105 \\ %Fail:Solve Time exceeds 600.000
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -604,9 +604,9 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{5cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.cg-sg.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 1.841 & 2252 & 563\\
 3 & 1.124 & 1470 & 245\\
 4 & 0.983 & 1384 & 173\\
@@ -626,7 +626,7 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 2.543 & 5486 & 172\\
 19 & 2.668 & 5628 & 172\\
 20 & 2.746 & 5749 & 172\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -635,9 +635,9 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2.5cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.cg-sg.2.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 11.872 & 8632 & 2158\\
 3 & 6.552 & 5520 & 920\\
 4 & 4.556 & 4088 & 511\\
@@ -657,7 +657,7 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 5.398 & 6264 & 174\\
 19 & 5.679 & 6612 & 174\\
 20 & 5.975 & 6960 & 174\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -666,9 +666,9 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2cm 网格时 CG-SG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.cg-sg.2cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & 25.366 & 12412 & 3103\\
 3 & 15.023 & 8388 & 1398\\
 4 & 10.265 & 6288 & 786\\
@@ -688,7 +688,7 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 8.159 & 6192 & 172\\
 19 & 8.408 & 6536 & 172\\
 20 & 9.048 & 6880 & 172\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -699,9 +699,9 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \label{tab:equsolve.iter.cg-sg.1cm}
 \small
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2(超时) & >600 & >57148 & >14287 \\ %Fail:Solve Time exceeds 600.000
 3 & 346.851 & 39186 & 6531\\
 4 & 251.941 & 30632 & 3829\\
@@ -733,7 +733,7 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 30 & 78.890 & 11940 & 199\\
 40 & 105.113 & 15840 & 198\\
 50 & 130.447 & 19800 & 198\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -901,9 +901,9 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{5cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.bicgstab-mg.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2 & \multicolumn{3}{c}{不收敛} \\  %Fail:KeffErr exceeds 10
 3 & 1.030 & 639 & 213\\
 4 & 1.076 & 728 & 182\\
@@ -923,7 +923,7 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 3.307 & 3096 & 172\\
 19 & 3.417 & 3268 & 172\\
 20 & 3.572 & 3440 & 172\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -932,9 +932,9 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2.5cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.bicgstab-mg.2.5cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-5 & \multicolumn{3}{c}{不收敛} \\ %Fail:KeffErr exceeds 10
 6(超时) & >600 & >223518 & >37253 \\ %Fail:Solve Time exceeds 600.000
 7 & 3.885 & 1512 & 216\\
@@ -951,7 +951,7 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 7.067 & 3024 & 168\\
 19 & 7.535 & 3230 & 170\\
 20 & 7.972 & 3440 & 172\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -960,9 +960,9 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{2cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.bicgstab-mg.2cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-7 & \multicolumn{3}{c}{不收敛} \\ %\footnote{Fail:Nan: KeffErr, PhiErr, }
 8(超时) & >600 & >142808 & >17851 \\ %Fail:Solve Time exceeds 600.000
 9 & 8.096 & 1926 & 214\\
@@ -977,7 +977,7 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 18 & 11.481 & 2880 & 160\\
 19 & 11.965 & 3040 & 160\\
 20 & 12.777 & 3220 & 161\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -987,9 +987,9 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \caption{1cm 网格时 BiCGStab-MG 不同内迭代次数的计算时间及总迭代次数}
 \label{tab:equsolve.iter.bicgstab-mg.1cm}
 \begin{tabular}{cccc}
-\toprule
+\topline
 内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 2-17 & \multicolumn{3}{c}{不收敛} \\ %Fail:Nan: KeffErr, PhiErr,
 18(超时) & >600 & >25434 & >1413 \\ %Fail:Solve Time exceeds 600.000
 19 & 258.103 & 11134 & 586\\
@@ -1006,7 +1006,7 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 30 & 141.648 & 6150 & 205\\
 40 & 176.530 & 7720 & 193\\
 50 & 222.298 & 9750 & 195\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -1037,9 +1037,9 @@ GMRES在实际计算中由于浮点精度问题一般会增加再启动步骤，
 \centering
 \caption{\label{tab:equsolve.iter.gmres}GMRES算法在不同参数下的最优内迭代次数及结果}
 \begin{tabular}{cccccc}
-\toprule
+\topline
 网格大小 & Restart & 最优内迭代次数 & 计算时间/s & 总内迭代次数 & 外迭代次数\\
-\midrule
+\midline
 \multirow{3}{*}{5cm}
  & 5 & 6 & 1.092 & 1218 & 203\\
  & 10 & 6 & 1.077 & 1200 & 200\\
@@ -1056,7 +1056,7 @@ GMRES在实际计算中由于浮点精度问题一般会增加再启动步骤，
  & 5 & 28 & 343.310 & 19544 & 698\\
  & 10 & 28 & 228.166 & 10696 & 382\\
  & 15 & 27 & 194.049 & 7641 & 283\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
@@ -1403,13 +1403,13 @@ GMRES能够求解方程类型更多，相应的每轮内迭代计算开销也更
 \centering
 \caption{\label{tab:equsolve.iter.compare} 不同迭代算法对比}
 \begin{tabular}{cccccc}
-\toprule
+\topline
 \begin{tabular}{c}网格\\ 大小 \end{tabular}
   & 迭代算法 & 计算时间/s
   & \begin{tabular}{c}总内迭代\\ 次数 \end{tabular}
    & \begin{tabular}{c}外迭代\\ 次数 \end{tabular}
    & 参数\\
-\midrule
+\midline
 \multirow{4}{*}{5cm}
   & Jacobi-SG   & 1.420 & 4802 & 343 & 内迭代7次\\
   & Jacobi-MG   & 1.295 & 2436 & 609 & 内迭代4次\\
@@ -1438,7 +1438,7 @@ GMRES能够求解方程类型更多，相应的每轮内迭代计算开销也更
   & BiCGStab-MG & 100.339 & 4305 & 205 & 内迭代21次\\
   & GMRES-MG    & 161.804 & 6264 & 232 & 
     \begin{tabular}{c}内迭代27次，\\ Restart15 \end{tabular}\\
-\bottomrule
+\bottomline
 \end{tabular}
 
 \end{table}

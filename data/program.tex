@@ -896,9 +896,9 @@ CUSP的显存管理部分继承自Thrust的显存管理方式，
 \caption{不同显存管理策略下临界计算时间和显存占用峰值表}
 \label{tab:program.cached_alloc}
 \begin{tabular}{cccc}
-\toprule
+\topline
 计算条件 & 显存管理策略 & 计算时间/s & 显存占用峰值/MB\\
-\midrule
+\midline
 \multirow{2}{*}{5cm网格}
  & 无缓存 & 3.994 & 11.23\\
  & 有缓存 & 2.652 & 11.23\\
@@ -918,7 +918,7 @@ CUSP的显存管理部分继承自Thrust的显存管理方式，
 \multirow{2}{*}{1cm网格+粗网预求解}
  & 无缓存 & 14.212 & 1453.17\\
  & 有缓存 & 12.512 & 1578.85\\
-\bottomrule
+\bottomline
 \end{tabular}
 \end{table}
 
