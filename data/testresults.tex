@@ -11,15 +11,14 @@
 \subsection{静态IAEA PWR三维基准问题}
 \label{sec:result.test.iaea}
 
-IAEA 三维压水堆基准题是三维两群扩散基准题\cite{center1977benchmark}，
+IAEA 三维压水堆基准题是三维两群扩散基准题，
 由177个燃料组件构成，堆芯取$1/4$，
 大小为170cm $\times$ 170cm $\times$ 380cm，
 堆芯的几何结构见\floatref{fig:result.test.iaea}，
-堆芯中心为对称边界条件，外侧边界入流为0，外侧也可取等效边界条件
+堆芯中心为对称边界条件，外侧边界入流为0，外侧也可取等效边界条件\cite{center1977benchmark}
 \begin{align}
   \frac{\partial \phi_g}{\partial n}=-\frac{0.4692}{D_g}\phi_g
 \end{align}
-
 各材料界面见\floatref{tab:result.test.iaea.mat}，
 裂变谱取$\chi_1=1$，$\chi_2=0$。
 
@@ -181,10 +180,10 @@ IAEA 三维压水堆基准题是三维两群扩散基准题\cite{center1977bench
 \label{sec:result.test.twigl}
 TWIGL是二维两群扩散时空动力学基准题，
 在1969年由Hageman和Yasinsky
-于文献\onlinecite{hageman1969comparison}中提出\cite{gehin1992quasi}，
+于文献\onlinecite{hageman1969comparison}中提出，
 堆芯取$1/4$，大小为80cm $\times$ 80cm，
 堆芯的几何结构见\floatref{fig:result.test.twigl}，
-堆芯中心为对称边界条件，外侧边界入流为0。
+堆芯中心为对称边界条件，外侧边界入流为0。\cite{gehin1992quasi}
 
 各材料截面见\floatref{tab:result.test.twigl.mat}，
 裂变谱和缓发中子谱取$\chi_1=1$，$\chi_2=0$。
@@ -283,10 +282,10 @@ TWIGL是二维两群扩散时空动力学基准题，
 \FloatBarrier
 \subsection{动态LMW三维基准问题}
 
-LMW(Langenbuch-Maurer-Werner)基准题\cite{langenbuch1977coarse,gehin1992quasi}是
+LMW(Langenbuch-Maurer-Werner)基准题是
 三维两群扩散中子时空动力学基准题，
 大小为$1/4$堆芯，几何尺寸110cm $\times$ 110cm $\times$ 200cm，
-见\floatref{fig:result.test.lmw}。
+见\floatref{fig:result.test.lmw}。\cite{langenbuch1977coarse,gehin1992quasi}
 
 \begin{figure}
 \centering
