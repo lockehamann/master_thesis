@@ -69,29 +69,42 @@ GPU（Graphics Processing Unit，图形处理单元）是个人电脑的主要�
 \ckeywords{GPU, 扩散方程, 共轭梯度法, 时空动力学}
 
 \begin{eabstract}
-GPU (Graphics Processing Unit) is one of the main components of the personal computer,
-In recent years a substantial increase in computing power, becoming one of the ways emerging scientific computing speed,
-Even a GPU supercomputer.
 
-This article describes the development of GPU-accelerated scientific computing and applications in reactor physics calculations,
-The more mature GPU programming techniques - CUDA (Compute Unified Device Architecture)
-And the highest computing power GK110 GPU core structure were introduced,
-Also introduced the coefficient matrix storage format for GPU-accelerated linear equations iterative algorithm.
+GPU (Graphics Processing Unit) is one of the main component of PC.
+ Recently, rapid development of GPU and its high performance make 
+ GPU one of the newest acceleration hardware of scientific computing. 
+ Some super computers even take GPUs as part of them.
 
-This article was written based on GPU accelerated the spread of the three-dimensional finite-difference critical / spatial and temporal dynamics solving
-The program \ProgramName (the \ProgramFullName)
-The program uses the CG algorithm and source iteration method for solving critical problems and use Multilevel accelerate methods,
-Use BiCGStab algorithm for solving the implicit backward difference discrete spatiotemporal dynamics equation.
-Wherein critical calculating portion with respect Citation program achieved under certain conditions up to 272 times the acceleration effect.
-In addition, the \ProgramName program uses the dynamics material cross-section based on the Lua language input mode,
-And discusses how to design spatiotemporal dynamics in both performance and flexibility of input module.
+The history of GPU accelerated scientific computing, 
+its application in Reactor physics calculation, 
+one of the most mature GPU programming technique at present 
+-– CUDA (Compute Unified Device Architecture), 
+GK110 -- the GPU core which has highest computing performance
+in the world, the sparse matrix storage format on GPU memory 
+and linear equations solving algorithm on GPU have been 
+reviewed or studied in this paper.
 
-This article discusses the impact of the performance of the different sparse matrix storage format of the program,
-And compare the pros and cons of GPU-accelerated conditions, iterative algorithm to solve the critical problem.
+\ProgramName (\ProgramFullName) -– a solver for 3-d diffusion
+ equation criticality and space-time kinetics problems with
+  GPU acceleration, has been developed. Conjugate gradient (CG),
+   power iteration and multilevel method have been used in 
+   \ProgramName \ to solve criticality problems, and BiCGStab 
+   algorithm and full implicit Euler method are utilized for 
+   space-time kinetics problems. Compared with Citation, 
+   \ProgramName \ achieved 272 times speedup in IAEA PWR 3-d benchmark test.
+\ProgramName \ uses Lua language as a part of material data input module,
+ and the  input method of material data for space-time kinetics,
+  which aims at high performance and flexibility, has been studied. 
 
-This work further demonstrates the advantages of GPU acceleration technology for three-dimensional diffusion
-GPU acceleration and related parameters corresponding to the performance were discussed,
-GPU-accelerated method research progress has played a catalytic role in the field of reactor physics calculations.
+The effect of sparse matrix storage format on GPU memory to the performance
+ of solvers has been studied. And the performance of
+  common Krylov subspace algorithms with GPU acceleration has been compared.
+
+This work further demonstrated the advantages of GPU acceleration
+ in scientific computing, studied the application of GPU acceleration
+ and related factors, and provides valuable information
+ and analysis to research on GPU acceleration of reactor physics calculation.
+
 \end{eabstract}
 
 \ekeywords{GPU, Diffusion Equation, Conjugate Gradient, Space-time Kinetics}
