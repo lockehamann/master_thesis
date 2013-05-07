@@ -56,7 +56,7 @@ addfootnotetoref
 
 \usepackage{multicol}
 
-\usepackage{textcomp} %千分号
+\interfootnotelinepenalty=10000 %阻止脚注分页
 
 \newcommand{\TODO}{ \textcolor{blue}{TODO} }
 \colorlet{BLUE}{blue}
@@ -101,8 +101,8 @@ addfootnotetoref
 \settimeformat{mytime}
 
 \usepackage[draft=true,allpages=true]{draftmark}
-\draftmarksetup{angle=0,grayness=0.5,xcoord=50,ycoord=-137,fontsize=12pt,
-mark={DRAFT \mydate\today\hspace{5pt} \currenttime}}
+\draftmarksetup{angle=0,xcoord=0,ycoord=-135,fontsize=12pt,grayness=0,
+mark={\framebox{DRAFT \hspace{5pt} \mydate\today\hspace{5pt} \currenttime}}}
 
 %只显示三层目录
 \setcounter{tocdepth}{2}

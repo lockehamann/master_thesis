@@ -654,7 +654,7 @@ $\bm{x}_e:=\bm{x}_k$\;
 \end{algorithm}
 
 
-\subsection{预条件处理简介}
+\subsection{预条件算法}
 \label{sec:gpu.krylov-precond}
 当矩阵$\bm{A}$的条件数较大时，以上的各种迭代方法的收敛速度往往并不理想，
 为了改善在大条件数情况下的收敛速度，Krylov方法往往和预条件处理共同使用。
@@ -679,8 +679,9 @@ $\bm{x}_e:=\bm{x}_k$\;
 \item SPAI(SParse Approximate Inverse)\cite{saad2003iterative}
 
 计算使$\|\bm{AT}-\bm{I}\|_F$最小的$\bm{T}$，
-取$\bm{P}=\bm{T}^{-1}$，具体过程参见文献\onlinecite{grote1997parallel}。
-由于在计算中只使用$\bm{P}^{-1}$，所以不需要计算$\bm{T}^{-1}$。
+取$\bm{P}=\bm{T}^{-1}$。
+$\bm{T}$的求解有多种算法，
+如文献\onlinecite{grote1997parallel,bridson2001multiresolution}。
 
 \item IC(Incomplete Cholesky factorization)
 
@@ -695,7 +696,9 @@ $\bm{x}_e:=\bm{x}_k$\;
 其他算法的Setup过程的串行度较高，较难在GPU上实现。
 
 
-%\subsubsection{多重网格}
+\begin{comment}
+
+\subsubsection{多重网格}
 
 \begin{table}
 \centering
@@ -719,6 +722,7 @@ ADI & $\mathcal{O}(N\log N)$\\
 \end{minipage}
 \end{table}
 
+\end{comment}
 
 \subsection{常见稀疏矩阵存储格式介绍}
 
