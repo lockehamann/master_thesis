@@ -725,22 +725,24 @@ ADI & $\mathcal{O}(N\log N)$\\
 \end{comment}
 
 \subsection{常见稀疏矩阵存储格式介绍}
+\label{sec:gpu.sparseformat}
 
 稀疏矩阵的特点是矩阵中大量元素为0，非零元素比例较小，
-分布有时具有一定的规律，如何快速高效地读写稀疏矩阵就是一个需要研究的方向。
-目前这方面的研究已经较为完善，对应的稀疏矩阵表示、存储方法一般称为系数矩阵存储格式，
+分布有时具有一定的规律，如何快速高效地读写稀疏矩阵就是一个可以深入研究的方向。
+目前这方面的基础研究已经较为完善，对应的稀疏矩阵表示、存储方法一般称为系数矩阵存储格式，
 下面介绍一些常见的系数矩阵存储格式。
 
 \subsubsection{坐标格式(COO)}
 COO格式直接存储每个非零元素的位置和值，
 如矩阵
-\begin{align*}
+\begin{align}
 \bm{A}=\begin{pmatrix}
 1 & 7 & 0\\
 0 & 2 & 0\\
 5 & 0 & 3
 \end{pmatrix}
-\end{align*}
+\label{equ:gpu.sparseformat.example.matrix3}
+\end{align}
 的COO格式表示为\footnote{下标从0开始计数，下同。}
 \begin{align*}
 \mathrm{rows}=\begin{pmatrix}
@@ -755,19 +757,17 @@ COO格式直接存储每个非零元素的位置和值，
 1 & 7 & 2 & 5 & 3
 \end{pmatrix}
 \end{align*}
-
+其中每个非零元素分别存储：所在行(rows)、所在列(cols)、元素值(values)，
+三个数组中的位置要对应，而且一般会按照行列进行排序，
+例如第一行第二列的元素7，对应rows、cols、values中下标为1的位置。
 
 
 \subsubsection{行压缩格式(CSC)}
-CSC格式把每行的非零元连续存放，相对于COO节省了存储行号的空间，
-如矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0\\
-0 & 2 & 0\\
-5 & 0 & 3
-\end{pmatrix}
-\end{align*}
+COO格式如果按行列位置对非零元素进行排序，则在行数组(rows)或列数组(cols)之一中
+会连续出现很多相同的值，这是由于对应的非零元素属于相同的行或列。
+为了减少这种冗余，CSC格式把每行的非零元连续存放，使用ptr数组记录每行元素的起始下标，
+相对于COO节省了存储行号的空间。
+如矩阵\aeqref{equ:gpu.sparseformat.example.matrix3}
 的CSC格式表示为
 \begin{align*}
 \mathrm{ptr}&=\begin{pmatrix}
@@ -782,6 +782,8 @@ CSC格式把每行的非零元连续存放，相对于COO节省了存储行号�
 1 & 7 & 2 & 5 & 3
 \end{pmatrix}
 \end{align*}
+ptr第一个元素为0，表示cols、values数组第一行的元素从下标0开始，
+ptr第二个元素为2，表示第一行只有2个元素，第二行的元素从下表2开始。
 
 如果把行列的存储方式调换，则可得到另一种格式，即列压缩格式(CSC)。
 
@@ -791,14 +793,15 @@ CSC格式把每行的非零元连续存放，相对于COO节省了存储行号�
 对角线格式是专门用于存储对角线稀疏矩阵的一种格式，
 其思路是只存储有非零元素的对角线。
 如矩阵\cite{bell2008spmv}
-\begin{align*}
+\begin{align}
 \bm{A}=\begin{pmatrix}
 1 & 7 & 0 & 0\\
 0 & 2 & 8 & 0\\
 5 & 0 & 3 & 9\\
 0 & 6 & 0 & 4
 \end{pmatrix}
-\end{align*}
+\label{equ:gpu.sparseformat.example.matrix4}
+\end{align}
 的DIA格式表示为\footnote{其中$\_$表示DIA格式不使用的任意值，下同。}
 \begin{align*}
 \mathrm{data}=\begin{pmatrix}
@@ -812,21 +815,18 @@ CSC格式把每行的非零元连续存放，相对于COO节省了存储行号�
 -2 & 0 & 1\\
 \end{pmatrix}
 \end{align*}
-
+该矩阵有三个条对角线(5,6)、(1,2,3,4)、(7,8,9)，对角线元素在data中存储（文本采用按列存放），
+需要注意的是主对角线以上的对角线和以下的对角线在data矩阵中对其的方式不同。
+这三条对角线的位置信息存储在offsets数组中，
+-2表示主对角线下方第二条，0表示主对角线，1表示主对角线上方第一条。
+data矩阵的列和offsets的元素要一一对应，
+而且一般会按照对角线位置排序后进行存储。
 
 \subsubsection{ELLPACK格式(ELL)}
-ELL是为向量机设计的一种稀疏矩阵存储格式，
-用于存储$M\times N$的矩阵且每行最多只有$k$个元素的情况。\cite{grimes1979itpack}
-如矩阵\cite{bell2008spmv}
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 9\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-\end{align*}
-的ELL格式表示为
+ELL是为向量机设计的一种稀疏矩阵存储格式，\cite{grimes1979itpack}
+用于存储$M\times N$的矩阵且每行最多只有$k$个元素的情况。
+如矩阵\aeqref{equ:gpu.sparseformat.example.matrix4}
+的ELL格式表示为\cite{bell2008spmv}
 \begin{align*}
 \mathrm{data}=\begin{pmatrix}
 1 & 7 & \_\\
@@ -842,21 +842,20 @@ ELL是为向量机设计的一种稀疏矩阵存储格式，
 1 & 4 & \_
 \end{pmatrix}
 \end{align*}
+ELL格式为每行保留k个位置，在上面的例子中每行最多有3个元素，
+data中的一行对应原矩阵中的一行，所以data的列数为3。
+data中每行元素的列号存储在indices矩阵中，
+例如，第2行第3列的元素8，在data矩阵中对应第2行第2列的位置，
+该元素的列号3存储在indices矩阵中第2行第2列的位置上。
+同一行的元素顺序可以随意，一般会按列号进行排序。
+
 
 \subsubsection{Hybrid格式(HYB)}
 由于ELL格式只适合每行元素个数相差不多的情况，
 所以又进一步出现了Hybrid格式，即同时使用ELL格式和COO格式，
 ELL格式存储系数矩阵中较为规整的部分（每行元素数量接近），
 COO格式则存储剩下的比较不规则的非零元。\cite{bell2008spmv}
-如矩阵
-\begin{align*}
-\bm{A}=\begin{pmatrix}
-1 & 7 & 0 & 0\\
-0 & 2 & 8 & 0\\
-5 & 0 & 3 & 9\\
-0 & 6 & 0 & 4
-\end{pmatrix}
-\end{align*}
+如矩阵\aeqref{equ:gpu.sparseformat.example.matrix4}
 可拆分为两个矩阵
 \begin{align*}
 \bm{A}=\begin{pmatrix}

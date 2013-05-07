@@ -369,10 +369,10 @@ $D_{ij}$的实对称矩阵性质往往可以加速计算过程。
 \section{\ProgramName 程序开发}
 
 \subsection{整体介绍}
-\ProgramName 程序主体结构见\floatref{fig:program.structure.whole}，
+\ProgramName 程序整体结构见\floatref{fig:program.structure.whole}，
 其中内核部分是程序的主要部分，结构见\floatref{fig:program.structure.core}。
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}[scale=0.8, transform shape]
 
@@ -598,19 +598,6 @@ Python语言是一种面向对象的动态语言，现在在学术界和工业�
 以避免数据传输问题，但这种方式的技术尚不成熟，而且对于开发人员和用户来说难度和工作量都要大的多，
 目前基本没有实际应用的价值。
 
-综合考虑以上各方面因素，\ProgramName 程序最后仍然采用了二段式的方式进行
-数据输入，在时空动力学的材料输入上采用了动态语言的方式来实现功能上的可扩展性，
-同时避免了大量的截面信息在CPU端产生的问题。主要方式为：
-每个时间步开始时，由用户通过输入文件的Lua代码给出本时间步和初始时间步的材料在网格分布
-信息的差分信息，即哪些网格上的材料发生了改变，并给出本时间步的新材料截面信息。
-程序根据材料分布的差分信息和初始材料分布信息在CPU端产生新的材料分布矩阵，
-新材料分布矩阵和新材料截面信息传送至GPU上，
-GPU端程序根据信息直接在显存产生完整的材料分布数据。
-在考虑到程序速度的情况下最大限度地照顾到前面提出的各种需求。
-此外\ProgramName 还针对需要临时改变全部或某些材料截面的需求
-添加了相应接口，简化输入文件修改的工作量。
-每个时间步\ProgramName 对材料截面更新过程见\floatref{alg:program.material.update}。
-
 \begin{algorithm}
 \ForEach(\tcc*[f]{遍历每种材料的截面信息}){输入文件中的材料截面信息}
 {
@@ -640,6 +627,19 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
 \caption{\label{alg:program.material.update}每个时间步\ProgramName 对材料截面更新过程}
 \end{algorithm}
 
+综合考虑以上各方面因素，\ProgramName 程序最后仍然采用了二段式的方式进行
+数据输入，在时空动力学的材料输入上采用了动态语言的方式来实现功能上的可扩展性，
+同时避免了大量的截面信息在CPU端产生的问题。主要方式为：
+每个时间步开始时，由用户通过输入文件的Lua代码给出本时间步和初始时间步的材料在网格分布
+信息的差分信息，即哪些网格上的材料发生了改变，并给出本时间步的新材料截面信息。
+程序根据材料分布的差分信息和初始材料分布信息在CPU端产生新的材料分布矩阵，
+新材料分布矩阵和新材料截面信息传送至GPU上，
+GPU端程序根据信息直接在显存产生完整的材料分布数据。
+在考虑到程序速度的情况下最大限度地照顾到前面提出的各种需求。
+此外\ProgramName 还针对需要临时改变全部或某些材料截面的需求
+添加了相应接口，简化输入文件修改的工作量。
+每个时间步\ProgramName 对材料截面更新过程见\floatref{alg:program.material.update}。
+
 需要说明的是，以上的材料更新过程和空间网格定义是关联的，
 当需要在不同网格上进行计算时，程序会对不同网格上的材料信息分开处理，
 允许用户在粗网和细网上分别定义不同的材料更新及均匀化方式。
@@ -649,8 +649,7 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
 \label{sec:program.eigen}
 
 临界计算是反应堆物理设计中常见的计算需求，同时也是动力学中计算通量初值所必需的，
-所以\ProgramName 程序首先实现了临界计算功能。
-
+所以\ProgramName 程序实现了临界计算功能。
 临界计算部分，\ProgramName 主要使用:
 \begin{enumerate}
 \item CG-SG，使用CG方法从高能群到低能群逐群求解单群方程组。
@@ -671,23 +670,16 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
 使用了粗网预求解方法改进迭代过程的初值，显著减少了迭代次数，
 详见\sectionref{sec:equsolve.multimesh}。
 
-临界部分的求解流程见\floatref{alg:program.eigen.main}。
-以上各求解算法的实现可以分为两大类，逐群求解和联合求解，
-这两类中的算法过程基本相近，所以只以CG-SG和BiCGStab-MG
-为代表进行说明。
-CG-SG算法的伪代码见\floatref{alg:program.eigen.cg-sg}，
-BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
-
 
 \begin{algorithm}
-读取输入文件的临界部分\;
+读取输入文件的临界部分 \algoend
 配置内核稀疏矩阵格式\;
 初始化网格信息\;
 \If{需要进行粗网预求解}
 {
-  初始化粗网网格信息\;
+  初始化粗网网格信息 \algoend
   初始化粗网通量\;
-  配置粗网求解算法及参数\;
+  配置粗网求解算法及参数 \algoend
   求解粗网临界问题\;
   将粗网通量插值为细网通量\;
 }
@@ -695,7 +687,7 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 {
   初始化细网通量\;
 }
-配置求解算法及参数\;
+配置求解算法及参数 \algoend
 求解临界问题\;
 通量归一化，输出结果\;
 \setlabelname{\ProgramName 程序临界功能主流程伪代码}
@@ -714,11 +706,11 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 源迭代过程初始化\;
 \Repeat{源迭代收敛}
 {
-  使用CG求解第1群通量\;
+  使用CG求解第1群通量 \algoend
   计算第2群源项\;
-  使用CG求解第2群通量\;
+  使用CG求解第2群通量 \algoend
   更新第1群源项\;
-  计算下一代的$K_\mathrm{eff}$\;
+  计算下一代的$K_\mathrm{eff}$ \algoend
   估计$K_\mathrm{eff}$和通量的误差\;
 }
 \setlabelname{\ProgramName 程序临界功能CG-SG算法伪代码}
@@ -737,14 +729,23 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 源迭代过程初始化\;
 \Repeat{源迭代收敛}
 {
-  使用BiCGStab求解各群通量\;
+  使用BiCGStab求解各群通量 \algoend
   更新源项\;
-  计算下一代的$K_\mathrm{eff}$\;
+  计算下一代的$K_\mathrm{eff}$ \algoend
   估计$K_\mathrm{eff}$和通量的误差\;
 }
 \setlabelname{\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
 \caption{\label{alg:program.eigen.bicgstab-mg}\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
 \end{algorithm}
+
+临界部分的求解流程见\floatref{alg:program.eigen.main}。
+以上各求解算法的实现可以分为两大类，逐群求解和联合求解，
+这两类中的算法过程基本相近，所以只以CG-SG和BiCGStab-MG
+为代表进行说明。
+CG-SG算法的伪代码见\floatref{alg:program.eigen.cg-sg}，
+BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
+
+\FloatBarrier
 
 \subsection{时空动力学计算}
 
