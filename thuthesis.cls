@@ -308,6 +308,7 @@
 \captionsetup{labelformat=thu,labelsep=thu,font=thu}
 \captionsetup[table]{position=top,belowskip={12bp-\intextsep},aboveskip=6bp}
 \captionsetup[figure]{position=bottom,belowskip={12bp-\intextsep},aboveskip=6bp}
+\captionsetup[sub]{font=thu,skip=6bp}
 \renewcommand{\thesubfigure}{(\alph{subfigure})}
 \renewcommand{\thesubtable}{(\alph{subtable})}
 \let\thu@LT@array\LT@array
