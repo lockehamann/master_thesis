@@ -667,7 +667,7 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
 见\sectionref{sec:gpu.krylov-precond}。
 
 此外\ProgramName 为了加速细网问题的求解速度，
-使用了粗网预求解方法改进迭代过程的初值，显著减少了迭代次数，
+使用了MultiLevel方法改进迭代过程的初值，显著减少了迭代次数，
 详见\sectionref{sec:equsolve.multimesh}。
 
 
@@ -675,7 +675,7 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
 读取输入文件的临界部分 \algoend
 配置内核稀疏矩阵格式\;
 初始化网格信息\;
-\If{需要进行粗网预求解}
+\If{使用MultiLevel}
 {
   初始化粗网网格信息 \algoend
   初始化粗网通量\;
@@ -780,18 +780,34 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
   \lElse(\tcc*[f]{每次减半是考虑到$k_\mathrm{eff}$的计算可能有误差})
   {$\displaystyle c_L:=\frac{c+c_L}{2}$}
   $\displaystyle c:=\frac{c}{\ k_\mathrm{eff}^{(n)}\ }$\;
-  \If(\tcc*[f]{确保$c$不会发散})
+  \lIf(\tcc*[f]{确保$c$不会发散})
   {$c>c_U$或$c<c_L$}
   {$\displaystyle c:=\frac{c_L+c_U}{2}$}
   使用$c$对裂变截面进行修正
   $\nu\Sigma'_{f,g',\bm{k}}\Big|_{t=0} := c\cdot\nu\Sigma_{f,g',\bm{k}}\Big|_{t=0}$\;
-  重新计算临界问题，得到$k_\mathrm{eff}^{(n+1)}$\;
+  重新计算临界问题，得到$k_\mathrm{eff}^{(n+1)}$ \algoend
   $n:=n+1$\;
 }
 \setlabelname{\ProgramName 程序时空动力学临界修正伪代码}
 \caption{\label{alg:program.kinetics.keff-fix}
 \ProgramName 程序时空动力学临界修正伪代码}
 \end{algorithm}
+
+\subsubsection{时空动力学与预条件算法}
+
+由于复杂的预条件算法尚不能在GPU上并行化，只能在CPU上计算，
+使得其启动(setup)时间往往较长，在静态临界计算中一般会导致总求解时间增加。
+如果在每个时间步求解中分别使用这类复杂的预条件算法，则更加得不偿失。
+但时空动力学计算中，材料变化一般相对较小，最后待求解的方程变化也并不大，
+而预条件算法本身就是通过近似求解原方程来实现加速，
+不要求与当前的方程完全符合，
+所以可以在时空动力学启动计算初值时，
+同时setup一个较复杂的预条件算法，得到初始状态的预条件矩阵，
+在之后的每个时间步中总是使用这个预条件矩阵。
+
+本文使用CUSP提供的SPAI预条件算法，
+根据计算结果，上面这种方法对于网格数量较多的问题能够起到加速作用，
+代价是时空动力学启动(init)时间增加。
 
 \subsubsection{时空动力学计算}
 
@@ -802,26 +818,27 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 
 \begin{algorithm}
 读取时空动力学计算参数并初始化\;
-\If{需要进行粗网预求解}
-{
-  初始化粗网网格信息\;
-}
 计算时空动力学初值
 \tcc*[f]{见第 \ref{sec:program.eigen}
 节及第 \ref{sec:program.kinetics.keff-fix} 节}
 \;
+\If{使用SPAI预条件算法}
+{
+  读取SPAI设置并初始化SPAI\;
+}
 \Repeat{完成所有时间步}
 {
   初始化下一个时间步\;
   更新本时间步的材料、截面信息\;
-  \If{需要进行粗网预求解}
+  \If{使用SPAI预条件算法}
   {
-    将上一时间步的细网通量及缓发中子源映射到粗网\;
-    更新粗网网格材料、截面信息\;
-    求解粗网上的固定源问题并计算缓发中子源\;
-    将粗网通量及缓发中子源插值到细网网格\;
+    求解细网网格上的固定源问题（使用SPAI预条件矩阵）\;
   }
-  求解细网网格上的固定源问题并计算缓发中子源\;
+  \Else
+  {
+    初始化对角线预条件算法，并求解细网网格上的固定源问题\;
+  }
+  计算缓发中子源 \algoend
   计算当前时间步的最大通量及总功率\;
   将本时间步计算结果从GPU显存传送至内存\;
 }
@@ -842,9 +859,9 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 初始化预条件算法的对角线矩阵\;
 \Repeat{各群通量收敛}
 {
-  计算第1群的源项\;
+  计算第1群的源项 \algoend
   使用CG算法求解第1群通量\;
-  计算第2群的源项\;
+  计算第2群的源项 \algoend
   使用CG算法求解第2群通量\;
   估算各群通量的误差\;
 }
@@ -865,7 +882,43 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 \end{algorithm}
 
 
-\subsubsection{显存管理}
+\subsection{迭代收敛条件}
+
+在迭代过程中，需要不断地对当前迭代的收敛程度进行估计，
+本文使用本次迭代通量和上次迭代通量的绝对偏差的最大值进行对收敛程度进行估计，
+为了排除通量幅值的影响，使用本次迭代的最大通量进行标准化，即
+\begin{align}
+e^{(p)}=\frac{\displaystyle \max_{\bm{k},g}\left|\phi_{\bm{k},g}^{(p)}-\phi_{\bm{k},g}^{(p-1)}\right|}
+         {\displaystyle \max_{\bm{k},g}\phi_{\bm{k},g}^{(p)}}
+\end{align}
+其中$\bm{k}$为三维网格编号。
+
+
+\subsection{MultiLevel方法}
+\label{sec:equsolve.multimesh}
+
+由于初值对于迭代算法的运行时间影响较大，
+所以可以通过改善初值来实现总计算时间的缩减。
+对于反应堆类问题，堆中的材料分布相对较简单，
+尤其是在细网离散时往往会出现大片的网格材料相同的情况。
+可以首先对问题进行粗网离散，可以用较低的开销进行求解，
+获得一个较粗略的结果后，可以变换为一个较好的细网计算初值，
+达到减少总计算时间的目的，
+这种方法由文献\onlinecite{ginestar2001multilevel}最早提出，
+称作MultiLevel方法。
+
+本文采用如下方式计算临界计算中使用的通量初值：
+产生原网格xyz方向网格数量均减半的空间网格划分，
+即细网格上的8个网格对应到粗网上的1个网格，
+使用如前所用的CG-SG等方法进行求解，该阶段用户可以通过输入文件自定义
+每轮内迭代次数、外迭代收敛标准等控制变量，
+在粗网上求解后把粗网上的通量插值为细网通量，
+细网上的初始$K_\mathrm{eff}$取为粗网$K_\mathrm{eff}$%
+\footnote{同一个扩散问题采用不同网格大小进行离散后得到的$K_\mathrm{eff}$并不完全一致，
+略有差异。}，
+最后在细网上使用CG-SG等方法进行求解。
+
+\subsection{显存管理}
 
 CUSP的显存管理部分继承自Thrust的显存管理方式，
 而Thrust的显存管理策略为需要时向CUDA申请，
@@ -885,12 +938,6 @@ CUSP的显存管理部分继承自Thrust的显存管理方式，
 一般来讲从显存池中查找适合的显存的时间开销要小于向CUDA申请显存的开销，
 从而达到了缩短程序运行时间的效果。
 %\TODO 考虑添加结果比较
-
-对了观察显存分配缓存的影响，这里使用静态IAEA PWR三维基准题进行计算，
-不同情况下的计算时间和显存占用峰值见\floatref{tab:program.cached_alloc}。
-可见，带缓存的显存管理策略以少量显存占用峰值增加为代价
-（不使用粗网预求解时峰值显存增加很小）
-减少了约1-2s的计算时间，对于小规模问题效果十分明显。
 
 \begin{table}
 \centering
@@ -913,48 +960,18 @@ CUSP的显存管理部分继承自Thrust的显存管理方式，
  & 无缓存 & 55.630 & 1403.42\\
  & 有缓存 & 53.430 & 1403.42\\
 
-\multirow{2}{*}{2.5cm网格+粗网预求解}
+\multirow{2}{*}{2.5cm网格+MultiLevel}
  & 无缓存 & 4.790 & 93.00\\
  & 有缓存 & 3.338 & 101.05\\
-\multirow{2}{*}{1cm网格+粗网预求解}
+\multirow{2}{*}{1cm网格+MultiLevel}
  & 无缓存 & 14.212 & 1453.17\\
  & 有缓存 & 12.512 & 1578.85\\
 \bottomline
 \end{tabular}
 \end{table}
 
-\subsection{迭代收敛条件}
-
-在迭代过程中，需要不断地对当前迭代的收敛程度进行估计，
-本文使用本次迭代通量和上次迭代通量的绝对偏差的最大值进行对收敛程度进行估计，
-为了排除通量幅值的影响，使用本次迭代的最大通量进行标准化，即
-\begin{align}
-e^{(p)}=\frac{\displaystyle \max_{\bm{k},g}\left|\phi_{\bm{k},g}^{(p)}-\phi_{\bm{k},g}^{(p-1)}\right|}
-         {\displaystyle \max_{\bm{k},g}\phi_{\bm{k},g}^{(p)}}
-\end{align}
-其中$\bm{k}$为三维网格编号。
-
-
-\subsection{Multilevel方法}
-\label{sec:equsolve.multimesh}
-
-由于初值对于迭代算法的运行时间影响较大，
-所以可以通过改善初值来实现总计算时间的缩减。
-对于反应堆类问题，堆中的材料分布相对较简单，
-尤其是在细网离散时往往会出现大片的网格材料相同的情况。
-可以首先对问题进行粗网离散，可以用较低的开销进行求解，
-获得一个较粗略的结果后，可以变换为一个较好的细网计算初值，
-达到减少总计算时间的目的，
-这种方法由文献\onlinecite{ginestar2001multilevel}最早提出，
-称作Multilevel方法。
-
-本课题采用如下方式计算通量初值：
-产生原网格xyz方向网格数量均减半的空间网格划分，
-使用如前所用的CG-SG方法进行求解，该阶段用户可以通过输入文件自定义
-每轮内迭代次数、外迭代收敛标准等控制变量，
-在粗网上求解后把粗网上的通量插值为细网通量，
-细网上的初始$K_\mathrm{eff}$取为粗网$K_\mathrm{eff}$即可%
-\footnote{同一个扩散问题采用不同网格大小进行离散后得到的$K_\mathrm{eff}$并不完全一致，
-略有差异。}。
-
-实际求解中，Multilevel方法对于稳态计算有显著的加速效果。
+对了观察显存分配缓存的影响，这里使用静态IAEA PWR三维基准题进行计算，
+不同情况下的计算时间和显存占用峰值见\floatref{tab:program.cached_alloc}。
+可见，带缓存的显存管理策略以少量显存占用峰值增加为代价
+（不使用MultiLevel时峰值显存增加很小）
+减少了约1-2s的计算时间，对于小规模问题效果十分明显。
