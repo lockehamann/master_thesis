@@ -30,6 +30,6 @@ draw(graph(x,ELLMM),legend="ELL ML", dashed, marker(markersize*polygon(4)));
 draw(graph(x,CSRMM),legend="CSR ML", dashed, marker(markersize*unitcircle));
 draw(graph(x,COOMM),legend="COO ML", dashed, marker(markersize*cross(4))  );
 xaxis(BottomTop,LeftTicks(rotate(45)*Label(),new string(real x) {
-return month[round(x)];},8));
+return month[round(x)];},Step=1));
 yaxis("$T/\mathrm{s}$",LeftRight,RightTicks);
 add(legend(linelength=30),point(E),10E);

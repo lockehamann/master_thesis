@@ -999,13 +999,14 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 上一节中的时空动力学程序大多缺少和时间步对应的计算时间结果，
 无法进行直接比较，这里只分析\ProgramName 程序自己的计算结果。
 
-\subsubsection{动态TWIGL二维基准问题}
+\subsubsection{动态TWIGL二维基准问题（阶跃反应性）}
 
 动态TWIGL二维基准题阶跃反应性计算结果见
 \floatref{fig:testresult.twigl.1.1}、
 \floatref{fig:testresult.twigl.1.2}、
 \floatref{fig:testresult.twigl.1.4}、
-\floatref{fig:testresult.twigl.1.8}。
+\floatref{fig:testresult.twigl.1.8}，
+并使用1cm网格时间步长0.01s的结果作为参考解计算其他参数下的总功率偏差。
 
 \begin{figure}[H]
 \centering
@@ -1017,7 +1018,7 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 {
 \includegraphics[scale=0.8]{result-twigl1-s1-err}
 }
-\caption{动态TWIGL二维基准题阶跃反应性(1cm)\label{fig:testresult.twigl.1.1}}
+\caption{动态TWIGL二维基准题阶跃反应性(网格1cm)\label{fig:testresult.twigl.1.1}}
 \end{figure}
 
 \begin{figure}[H]
@@ -1030,7 +1031,7 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 {
 \includegraphics[scale=0.8]{result-twigl1-s2-err}
 }
-\caption{动态TWIGL二维基准题阶跃反应性(2cm)\label{fig:testresult.twigl.1.2}}
+\caption{动态TWIGL二维基准题阶跃反应性(网格2cm)\label{fig:testresult.twigl.1.2}}
 \end{figure}
 
 \begin{figure}[H]
@@ -1043,7 +1044,7 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 {
 \includegraphics[scale=0.8]{result-twigl1-s4-err}
 }
-\caption{动态TWIGL二维基准题阶跃反应性(4cm)\label{fig:testresult.twigl.1.4}}
+\caption{动态TWIGL二维基准题阶跃反应性(网格4cm)\label{fig:testresult.twigl.1.4}}
 \end{figure}
 
 \begin{figure}[H]
@@ -1056,7 +1057,7 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 {
 \includegraphics[scale=0.8]{result-twigl1-s8-err}
 }
-\caption{动态TWIGL二维基准题阶跃反应性(8cm)\label{fig:testresult.twigl.1.8}}
+\caption{动态TWIGL二维基准题阶跃反应性(网格8cm)\label{fig:testresult.twigl.1.8}}
 \end{figure}
 
 从结果中可以看出，网格大小放大为4cm时，
@@ -1071,304 +1072,50 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 
 \FloatBarrier
 
-%-----------------------TWIGL 2-------------------------------------
+\subsubsection{动态TWIGL二维基准问题（线性反应性）}
 
 线性反应性计算结果见
-\floatref{tab:testresult.twigl.2.1-2}和
-\floatref{tab:testresult.twigl.2.4-8}，
+\floatref{fig:testresult.twigl.2.1}、
+\floatref{fig:testresult.twigl.2.2}、
+\floatref{fig:testresult.twigl.2.4}和
+\floatref{fig:testresult.twigl.2.8}，
+并使用1cm网格时间步长0.005s的结果作为参考解计算其他参数下的总功率偏差。
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{result-twigl2-s1-time}
+\includegraphics[scale=0.8]{result-twigl2-s1-err}
+\caption{动态TWIGL二维基准题线性反应性(网格1cm)\label{fig:testresult.twigl.2.1}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{result-twigl2-s2-time}
+\includegraphics[scale=0.8]{result-twigl2-s2-err}
+\caption{动态TWIGL二维基准题线性反应性(网格2cm)\label{fig:testresult.twigl.2.2}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{result-twigl2-s4-time}
+\includegraphics[scale=0.8]{result-twigl2-s4-err}
+\caption{动态TWIGL二维基准题线性反应性(网格4cm)\label{fig:testresult.twigl.2.4}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.8]{result-twigl2-s8-time}
+\includegraphics[scale=0.8]{result-twigl2-s8-err}
+\caption{动态TWIGL二维基准题线性反应性(网格8cm)\label{fig:testresult.twigl.2.8}}
+\end{figure}
+
+
 当网格大小放大到8cm时，总功率偏差值约有0.02。
 固定网格大小为8cm后，调整时间步长，
 总功率偏差主要出现在0.2s，偏差值最大达到0.04。
 网格大小为2cm时间步长取0.10s时，
 以及网格大小为4cm时间步长取0.05s时，能够实现实时模拟。
-
-\begin{table}
-\centering
-\caption{动态TWIGL二维基准题线性反应性计算结果1\label{tab:testresult.twigl.2.1-2}}
-\subcaptionbox{网格大小1cm 时间步长0.005s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.919\\
-0.1 & 1.309 & 3.823 & 5.742\\
-0.2 & 1.962 & 3.900 & 9.642\\
-0.3 & 2.076 & 3.384 & 13.026\\
-0.4 & 2.093 & 3.370 & 16.396\\
-0.5 & 2.111 & 3.292 & 19.688\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小1cm 时间步长0.02s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.137\\
-0.1 & 1.311 & 0.982 & 3.119\\
-0.2 & 1.969 & 1.279 & 4.398\\
-0.3 & 2.077 & 0.890 & 5.288\\
-0.4 & 2.095 & 0.795 & 6.083\\
-0.5 & 2.112 & 0.843 & 6.926\\
-\bottomline
-\end{tabular}
-}
-
-\subcaptionbox{网格大小1cm 时间步长0.05s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.794\\
-0.1 & 1.313 & 0.375 & 2.169\\
-0.2 & 1.982 & 0.390 & 2.559\\
-0.3 & 2.078 & 0.344 & 2.903\\
-0.4 & 2.097 & 0.312 & 3.215\\
-0.5 & 2.115 & 0.328 & 3.543\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小1cm 时间步长0.10s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.825\\
-0.1 & 1.318 & 0.218 & 2.043\\
-0.2 & 2.000 & 0.203 & 2.246\\
-0.3 & 2.079 & 0.172 & 2.418\\
-0.4 & 2.102 & 0.156 & 2.574\\
-0.5 & 2.120 & 0.156 & 2.730\\
-\bottomline
-\end{tabular}
-}
-
-
-\subcaptionbox{网格大小2cm 时间步长0.005s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.497\\
-0.1 & 1.309 & 1.623 & 3.120\\
-0.2 & 1.961 & 1.608 & 4.728\\
-0.3 & 2.075 & 1.405 & 6.133\\
-0.4 & 2.093 & 1.342 & 7.475\\
-0.5 & 2.110 & 1.356 & 8.831\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小2cm 时间步长0.02s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.513\\
-0.1 & 1.310 & 0.421 & 1.934\\
-0.2 & 1.968 & 0.437 & 2.371\\
-0.3 & 2.076 & 0.390 & 2.761\\
-0.4 & 2.094 & 0.390 & 3.151\\
-0.5 & 2.112 & 0.342 & 3.493\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小2cm 时间步长0.05s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.278\\
-0.1 & 1.313 & 0.281 & 2.559\\
-0.2 & 1.981 & 0.281 & 2.840\\
-0.3 & 2.077 & 0.233 & 3.073\\
-0.4 & 2.097 & 0.234 & 3.307\\
-0.5 & 2.115 & 0.171 & 3.478\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小2cm 时间步长0.10s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.576\\
-0.1 & 1.318 & 0.094 & 1.670\\
-0.2 & 1.999 & 0.093 & 1.763\\
-0.3 & 2.078 & 0.094 & 1.857\\
-0.4 & 2.102 & 0.078 & 1.935\\
-0.5 & 2.120 & 0.078 & 2.013\\
-\bottomline
-\end{tabular}
-}
-\end{table}
-
-\begin{table}
-\centering
-\caption{动态TWIGL二维基准题线性反应性计算结果2\label{tab:testresult.twigl.2.4-8}}
-\subcaptionbox{网格大小4cm 时间步长0.005s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.217\\
-0.1 & 1.309 & 0.998 & 2.215\\
-0.2 & 1.962 & 1.122 & 3.337\\
-0.3 & 2.076 & 0.857 & 4.194\\
-0.4 & 2.094 & 0.716 & 4.910\\
-0.5 & 2.111 & 0.826 & 5.736\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小4cm 时间步长0.02s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.139\\
-0.1 & 1.310 & 0.234 & 1.373\\
-0.2 & 1.969 & 0.202 & 1.575\\
-0.3 & 2.077 & 0.157 & 1.732\\
-0.4 & 2.095 & 0.158 & 1.890\\
-0.5 & 2.113 & 0.172 & 2.062\\
-\bottomline
-\end{tabular}
-}
-
-\subcaptionbox{网格大小4cm 时间步长0.05s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.107\\
-0.1 & 1.313 & 0.094 & 1.201\\
-0.2 & 1.982 & 0.094 & 1.295\\
-0.3 & 2.078 & 0.063 & 1.358\\
-0.4 & 2.098 & 0.078 & 1.436\\
-0.5 & 2.115 & 0.063 & 1.499\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小4cm 时间步长0.10s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 1.076\\
-0.1 & 1.318 & 0.047 & 1.123\\
-0.2 & 2.000 & 0.046 & 1.169\\
-0.3 & 2.079 & 0.047 & 1.216\\
-0.4 & 2.103 & 0.031 & 1.247\\
-0.5 & 2.121 & 0.031 & 1.278\\
-\bottomline
-\end{tabular}
-}
-
-
-\subcaptionbox{网格大小8cm 时间步长0.005s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 0.780\\
-0.1 & 1.312 & 0.359 & 1.139\\
-0.2 & 1.978 & 0.390 & 1.529\\
-0.3 & 2.096 & 0.374 & 1.903\\
-0.4 & 2.114 & 0.359 & 2.262\\
-0.5 & 2.132 & 0.328 & 2.590\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小8cm 时间步长0.02s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 0.873\\
-0.1 & 1.314 & 0.141 & 1.014\\
-0.2 & 1.985 & 0.078 & 1.092\\
-0.3 & 2.097 & 0.093 & 1.185\\
-0.4 & 2.115 & 0.110 & 1.295\\
-0.5 & 2.133 & 0.093 & 1.388\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小8cm 时间步长0.05s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 0.857\\
-0.1 & 1.316 & 0.063 & 0.920\\
-0.2 & 1.998 & 0.062 & 0.982\\
-0.3 & 2.098 & 0.047 & 1.029\\
-0.4 & 2.118 & 0.047 & 1.076\\
-0.5 & 2.136 & 0.032 & 1.108\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小8cm 时间步长0.10s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 0.873\\
-0.1 & 1.321 & 0.031 & 0.904\\
-0.2 & 2.017 & 0.031 & 0.935\\
-0.3 & 2.099 & 0.016 & 0.951\\
-0.4 & 2.123 & 0.016 & 0.967\\
-0.5 & 2.141 & 0.031 & 0.998\\
-\bottomline
-\end{tabular}
-}
-\end{table}
 
 
 
