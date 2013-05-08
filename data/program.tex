@@ -793,6 +793,8 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 \ProgramName 程序时空动力学临界修正伪代码}
 \end{algorithm}
 
+
+\begin{comment}
 \subsubsection{时空动力学与预条件算法}
 
 由于复杂的预条件算法尚不能在GPU上并行化，只能在CPU上计算，
@@ -808,6 +810,8 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 本文使用CUSP提供的SPAI预条件算法，
 根据计算结果，上面这种方法对于网格数量较多的问题能够起到加速作用，
 代价是时空动力学启动(init)时间增加。
+\end{comment}
+
 
 \subsubsection{时空动力学计算}
 
@@ -822,22 +826,22 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 \tcc*[f]{见第 \ref{sec:program.eigen}
 节及第 \ref{sec:program.kinetics.keff-fix} 节}
 \;
-\If{使用SPAI预条件算法}
-{
-  读取SPAI设置并初始化SPAI\;
-}
+%\If{使用SPAI预条件算法}
+%{
+%  读取SPAI设置并初始化SPAI\;
+%}
 \Repeat{完成所有时间步}
 {
   初始化下一个时间步\;
   更新本时间步的材料、截面信息\;
-  \If{使用SPAI预条件算法}
-  {
-    求解细网网格上的固定源问题（使用SPAI预条件矩阵）\;
-  }
-  \Else
-  {
+  %\If{使用SPAI预条件算法}
+  %{
+  %  求解细网网格上的固定源问题（使用SPAI预条件矩阵）\;
+  %}
+  %\Else
+  %{
     初始化对角线预条件算法，并求解细网网格上的固定源问题\;
-  }
+  %}
   计算缓发中子源 \algoend
   计算当前时间步的最大通量及总功率\;
   将本时间步计算结果从GPU显存传送至内存\;

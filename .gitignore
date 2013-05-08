@@ -7,4 +7,5 @@
 /*.bbl
 /main.pdf
 /main.synctex.gz
-/*.asy
+*.bak
+/figures/*.pdf

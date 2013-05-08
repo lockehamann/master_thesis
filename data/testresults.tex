@@ -1002,120 +1002,166 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \subsubsection{动态TWIGL二维基准问题（阶跃反应性）}
 
 动态TWIGL二维基准题阶跃反应性计算结果见
+\floatref{tab:testresult.twigl.1}、
 \floatref{fig:testresult.twigl.1.1}、
 \floatref{fig:testresult.twigl.1.2}、
 \floatref{fig:testresult.twigl.1.4}、
 \floatref{fig:testresult.twigl.1.8}，
-并使用1cm网格时间步长0.01s的结果作为参考解计算其他参数下的总功率偏差。
+动力学结果分两部分给出，一个是每个时间步的计算时间除以该时间步长度得到的相对时间，
+该相对时间小于1时，表明系统可以达到实时模拟，即计算时间小于模型时间；
+第二部分是系统总功率的相对偏差随模型时间的变化图，
+参考结果使用\ProgramName 程序1cm网格时间步长0.01s的结果。
+
+\begin{table}[H]
+\centering
+\caption{动态TWIGL二维基准问题（阶跃反应性）计算时间表\label{tab:testresult.twigl.1}}
+\begin{tabular}{ccccc}
+\topline
+网格大小 & 时间步长 & 初始化 & 每步平均 & 总时间\\
+/cm & /s & 时间/s & 计算时间/s & /s\\
+\midline
+1 & 0.010 & 1.280 & 0.122 & 7.382\\
+1 & 0.020 & 1.264 & 0.122 & 4.318\\
+1 & 0.050 & 1.279 & 0.131 & 2.588\\
+1 & 0.100 & 1.264 & 0.135 & 1.941\\
+2 & 0.010 & 1.045 & 0.061 & 4.082\\
+2 & 0.020 & 1.014 & 0.062 & 2.556\\
+2 & 0.050 & 1.030 & 0.066 & 1.694\\
+2 & 0.100 & 1.046 & 0.070 & 1.395\\
+4 & 0.010 & 0.843 & 0.027 & 2.213\\
+4 & 0.020 & 0.827 & 0.028 & 1.520\\
+4 & 0.050 & 0.842 & 0.029 & 1.136\\
+4 & 0.100 & 0.842 & 0.030 & 0.994\\
+8 & 0.010 & 0.577 & 0.016 & 1.362\\
+8 & 0.020 & 0.593 & 0.016 & 0.988\\
+8 & 0.050 & 0.577 & 0.017 & 0.747\\
+8 & 0.100 & 0.577 & 0.018 & 0.668\\
+\bottomline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 \centering
-%\subcaptionbox{计算时间图\label{fig:testresult.twigl.1.1.time}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s1-time}
-}
-%\subcaptionbox{误差图\label{fig:testresult.twigl.1.1.err}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s1-err}
-}
-\caption{动态TWIGL二维基准题阶跃反应性(网格1cm)\label{fig:testresult.twigl.1.1}}
+\caption{动态TWIGL二维基准题阶跃反应性计算结果(网格1cm)\label{fig:testresult.twigl.1.1}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-%\subcaptionbox{计算时间图\label{fig:testresult.twigl.1.2.time}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s2-time}
-}
-%\subcaptionbox{误差图\label{fig:testresult.twigl.1.2.err}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s2-err}
-}
-\caption{动态TWIGL二维基准题阶跃反应性(网格2cm)\label{fig:testresult.twigl.1.2}}
+\caption{动态TWIGL二维基准题阶跃反应性计算结果(网格2cm)\label{fig:testresult.twigl.1.2}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-%\subcaptionbox{计算时间图\label{fig:testresult.twigl.1.4.time}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s4-time}
-}
-%\subcaptionbox{误差图\label{fig:testresult.twigl.1.4.err}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s4-err}
-}
-\caption{动态TWIGL二维基准题阶跃反应性(网格4cm)\label{fig:testresult.twigl.1.4}}
+\caption{动态TWIGL二维基准题阶跃反应性计算结果(网格4cm)\label{fig:testresult.twigl.1.4}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-%\subcaptionbox{计算时间图\label{fig:testresult.twigl.1.8.time}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s8-time}
-}
-%\subcaptionbox{误差图\label{fig:testresult.twigl.1.8.err}}
-{
 \includegraphics[scale=0.8]{result-twigl1-s8-err}
-}
-\caption{动态TWIGL二维基准题阶跃反应性(网格8cm)\label{fig:testresult.twigl.1.8}}
+\caption{动态TWIGL二维基准题阶跃反应性计算结果(网格8cm)\label{fig:testresult.twigl.1.8}}
 \end{figure}
 
-从结果中可以看出，网格大小放大为4cm时，
-给定时刻的堆芯总功率偏差只有0.001左右，
-网格大小进一步放大为8cm时，总功率偏差大约为0.02。
-网格大小固定为4cm时，时间步长对总功率影响主要在第一个0.1s内，
-步长从0.01放大到0.1的过程中，
-0.1s时的堆芯总功率偏差逐渐达到0.09左右，
-而0.2s时的堆芯总功率偏差最大只有0.09左右。
-网格大小为4cm，时间步长取0.05s时，计算时间约等于模型时间，
-基本达到实时模拟，此时最大总功率偏差出现在0.1s，偏差值约为0.03。
+从以上结果可见对于如下情况，可以实现实时模拟：
+\begin{enumerate}[a)]
+\item 2cm网格（$40\times40$个），时间步长0.1s。
+\item 4cm网格（$20\times20$个），时间步长0.05s、0.1s。
+\item 8cm网格（$10\times10$个），时间步长0.02s、0.05s、0.1s。
+\end{enumerate}
+对于1cm、2cm、4cm，总功率相对偏差大部分在0.001以下，
+网格尺寸加到到8cm后，总功率相对偏差达到0.01左右。
 
 \FloatBarrier
 
 \subsubsection{动态TWIGL二维基准问题（线性反应性）}
 
 线性反应性计算结果见
+\floatref{tab:testresult.twigl.2}、
 \floatref{fig:testresult.twigl.2.1}、
 \floatref{fig:testresult.twigl.2.2}、
 \floatref{fig:testresult.twigl.2.4}和
 \floatref{fig:testresult.twigl.2.8}，
 并使用1cm网格时间步长0.005s的结果作为参考解计算其他参数下的总功率偏差。
 
+\begin{table}[H]
+\centering
+\caption{动态TWIGL二维基准问题（线性反应性）计算时间表\label{tab:testresult.twigl.2}}
+\begin{tabular}{ccccc}
+\topline
+网格大小 & 时间步长 & 初始化 & 每步平均 & 总时间\\
+/cm & /s & 时间/s & 计算时间/s & /s\\
+\midline
+1 & 0.005 & 1.264 & 0.127 & 13.978\\
+1 & 0.010 & 1.248 & 0.126 & 7.538\\
+1 & 0.020 & 1.264 & 0.132 & 4.576\\
+1 & 0.050 & 1.295 & 0.139 & 2.681\\
+1 & 0.100 & 1.264 & 0.141 & 1.970\\
+2 & 0.005 & 1.045 & 0.064 & 7.456\\
+2 & 0.010 & 1.045 & 0.065 & 4.304\\
+2 & 0.020 & 1.045 & 0.066 & 2.697\\
+2 & 0.050 & 1.045 & 0.069 & 1.739\\
+2 & 0.100 & 1.061 & 0.071 & 1.414\\
+4 & 0.005 & 0.858 & 0.029 & 3.757\\
+4 & 0.010 & 0.827 & 0.029 & 2.278\\
+4 & 0.020 & 0.858 & 0.029 & 1.592\\
+4 & 0.050 & 0.874 & 0.031 & 1.181\\
+4 & 0.100 & 0.811 & 0.031 & 0.968\\
+8 & 0.005 & 0.640 & 0.016 & 2.276\\
+8 & 0.010 & 0.656 & 0.017 & 1.489\\
+8 & 0.020 & 0.639 & 0.017 & 1.066\\
+8 & 0.050 & 0.639 & 0.018 & 0.821\\
+8 & 0.100 & 0.640 & 0.018 & 0.729\\
+\bottomline
+\end{tabular}
+\end{table}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.8]{result-twigl2-s1-time}
 \includegraphics[scale=0.8]{result-twigl2-s1-err}
-\caption{动态TWIGL二维基准题线性反应性(网格1cm)\label{fig:testresult.twigl.2.1}}
+\caption{动态TWIGL二维基准题线性反应性计算结果(网格1cm)\label{fig:testresult.twigl.2.1}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.8]{result-twigl2-s2-time}
 \includegraphics[scale=0.8]{result-twigl2-s2-err}
-\caption{动态TWIGL二维基准题线性反应性(网格2cm)\label{fig:testresult.twigl.2.2}}
+\caption{动态TWIGL二维基准题线性反应性计算结果(网格2cm)\label{fig:testresult.twigl.2.2}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.8]{result-twigl2-s4-time}
 \includegraphics[scale=0.8]{result-twigl2-s4-err}
-\caption{动态TWIGL二维基准题线性反应性(网格4cm)\label{fig:testresult.twigl.2.4}}
+\caption{动态TWIGL二维基准题线性反应性计算结果(网格4cm)\label{fig:testresult.twigl.2.4}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.8]{result-twigl2-s8-time}
 \includegraphics[scale=0.8]{result-twigl2-s8-err}
-\caption{动态TWIGL二维基准题线性反应性(网格8cm)\label{fig:testresult.twigl.2.8}}
+\caption{动态TWIGL二维基准题线性反应性计算结果(网格8cm)\label{fig:testresult.twigl.2.8}}
 \end{figure}
 
+从以上结果可见对于如下情况，可以实现实时模拟：
+\begin{enumerate}[a)]
+\item 2cm网格（$40\times40$个），时间步长0.1s。
+\item 4cm网格（$20\times20$个），时间步长0.05s、0.1s。
+\item 8cm网格（$10\times10$个），时间步长0.02s、0.05s、0.1s。
+\end{enumerate}
 
-当网格大小放大到8cm时，总功率偏差值约有0.02。
-固定网格大小为8cm后，调整时间步长，
-总功率偏差主要出现在0.2s，偏差值最大达到0.04。
-网格大小为2cm时间步长取0.10s时，
-以及网格大小为4cm时间步长取0.05s时，能够实现实时模拟。
+对于线性反应性情况，\ProgramName 程序的结果误差相比阶跃情况要大，
+这是因为\ProgramName 程序采用全隐式差分离散，并没有对线性反应性进行处理，
+因此会引入一个和时间步大小有关的误差，时间步越小则结果误差越小，
+这与上面的结果是符合的。
+对于1cm、2cm、4cm，总功率相对偏差大部分在0.01以下，
+网格尺寸加到到8cm后，总功率相对偏差达到0.01左右。
 
 
 
@@ -1133,310 +1179,52 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 时刻为30s。
 
 
-\begin{table}
+\begin{figure}[H]
 \centering
-\caption{动态LMW三维基准题计算结果1\label{tab:testresult.lmw.size1}}
-\subcaptionbox{网格大小1cm 时间步长1/12s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 17.909\\
-10.0 & 1.341 & 677.245 & 695.154\\
-20.0 & 1.705 & 723.421 & 1418.575\\
-30.0 & 1.362 & 714.762 & 2133.337\\
-40.0 & 0.804 & 682.797 & 2816.134\\
-50.0 & 0.501 & 658.147 & 3474.281\\
-60.0 & 0.385 & 606.188 & 4080.469\\
-\bottomline
-\end{tabular}
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s10-time}
 }
-\subcaptionbox{网格大小1cm 时间步长1/6s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 17.690\\
-10.0 & 1.342 & 354.043 & 371.733\\
-20.0 & 1.705 & 375.402 & 747.135\\
-30.0 & 1.360 & 367.315 & 1114.450\\
-40.0 & 0.803 & 353.246 & 1467.696\\
-50.0 & 0.501 & 340.503 & 1808.199\\
-60.0 & 0.385 & 306.380 & 2114.579\\
-\bottomline
-\end{tabular}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s10-err}
 }
+\caption{动态LMW三维基准题计算结果(网格10cm)\label{fig:testresult.lwm.10}}
+\end{figure}
 
-\subcaptionbox{网格大小1cm 时间步长0.5s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 17.815\\
-10.0 & 1.349 & 131.836 & 149.651\\
-20.0 & 1.711 & 133.583 & 283.234\\
-30.0 & 1.356 & 133.971 & 417.205\\
-40.0 & 0.799 & 132.957 & 550.162\\
-50.0 & 0.500 & 124.378 & 674.540\\
-60.0 & 0.384 & 104.364 & 778.904\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小1cm 时间步长1s}
-{
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 18.080\\
-10.0 & 1.353 & 67.923 & 86.003\\
-20.0 & 1.710 & 69.591 & 155.594\\
-30.0 & 1.344 & 68.671 & 224.265\\
-40.0 & 0.790 & 67.079 & 291.344\\
-50.0 & 0.496 & 65.100 & 356.444\\
-60.0 & 0.382 & 56.755 & 413.199\\
-\bottomline
-\end{tabular}
-}
-\end{table}
 
-\begin{table}
+\begin{figure}[H]
 \centering
-\caption{动态LMW三维基准题计算结果2\label{tab:testresult.lmw.size2}}
-\subcaptionbox{网格大小2cm 时间步长1/12s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 7.816\\
-10.0 & 1.341 & 64.663 & 72.479\\
-20.0 & 1.703 & 69.853 & 142.332\\
-30.0 & 1.360 & 67.894 & 210.226\\
-40.0 & 0.803 & 67.125 & 277.351\\
-50.0 & 0.501 & 65.412 & 342.763\\
-60.0 & 0.385 & 62.287 & 405.050\\
-\bottomline
-\end{tabular}
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s5-time}
 }
-\subcaptionbox{网格大小2cm 时间步长1/6s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 7.815\\
-10.0 & 1.342 & 33.745 & 41.560\\
-20.0 & 1.706 & 36.989 & 78.549\\
-30.0 & 1.360 & 35.520 & 114.069\\
-40.0 & 0.802 & 35.101 & 149.170\\
-50.0 & 0.500 & 34.196 & 183.366\\
-60.0 & 0.384 & 31.747 & 215.113\\
-\bottomline
-\end{tabular}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s5-err}
 }
+\caption{动态LMW三维基准题计算结果(网格5cm)\label{fig:testresult.lwm.5}}
+\end{figure}
 
-\subcaptionbox{网格大小2cm 时间步长0.5s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 7.612\\
-10.0 & 1.348 & 12.260 & 19.872\\
-20.0 & 1.711 & 12.825 & 32.697\\
-30.0 & 1.356 & 12.371 & 45.068\\
-40.0 & 0.799 & 12.246 & 57.314\\
-50.0 & 0.499 & 11.637 & 68.951\\
-60.0 & 0.384 & 10.325 & 79.276\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小2cm 时间步长1s}
-{
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 7.722\\
-10.0 & 1.359 & 6.614 & 14.336\\
-20.0 & 1.725 & 6.598 & 20.934\\
-30.0 & 1.361 & 6.457 & 27.391\\
-40.0 & 0.802 & 6.351 & 33.742\\
-50.0 & 0.503 & 6.159 & 39.901\\
-60.0 & 0.387 & 5.520 & 45.421\\
-\bottomline
-\end{tabular}
-}
-\end{table}
 
-\begin{table}
+\begin{figure}[H]
 \centering
-\caption{动态LMW三维基准题计算结果3\label{tab:testresult.lmw.size25}}
-\subcaptionbox{网格大小2.5cm 时间步长1/12s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 3.978\\
-10.0 & 1.341 & 34.352 & 38.330\\
-20.0 & 1.707 & 36.424 & 74.754\\
-30.0 & 1.365 & 35.536 & 110.290\\
-40.0 & 0.805 & 35.666 & 145.956\\
-50.0 & 0.501 & 34.881 & 180.837\\
-60.0 & 0.384 & 33.381 & 214.218\\
-\bottomline
-\end{tabular}
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s25-time}
 }
-\subcaptionbox{网格大小2.5cm 时间步长1/6s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 4.165\\
-10.0 & 1.342 & 19.022 & 23.187\\
-20.0 & 1.708 & 20.409 & 43.596\\
-30.0 & 1.364 & 20.045 & 63.641\\
-40.0 & 0.805 & 19.791 & 83.432\\
-50.0 & 0.501 & 19.469 & 102.901\\
-60.0 & 0.384 & 18.248 & 121.149\\
-\bottomline
-\end{tabular}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s25-err}
 }
+\caption{动态LMW三维基准题计算结果(网格2.5cm)\label{fig:testresult.lwm.25}}
+\end{figure}
 
-\subcaptionbox{网格大小2.5cm 时间步长0.5s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 3.932\\
-10.0 & 1.346 & 6.707 & 10.639\\
-20.0 & 1.714 & 6.865 & 17.504\\
-30.0 & 1.364 & 6.895 & 24.399\\
-40.0 & 0.804 & 6.862 & 31.261\\
-50.0 & 0.501 & 6.599 & 37.860\\
-60.0 & 0.385 & 5.928 & 43.788\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小2.5cm 时间步长1s}
-{
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 3.900\\
-10.0 & 1.353 & 3.573 & 7.473\\
-20.0 & 1.718 & 3.665 & 11.138\\
-30.0 & 1.358 & 3.683 & 14.821\\
-40.0 & 0.800 & 3.540 & 18.361\\
-50.0 & 0.500 & 3.542 & 21.903\\
-60.0 & 0.385 & 3.056 & 24.959\\
-\bottomline
-\end{tabular}
-}
-\end{table}
-
-\begin{table}
+\begin{figure}[H]
 \centering
-\caption{动态LMW三维基准题计算结果4\label{tab:testresult.lmw.size5}}
-\subcaptionbox{网格大小5cm 时间步长1/12s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.933\\
-10.0 & 1.337 & 9.435 & 12.368\\
-20.0 & 1.686 & 10.111 & 22.479\\
-30.0 & 1.342 & 9.909 & 32.388\\
-40.0 & 0.795 & 10.015 & 42.403\\
-50.0 & 0.501 & 9.625 & 52.028\\
-60.0 & 0.385 & 8.782 & 60.810\\
-\bottomline
-\end{tabular}
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s2-time}
 }
-\subcaptionbox{网格大小5cm 时间步长1/6s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.979\\
-10.0 & 1.339 & 4.708 & 7.687\\
-20.0 & 1.685 & 5.179 & 12.866\\
-30.0 & 1.339 & 5.051 & 17.917\\
-40.0 & 0.793 & 4.963 & 22.880\\
-50.0 & 0.501 & 4.899 & 27.779\\
-60.0 & 0.385 & 4.492 & 32.271\\
-\bottomline
-\end{tabular}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s2-err}
 }
-
-\subcaptionbox{网格大小5cm 时间步长0.5s}
-{
-\small
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.949\\
-10.0 & 1.344 & 1.733 & 4.682\\
-20.0 & 1.686 & 1.887 & 6.569\\
-30.0 & 1.331 & 1.811 & 8.380\\
-40.0 & 0.789 & 1.779 & 10.159\\
-50.0 & 0.500 & 1.652 & 11.811\\
-60.0 & 0.385 & 1.638 & 13.449\\
-\bottomline
-\end{tabular}
-}
-\subcaptionbox{网格大小5cm 时间步长1s}
-{
-\begin{tabular}{cccc}
-\topline
-模型 & 堆芯 & 计算 & 累计计算\\
-时间/s & 功率 & 时间/s & 时间/s\\
-\midline
-init & 1.000 & -- & 2.965\\
-10.0 & 1.346 & 0.920 & 3.885\\
-20.0 & 1.683 & 0.996 & 4.881\\
-30.0 & 1.318 & 0.983 & 5.864\\
-40.0 & 0.780 & 0.983 & 6.847\\
-50.0 & 0.496 & 0.921 & 7.768\\
-60.0 & 0.382 & 0.874 & 8.642\\
-\bottomline
-\end{tabular}
-}
-\end{table}
+\caption{动态LMW三维基准题计算结果(网格2cm)\label{fig:testresult.lwm.2}}
+\end{figure}
