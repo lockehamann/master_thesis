@@ -994,12 +994,12 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \end{table}
 
 
-\subsection{时空动力学}
+\subsection{动态TWIGL二维基准问题}
 
 上一节中的时空动力学程序大多缺少和时间步对应的计算时间结果，
-无法进行直接比较，这里只分析\ProgramName 程序自己的计算结果。
+无法进行直接比较，这里只对比\ProgramName 程序自身的计算结果。
 
-\subsubsection{动态TWIGL二维基准问题（阶跃反应性）}
+\subsubsection{阶跃反应性}
 
 动态TWIGL二维基准题阶跃反应性计算结果见
 \floatref{tab:testresult.twigl.1}、
@@ -1079,7 +1079,7 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 
 \FloatBarrier
 
-\subsubsection{动态TWIGL二维基准问题（线性反应性）}
+\subsubsection{线性反应性}
 
 线性反应性计算结果见
 \floatref{tab:testresult.twigl.2}、
@@ -1165,30 +1165,60 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 
 
 
-\subsubsection{动态LMW三维基准问题}
+\subsection{动态LMW三维基准问题}
 
 动态LMW三维基准题计算结果见
-\floatref{tab:testresult.lmw.size1}、
-\floatref{tab:testresult.lmw.size2}、
-\floatref{tab:testresult.lmw.size25}和
-\floatref{tab:testresult.lmw.size5}，
-从结果可见，把空间网格放大到5cm时，
-堆芯总功率的偏差值最大有0.03左右。
-固定网格大小为5cm后，放大时间步长至1s，
-总功率最大偏差放大到0.04左右，
-时刻为30s。
+\floatref{fig:testresult.lwm.1}至
+\floatref{fig:testresult.lwm.10}
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s1-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s1-err}
+}
+\caption{动态LMW三维基准题计算结果(网格1cm)\label{fig:testresult.lwm.1}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s125-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s125-err}
+}
+\caption{动态LMW三维基准题计算结果(网格1.25cm)\label{fig:testresult.lwm.125}}
+\end{figure}
 
 
 \begin{figure}[H]
 \centering
 \subcaptionbox{计算时间}{
-\includegraphics[scale=0.95]{result-lwm-s10-time}
+\includegraphics[scale=0.95]{result-lwm-s2-time}
 }
 \\[1cm]
 \subcaptionbox{总功率相对误差}{
-\includegraphics[scale=0.95]{result-lwm-s10-err}
+\includegraphics[scale=0.95]{result-lwm-s2-err}
 }
-\caption{动态LMW三维基准题计算结果(网格10cm)\label{fig:testresult.lwm.10}}
+\caption{动态LMW三维基准题计算结果(网格2cm)\label{fig:testresult.lwm.2}}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-s25-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-s25-err}
+}
+\caption{动态LMW三维基准题计算结果(网格2.5cm)\label{fig:testresult.lwm.25}}
 \end{figure}
 
 
@@ -1208,23 +1238,85 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \begin{figure}[H]
 \centering
 \subcaptionbox{计算时间}{
-\includegraphics[scale=0.95]{result-lwm-s25-time}
+\includegraphics[scale=0.95]{result-lwm-s10-time}
 }
 \\[1cm]
 \subcaptionbox{总功率相对误差}{
-\includegraphics[scale=0.95]{result-lwm-s25-err}
+\includegraphics[scale=0.95]{result-lwm-s10-err}
 }
-\caption{动态LMW三维基准题计算结果(网格2.5cm)\label{fig:testresult.lwm.25}}
+\caption{动态LMW三维基准题计算结果(网格10cm)\label{fig:testresult.lwm.10}}
+\end{figure}
+
+\subsubsection{z方向网格}
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-z1s125-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-z1s125-err}
+}
+\caption{动态LMW三维基准题计算结果(网格1.25cm$\times$1.25cm$\times$1cm)\label{fig:testresult.lwm.125z1}}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \subcaptionbox{计算时间}{
-\includegraphics[scale=0.95]{result-lwm-s2-time}
+\includegraphics[scale=0.95]{result-lwm-z1s2-time}
 }
 \\[1cm]
 \subcaptionbox{总功率相对误差}{
-\includegraphics[scale=0.95]{result-lwm-s2-err}
+\includegraphics[scale=0.95]{result-lwm-z1s2-err}
 }
-\caption{动态LMW三维基准题计算结果(网格2cm)\label{fig:testresult.lwm.2}}
+\caption{动态LMW三维基准题计算结果(网格2cm$\times$2cm$\times$1cm)\label{fig:testresult.lwm.2z1}}
 \end{figure}
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-z1s25-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-z1s25-err}
+}
+\caption{动态LMW三维基准题计算结果(网格2.5cm$\times$2.5cm$\times$1cm)\label{fig:testresult.lwm.25z1}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-z1s5-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-z1s5-err}
+}
+\caption{动态LMW三维基准题计算结果(网格5cm$\times$5cm$\times$1cm)\label{fig:testresult.lwm.5z1}}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\subcaptionbox{计算时间}{
+\includegraphics[scale=0.95]{result-lwm-z1s10-time}
+}
+\\[1cm]
+\subcaptionbox{总功率相对误差}{
+\includegraphics[scale=0.95]{result-lwm-z1s10-err}
+}
+\caption{动态LMW三维基准题计算结果(网格10cm$\times$10cm$\times$1cm)\label{fig:testresult.lwm.10z1}}
+\end{figure}
+
+
+以下条件可以达到实时模拟：
+\begin{enumerate}[a)]
+\item 1cm网格（$110\times110\times200=2420000$个），时间步长10s。
+\item 1.25cm网格（$88\times88\times160=1239040$个），时间步长5s、10s。
+\item 2cm网格（$55\times55\times100=302500$个），时间步长1s-10s。
+\item 2.5cm网格（$44\times44\times80=154880$个），时间步长1/2s-10s。
+\item 5cm网格（$22\times22\times40=19360$个），时间步长1/6s-10s。
+\item 10cm网格（$11\times11\times20=2420$个），时间步长1/12s-10s。
+\end{enumerate}

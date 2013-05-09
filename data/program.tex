@@ -117,23 +117,48 @@ $\bm{n}$是边界面上的点$\bm{x}$在边界面上的法向量，
 为方便起见这里暂时省略能群$g$，时间步长$n$等下标上标，下同。
 
 离散的主要问题是微分项$\nabla\cdot D(\bm{x})\nabla\phi(\bm{x})$的离散方式，
-设$\nabla\cdot D(\bm{x})\nabla\phi(\bm{x})$对应的离散项为
-$\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$，
-在$xyz$坐标系中，可取
+设$\nabla\cdot D(\bm{x})\nabla\phi(\bm{x})$对应的离散项记为
+$\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$。
+本文的网格通量值取在网格中心位置，所以一个网格内$D$相同，
+相邻的网格如$D_{\bm{k}}$与$D_{\bm{k}\pm\hat{\bm{x}}}$、
+$D_{\bm{k}\pm\hat{\bm{y}}}$、$D_{\bm{k}\pm\hat{\bm{z}}}$
+\footnote{记$\hat{\bm{x}}=(1,0,0)^T$，$\hat{\bm{y}}=(0,1,0)^T$，$\hat{\bm{z}}=(0,0,1)^T$。}
+（这三项以下简记为$D_{\bm{k}\pm\hat{\bm{w}}}$其中$w=x,y,z$）
+未必相同，相邻网格交界面上的$D$取为
 \begin{align}
-  \begin{aligned}
+D_{\bm{k}\pm\frac{1}{2}\hat{\bm{w}}}
+  =\frac{2D_{\bm{k}}D_{\bm{k}\pm\hat{\bm{w}}}}{D_{\bm{k}}+D_{\bm{k}\pm\hat{\bm{w}}}}
+\end{align}
+则
+\begin{align*}
+\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}
+ &= \pb[bg]{ D_{\bm{k}\pm\frac{1}{2}\hat{\bm{x}}}\frac{\phi_{\bm{k}+\hat{\bm{x}}} - \phi_{\bm{k}}}{\Delta x^2}
+    -D_{\bm{k}\pm\frac{1}{2}\hat{\bm{x}}}\frac{\phi_{\bm{k}+\hat{\bm{x}}} - \phi_{\bm{k}}}{\Delta x^2}
+    }\\
+ &\hspace{1cm}+
+    \pb[bg]{ D_{\bm{k}\pm\frac{1}{2}\hat{\bm{y}}}\frac{\phi_{\bm{k}+\hat{\bm{y}}} - \phi_{\bm{k}}}{\Delta y^2}
+       -D_{\bm{k}\pm\frac{1}{2}\hat{\bm{y}}}\frac{\phi_{\bm{k}+\hat{\bm{y}}} - \phi_{\bm{k}}}{\Delta y^2}
+       }\\
+ &\hspace{1cm}+
+    \pb[bg]{ D_{\bm{k}\pm\frac{1}{2}\hat{\bm{z}}}\frac{\phi_{\bm{k}+\hat{\bm{z}}} - \phi_{\bm{k}}}{\Delta z^2}
+       -D_{\bm{k}\pm\frac{1}{2}\hat{\bm{z}}}\frac{\phi_{\bm{k}+\hat{\bm{z}}} - \phi_{\bm{k}}}{\Delta z^2}
+       }\\
+ &= \sum_{w=x,y,z} \pb[bg]{ D_{\bm{k}\pm\frac{1}{2}\hat{\bm{w}}}\frac{\phi_{\bm{k}+\hat{\bm{w}}} - \phi_{\bm{k}}}{\Delta w^2}
+   -D_{\bm{k}\pm\frac{1}{2}\hat{\bm{w}}}\frac{\phi_{\bm{k}+\hat{\bm{w}}} - \phi_{\bm{k}}}{\Delta w^2}
+   }
+\end{align*}
+即
+\begin{align}
   \pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}
     &=\sum_{w=x,y,z} \Sb[bg]{
-      \frac{2D_{\bm{k}}D_{\bm{k}+\hat{\bm{w}}}\pb{\phi_{\bm{k}+\hat{\bm{w}}} - \phi_{\bm{k}}}}
-           {\Delta w_{\bm{k}}\pb{D_{\bm{k}}\Delta w_{\bm{k}+\hat{\bm{w}}}+D_{\bm{k}+\hat{\bm{w}}}\Delta w_{\bm{k}}}}
-           \\
-    &\hspace{4cm} -\frac{2D_{\bm{k}}D_{\bm{k}-\hat{\bm{w}}}\pb{\phi_{\bm{k}} - \phi_{\bm{k}-\hat{\bm{w}}}}}
-           {\Delta w_{\bm{k}}\pb{D_{\bm{k}}\Delta w_{\bm{k}-\hat{\bm{w}}}+D_{\bm{k}-\hat{\bm{w}}}\Delta w_{\bm{k}}}}
-     }
-  \end{aligned}
+           \frac{2D_{\bm{k}}D_{\bm{k}+\hat{\bm{w}}}\pb{\phi_{\bm{k}+\hat{\bm{w}}} - \phi_{\bm{k}}}}
+                {\Delta w^2\pb{D_{\bm{k}}+D_{\bm{k}+\hat{\bm{w}}}}}
+          -\frac{2D_{\bm{k}}D_{\bm{k}-\hat{\bm{w}}}\pb{\phi_{\bm{k}} - \phi_{\bm{k}-\hat{\bm{w}}}}}
+                {\Delta w^2\pb{D_{\bm{k}}+D_{\bm{k}-\hat{\bm{w}}}}}
+          }
   \label{equ:dnabla2.equ0}
 \end{align}
-其中$\Delta w_{\bm{k}}$是网格$\bm{k}$在$w$方向上的长度。
+其中$\Delta x,\Delta y,\Delta z$是$x,y,z$方向上的网格尺寸。
 
 则\aeqref{equ:pro.diff.init.diff.equ1}的离散形式为
 \begin{align}
@@ -350,12 +375,14 @@ $D_{ij}$的实对称矩阵性质往往可以加速计算过程。
 \end{align}
 其中 $A_{gg}$是7对角对称阵，$F_{g_1g_2}$、$S_{g_1g_2}$ 是对角阵。
 
-如果使用源迭代进行求解，则每轮外迭代的分群迭代形式为（略去源迭代$k_\mathrm{eff}$相关处理）
+如果使用源迭代进行求解，则每轮外迭代的分群迭代形式为
 \begin{align}
   \left\{
   \begin{aligned}
-    \phi_1^{(k+1)}&=A_{11}^{-1}\pb[B]{F_{11}\phi_1^{(k)}+F_{12}\phi_2^{(k)}}\\
-    \phi_2^{(k+1)}&=A_{22}^{-1}S_{21}\phi_1^{(k+1)}
+    \mathcal{S}^{(k+1)}&=\frac{1}{k_\mathrm{eff}^{(k)}}\pb[B]{F_{11}\phi_1^{(k)}+F_{12}\phi_2^{(k)}}\\
+    \phi_1^{(k+1)}&=A_{11}^{-1}\mathcal{S}^{(k+1)}\\
+    \phi_2^{(k+1)}&=A_{22}^{-1}S_{21}\phi_1^{(k+1)}\\
+    k_\mathrm{eff}^{(k+1)}&=k_\mathrm{eff}^{(k)}\frac{\left\|\mathcal{S}^{(k+1)}\right\|}{\left\|\mathcal{S}^{(k)}\right\|}
   \end{aligned}
   \right.
   \label{equ:program.group.g2equ.keff}
@@ -853,10 +880,13 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 \end{algorithm}
 
 同临界部分一样，固定源的多群扩散方程可以根据对能群处理的不同而有不同的求解方式，
-本文实现了CG-SG和BiCGStab-MG两种固定源方程求解算法，
-分别对应逐群求解和联合求解，
-伪代码分别见\floatref{alg:program.kinetics.cg-sg}及%
-\floatref{alg:program.kinetics.bicgstab-mg}。
+但由于BiCGStab-MG方法只需要一层迭代循环，内迭代次数要比CG-SG方法少，
+所以本文选择了BiCGStab-MG方法作为固定源方程求解算法，
+伪代码见\floatref{alg:program.kinetics.bicgstab-mg}。
+
+\begin{comment}
+
+在实际计算中，
 
 \begin{algorithm}
 根据网格及截面信息在GPU显存上直接生成各群的迭代矩阵\;
@@ -874,6 +904,7 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 \ProgramName 程序固定源CG-SG算法伪代码}
 \end{algorithm}
 
+\end{comment}
 
 \begin{algorithm}
 根据网格及截面信息在GPU显存上直接生成迭代矩阵\;

@@ -75,7 +75,7 @@ real[][] datas1t5 = {
 
 
 scale(Linear,Log);
-//draw(graph(datas1t1f12[0],datas1t1f12[3]),legend="$\Delta t$=1/12s");
+draw(graph(datas1t1f12[0],datas1t1f12[3]),legend="$\Delta t$=1/12s");
 draw(graph(datas1t1f6[0],datas1t1f6[3]),legend="$\Delta t$=1/6s", longdashdotted);
 draw(graph(datas1t1f3[0],datas1t1f3[3]),legend="$\Delta t$=1/3s", dashed);
 draw(graph(datas1t1f2[0],datas1t1f2[3]),legend="$\Delta t$=1/2s", Dotted);
