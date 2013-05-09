@@ -999,18 +999,27 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 上一节中的时空动力学程序大多缺少和时间步对应的计算时间结果，
 无法进行直接比较，这里只对比\ProgramName 程序自身的计算结果。
 
+由于本文比较的结果偏差大多在0.01以下，
+在功率图像上各结果的曲线几乎完全重合很难分辨，所以总功率偏差图使用对数坐标绘制。
+
 \subsubsection{阶跃反应性}
 
-动态TWIGL二维基准题阶跃反应性计算结果见
-\floatref{tab:testresult.twigl.1}、
-\floatref{fig:testresult.twigl.1.1}、
-\floatref{fig:testresult.twigl.1.2}、
-\floatref{fig:testresult.twigl.1.4}、
+动态TWIGL二维基准题阶跃反应性计算结果总功率随时间变化图
+见\floatref{fig:testresult.twigl.1.plot}，
+计算时间见\floatref{tab:testresult.twigl.1}，
+计算时间及总功率偏差结果见
+\floatref{fig:testresult.twigl.1.1}至
 \floatref{fig:testresult.twigl.1.8}，
 动力学结果分两部分给出，一个是每个时间步的计算时间除以该时间步长度得到的相对时间，
 该相对时间小于1时，表明系统可以达到实时模拟，即计算时间小于模型时间；
 第二部分是系统总功率的相对偏差随模型时间的变化图，
 参考结果使用\ProgramName 程序1cm网格时间步长0.01s的结果。
+
+\begin{figure}[H]
+\centering
+\includegraphics{result-twigl1-plot}
+\caption{动态TWIGL二维基准题（阶跃反应性）计算结果总功率随时间变化图\label{fig:testresult.twigl.1.plot}}
+\end{figure}
 
 \begin{table}[H]
 \centering
@@ -1081,13 +1090,19 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 
 \subsubsection{线性反应性}
 
-线性反应性计算结果见
-\floatref{tab:testresult.twigl.2}、
-\floatref{fig:testresult.twigl.2.1}、
-\floatref{fig:testresult.twigl.2.2}、
-\floatref{fig:testresult.twigl.2.4}和
+动态TWIGL二维基准题阶跃线性反应性计算结果总功率随时间变化图
+见\floatref{fig:testresult.twigl.2.plot}，
+计算时间见\floatref{tab:testresult.twigl.2}，
+计算时间及总功率偏差结果见
+\floatref{fig:testresult.twigl.2.1}至
 \floatref{fig:testresult.twigl.2.8}，
 并使用1cm网格时间步长0.005s的结果作为参考解计算其他参数下的总功率偏差。
+
+\begin{figure}[H]
+\centering
+\includegraphics{result-twigl2-plot}
+\caption{动态TWIGL二维基准题（线性反应性）计算结果总功率随时间变化图\label{fig:testresult.twigl.2.plot}}
+\end{figure}
 
 \begin{table}[H]
 \centering
@@ -1173,9 +1188,16 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 材料的情况，本算例计算中按取整计算，即控制棒超过该网格体积的1/2时，
 把该网格认为由控制棒材料填充，否则按非控制棒材料填充。
 
-动态LMW三维基准题计算结果见
-\floatref{fig:testresult.lwm.1}至
+动态LMW三维基准题计算结果总功率随时间变化图
+见\floatref{fig:testresult.lwm.plot}，
+计算时间及总功率偏差结果见\floatref{fig:testresult.lwm.1}至
 \floatref{fig:testresult.lwm.10}。
+
+\begin{figure}[H]
+\centering
+\includegraphics{result-lwm-plot}
+\caption{动态LMW三维基准题计算结果总功率随时间变化图\label{fig:testresult.lwm.plot}}
+\end{figure}
 
 \begin{figure}[H]
 \centering
@@ -1339,11 +1361,11 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 
 以上结果中下面条件可以实现实时模拟：
 \begin{enumerate}[a)]
-\item xy方向1.25cm网格，z方向1cm（$88\times88\times200=1548800$个），时间步长5s、10s。
-\item xy方向2cm网格，z方向1cm（$55\times55\times200=605000$个），时间步长2s-10s。
-\item xy方向2.5cm网格，z方向1cm（$44\times44\times200=387200$个），时间步长1s-10s。
-\item xy方向5cm网格，z方向1cm（$22\times22\times200=96800$个），时间步长1/2s-10s。
-\item xy方向10cm网格，z方向1cm（$11\times11\times200=24200$个），时间步长1/3s-10s。
+\item xy方向网格大小1.25cm，z方向网格大小1cm（$88\times88\times200=1548800$个），时间步长5s、10s。
+\item xy方向网格大小2cm，z方向网格大小1cm（$55\times55\times200=605000$个），时间步长2s-10s。
+\item xy方向网格大小2.5cm，z方向网格大小1cm（$44\times44\times200=387200$个），时间步长1s-10s。
+\item xy方向网格大小5cm，z方向网格大小1cm（$22\times22\times200=96800$个），时间步长1/2s-10s。
+\item xy方向网格大小10cm，z方向网格大小1cm（$11\times11\times200=24200$个），时间步长1/3s-10s。
 \end{enumerate}
 
 从以上结果中可见，误差的周期性涨落的高频频率基本不随xy方向的网格尺寸改变，
