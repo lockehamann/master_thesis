@@ -69,7 +69,7 @@ baskaran2008optimizing}，所以DIA格式性能相对较好。
 \end{figure}
 
 
-\section{迭代算法选择}
+\section{不同迭代算法比较}
 
 为了比较不同迭代求解方法和预处理器的效果，这里仍然选择用IAEA基准题进行测试，
 网格大小分别取5cm、2.5cm、2cm、1cm进行测试。
@@ -94,8 +94,8 @@ $K_\mathrm{eff}$和Citation的结果偏差刚好小于$5\times10^{-5}$，
 如何根据问题规模选择最优的内迭代次数不在文本的讨论之内，
 为了公平地比较各种算法，以下将分别寻找各种情况下最优的内迭代次数。
 
-\subsection{Jacobi-SG}
-\label{sec:equsolve.iter.jacobi-sg}
+%\subsection{Jacobi-SG}
+%\label{sec:equsolve.iter.jacobi-sg}
 
 Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 见\floatref{tab:equsolve.iter.jacobi-sg.5cm}、%
@@ -105,12 +105,11 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 从表中可见最优的内迭代次数分别为7、11、16、18。
 
 \begin{datasheet}
-\sectionref{sec:equsolve.iter.jacobi-sg}的数据表：
-\floatref{tab:equsolve.iter.jacobi-sg.5cm}、
-\floatref{tab:equsolve.iter.jacobi-sg.2.5cm}、
-\floatref{tab:equsolve.iter.jacobi-sg.2cm}、
-\floatref{tab:equsolve.iter.jacobi-sg.1cm}
-。
+%\sectionref{sec:equsolve.iter.jacobi-sg}的数据表：
+%\floatref{tab:equsolve.iter.jacobi-sg.5cm}、
+%\floatref{tab:equsolve.iter.jacobi-sg.2.5cm}、
+%\floatref{tab:equsolve.iter.jacobi-sg.2cm}、
+%\floatref{tab:equsolve.iter.jacobi-sg.1cm}。
 
 \begin{table}
 \centering
@@ -252,8 +251,8 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \end{datasheet}
 
 
-\subsection{Jacobi-MG}
-\label{sec:equsolve.iter.jacobi-mg}
+%\subsection{Jacobi-MG}
+%\label{sec:equsolve.iter.jacobi-mg}
 
 Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 见\floatref{tab:equsolve.iter.jacobi-mg.5cm}、%
@@ -263,12 +262,11 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 从中可见最优的内迭代次数分别为4\footnote{各迭代次数时间接近，这里取总内迭代次数最小的。}、8、11、38。
 
 \begin{datasheet}
-\sectionref{sec:equsolve.iter.jacobi-mg}的数据表：
-\floatref{tab:equsolve.iter.jacobi-mg.5cm}、
-\floatref{tab:equsolve.iter.jacobi-mg.2.5cm}、
-\floatref{tab:equsolve.iter.jacobi-mg.2cm}、
-\floatref{tab:equsolve.iter.jacobi-mg.1cm}
-。
+%\sectionref{sec:equsolve.iter.jacobi-mg}的数据表：
+%\floatref{tab:equsolve.iter.jacobi-mg.5cm}、
+%\floatref{tab:equsolve.iter.jacobi-mg.2.5cm}、
+%\floatref{tab:equsolve.iter.jacobi-mg.2cm}、
+%\floatref{tab:equsolve.iter.jacobi-mg.1cm}。
 
 \begin{table}
 \centering
@@ -403,8 +401,8 @@ Jacobi-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \end{datasheet}
 
 
-\subsection{CG-SG}
-\label{sec:equsolve.iter.cg-sg}
+%\subsection{CG-SG}
+%\label{sec:equsolve.iter.cg-sg}
 
 CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 见\floatref{fig:equsolve.iter.cg-sg}，
@@ -593,12 +591,11 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \end{figure}
 
 \begin{datasheet}
-\sectionref{sec:equsolve.iter.cg-sg}的数据表：
-\floatref{tab:equsolve.iter.cg-sg.5cm}、
-\floatref{tab:equsolve.iter.cg-sg.2.5cm}、
-\floatref{tab:equsolve.iter.cg-sg.2cm}、
-\floatref{tab:equsolve.iter.cg-sg.1cm}
-。
+%\sectionref{sec:equsolve.iter.cg-sg}的数据表：
+%\floatref{tab:equsolve.iter.cg-sg.5cm}、
+%\floatref{tab:equsolve.iter.cg-sg.2.5cm}、
+%\floatref{tab:equsolve.iter.cg-sg.2cm}、
+%\floatref{tab:equsolve.iter.cg-sg.1cm}。
 
 \begin{table}
 \centering
@@ -740,8 +737,8 @@ CG-SG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 
 \end{datasheet}
 
-\subsection{BiCGStab-MG}
-\label{sec:equsolve.iter.bicgstab-mg}
+%\subsection{BiCGStab-MG}
+%\label{sec:equsolve.iter.bicgstab-mg}
 
 BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 见\floatref{fig:equsolve.iter.bicgstab-mg}，
@@ -890,12 +887,11 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 \end{figure}
 
 \begin{datasheet}
-\sectionref{sec:equsolve.iter.bicgstab-mg}的数据表：
-\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、
-\floatref{tab:equsolve.iter.bicgstab-mg.2.5cm}、
-\floatref{tab:equsolve.iter.bicgstab-mg.2cm}、
-\floatref{tab:equsolve.iter.bicgstab-mg.1cm}
-。
+%\sectionref{sec:equsolve.iter.bicgstab-mg}的数据表：
+%\floatref{tab:equsolve.iter.bicgstab-mg.5cm}、
+%\floatref{tab:equsolve.iter.bicgstab-mg.2.5cm}、
+%\floatref{tab:equsolve.iter.bicgstab-mg.2cm}、
+%\floatref{tab:equsolve.iter.bicgstab-mg.1cm}。
 
 \begin{table}
 \centering
@@ -1013,7 +1009,7 @@ BiCGStab-MG算法网格大小分别取5cm、2.5cm、2cm、1cm的计算结果
 
 \end{datasheet}
 
-\subsection{GMRES-MG}
+%\subsection{GMRES-MG}
 GMRES在实际计算中由于浮点精度问题一般会增加再启动步骤，
 相对于前面的迭代算法增加了每隔多少次迭代进行再启动的参数，以下简记为Restart，
 这里Restart分别取5、10、15进行计算，
@@ -1352,7 +1348,7 @@ res_gmres_size1.0_*_restart15*
 50 & 290.098 & 11150 & 223\\
 \end{comment}
 
-\subsection{不同迭代算法对比}
+%\subsection{小结}
 
 以上各种迭代算法的最优参数及计算结果见\floatref{tab:equsolve.iter.compare}。
 
