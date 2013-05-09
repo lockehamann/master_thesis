@@ -1164,12 +1164,18 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 网格尺寸加到到8cm后，总功率相对偏差达到0.01左右。
 
 
-
 \subsection{动态LMW三维基准问题}
+
+LMW基准题中涉及控制棒高度方向的位置变化，
+移动速率为3cm/s，所以本基准题的时间步长取了1/12s、1/6s、1/3s
+这样包含3因子的步长大小，减少由于控制棒不能完整填满某个网格而引起的误差。
+对于控制棒没能完全填满某个网格，即某个网格中同时存在控制棒和非控制棒
+材料的情况，本算例计算中按取整计算，即控制棒超过该网格体积的1/2时，
+把该网格认为由控制棒材料填充，否则按非控制棒材料填充。
 
 动态LMW三维基准题计算结果见
 \floatref{fig:testresult.lwm.1}至
-\floatref{fig:testresult.lwm.10}
+\floatref{fig:testresult.lwm.10}。
 
 \begin{figure}[H]
 \centering
@@ -1247,7 +1253,25 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \caption{动态LMW三维基准题计算结果(网格10cm)\label{fig:testresult.lwm.10}}
 \end{figure}
 
-\subsubsection{z方向网格}
+\clearpage
+以上结果中下面条件可以实现实时模拟：
+\begin{enumerate}[a)]
+\item 1cm网格（$110\times110\times200=2420000$个），时间步长10s。
+\item 1.25cm网格（$88\times88\times160=1239040$个），时间步长5s、10s。
+\item 2cm网格（$55\times55\times100=302500$个），时间步长1s-10s。
+\item 2.5cm网格（$44\times44\times80=154880$个），时间步长1/2s-10s。
+\item 5cm网格（$22\times22\times40=19360$个），时间步长1/6s-10s。
+\item 10cm网格（$11\times11\times20=2420$个），时间步长1/12s-10s。
+\end{enumerate}
+
+在误差图中，可以看出总功率相对误差随着模型时间的增加，
+出现周期性的涨落，而且该周期和网格大小有关，
+这是由于控制棒在高度方向移动后离散到具体的所带来的误差。
+
+为了验证这个因素，下面把高度方向的网格大小固定为1cm，
+只改变xy方向上的网格大小，得到
+\floatref{fig:testresult.lwm.125z1}至
+\floatref{fig:testresult.lwm.10z1}。
 
 \begin{figure}[H]
 \centering
@@ -1311,12 +1335,19 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \end{figure}
 
 
-以下条件可以达到实时模拟：
+\clearpage
+
+以上结果中下面条件可以实现实时模拟：
 \begin{enumerate}[a)]
-\item 1cm网格（$110\times110\times200=2420000$个），时间步长10s。
-\item 1.25cm网格（$88\times88\times160=1239040$个），时间步长5s、10s。
-\item 2cm网格（$55\times55\times100=302500$个），时间步长1s-10s。
-\item 2.5cm网格（$44\times44\times80=154880$个），时间步长1/2s-10s。
-\item 5cm网格（$22\times22\times40=19360$个），时间步长1/6s-10s。
-\item 10cm网格（$11\times11\times20=2420$个），时间步长1/12s-10s。
+\item xy方向1.25cm网格，z方向1cm（$88\times88\times200=1548800$个），时间步长5s、10s。
+\item xy方向2cm网格，z方向1cm（$55\times55\times200=605000$个），时间步长2s-10s。
+\item xy方向2.5cm网格，z方向1cm（$44\times44\times200=387200$个），时间步长1s-10s。
+\item xy方向5cm网格，z方向1cm（$22\times22\times200=96800$个），时间步长1/2s-10s。
+\item xy方向10cm网格，z方向1cm（$11\times11\times200=24200$个），时间步长1/3s-10s。
 \end{enumerate}
+
+从以上结果中可见，误差的周期性涨落的高频频率基本不随xy方向的网格尺寸改变，
+符合之前的解释。
+而且高度方向网格固定为1cm后，总功率偏差只在xy方向网格为10cm时才会明显增大，
+xy方向网格大小在1-5cm时，总功率最大偏差基本不变，
+说明对于高度方向取1cm网格时，xy方向上的网格大小可以放大为5cm来在保持精度的情况下减少计算量。
