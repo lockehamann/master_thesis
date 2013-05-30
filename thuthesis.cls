@@ -582,12 +582,13 @@
         \ignorespaces\yihao[1.55]\thu@ctitle} %TODO: CJKulem.sty
       \vskip1.3cm
     \else
+      \vskip0.8cm
       \parbox[t][9cm][t]{\paperwidth-8cm}{
-      \renewcommand{\baselinestretch}{1.5}
+      \renewcommand{\baselinestretch}{1.3}
       \begin{center}
       \yihao[1.2]{\sffamily\heiti\thu@ctitle}\par
-      \par\vskip 20bp
-      \xiaoer[1] \textrm{{\ziju{0.1111}\thu@apply}}
+      \par\vskip 18bp
+      \xiaoer[1] \textrm{\thu@apply}
       \end{center}}
     \fi
     \ifthu@bachelor
@@ -611,6 +612,7 @@
             \end{tabular}
         }}
     \else
+      \vskip 5bp
       \parbox[t][7.8cm][t]{\textwidth}{{\sanhao[1.5]
         \begin{center}\fangsong
           \setlength{\thu@title@width}{6em}
@@ -634,7 +636,7 @@
         \end{center}}}
       \fi
      \begin{center}
-       {\ifthu@bachelor\vskip-1.0cm\hskip-1.2cm\xiaosi\else\sanhao\fi \songti \thu@cdate}
+       {\ifthu@bachelor\vskip-1.0cm\hskip-1.2cm\xiaosi\else\vskip-0.5cm\sanhao\fi \songti \thu@cdate}
      \end{center}
     \end{center}} % end of titlepage
 \newcommand{\thu@engcover}{%
