@@ -1119,10 +1119,11 @@
 % \changes{v2.5.1}{2006/05/26}{本科 openright，研究生 openany。}
 % \changes{v3.1}{2007/10/09}{本科的目录又不要 arial 字体了。}
 % \changes{v4.8dev}{2013/03/10}{使用 ctexbook 类，优于调用 ctex 宏包。}
+% \changes{v4.8dev}{2013/05/29}{添加 nocap 选项，恢复默认标题样式，模板会进一步定制。}
 %    \begin{macrocode}
 \ExecuteOptions{utf,arialtitle}
 \ProcessOptions\relax
-\LoadClass[cs4size,a4paper,openany,UTF8]{ctexbook}
+\LoadClass[cs4size,a4paper,openany,nocap,UTF8]{ctexbook}
 %    \end{macrocode}
 %
 % 用户至少要提供一个选项：指定论文类型。
@@ -1193,6 +1194,7 @@
 % 中文支持，我们使用 ctex 宏包。
 % \changes{v4.5}{2008/01/03}{加入 XeTeX 支持，需要 \pkg{xeCJK}。}
 % \changes{v4.8dev}{2013/03/09}{reset baselinestretch after ctex's change.}
+% \changes{v4.8dev}{2013/05/28}{在 CJK 模式下用 \pkg{CJKspace} 保留中英文间空格。}
 %    \begin{macrocode}
 \renewcommand{\baselinestretch}{1.0}
 \ifxetex
@@ -1213,6 +1215,7 @@
   \setsansfont{Arial}
   \setmonofont{Courier New}
 \else
+  \RequirePackage{CJKspace}
 %    \end{macrocode}
 % arial 字体需要单独安装，如果不使用 arial 字体，可以用 helvet 字体 |\textsf|
 % 模拟，二者基本没有差别。
@@ -1473,8 +1476,8 @@
   \addtolength{\textwidth}{-6cm}
   \setlength{\topmargin}{2.2cm-1in}
   \setlength{\oddsidemargin}{3cm-1in}
-  \setlength{\footskip}{1.5cm}
-  \setlength{\headsep}{0.5cm}
+  \setlength{\footskip}{0.6cm}
+  \setlength{\headsep}{0.2cm}
   \addtolength{\textheight}{-6cm}
 \fi
 \setlength{\evensidemargin}{\oddsidemargin}
@@ -1784,7 +1787,7 @@
 \captionsetup{labelformat=thu,labelsep=thu,font=thu}
 \captionsetup[table]{position=top,belowskip={12bp-\intextsep},aboveskip=6bp}
 \captionsetup[figure]{position=bottom,belowskip={12bp-\intextsep},aboveskip=6bp}
-%\captionsetup[subfloat]{labelformat=simple,font=thu,captionskip=6bp,nearskip=6bp,farskip=0bp,topadjust=0bp}
+\captionsetup[sub]{font=thu,skip=6bp}
 \renewcommand{\thesubfigure}{(\alph{subfigure})}
 \renewcommand{\thesubtable}{(\alph{subtable})}
 % \renewcommand{\p@subfigure}{:}
@@ -3104,37 +3107,6 @@
 %<*cls>
 \AtEndOfClass{\input{thuthesis.cfg}}
 %    \end{macrocode}
-%
-% \begin{macro}{\thu@fixselectfont}
-% \pkg{caption} 宏包会调用 \pkg{ragged2e}，\pkg{ragged2e} 又调用 \pkg{everysel}。而 \pkg{everysel} 宏包和 \pkg{CJK}
-% 宏包都要修改 \cs{selectfont}，一个是给 \cs{selectfont} 加 hook，一个是让
-%  \cs{selectfont} 支持 \cs{CJKbold}。幸好两者本质上并不冲突，把他们源文件中对
-%  \cs{selectfont} 重定义的部分合并一下就可以了。
-% \changes{4.3}{2008/03/09}{\pkg{caption} 调整了对 \pkg{ragged2e} 包的调用，所以
-% 我们这里要判断 \pkg{everysel} 是不是装载了。}
-%    \begin{macrocode}
-\def\thu@fixselectfont{%
-  \ifx\@EverySelectfont@EveryHook\@undefined\else% everysel package is loaded
-    \DeclareRobustCommand{\selectfont}{%
-       \ifx\f@linespread\baselinestretch \else
-          \set@fontsize\baselinestretch\f@size\f@baselineskip \fi
-       \xdef\font@name{%
-          \csname\curr@fontshape/\f@size\endcsname}%
-       \pickup@font
-       \font@name
-       % CJK addition:
-       \CJK@bold@false
-       \csname \curr@fontshape\endcsname
-       % everysel addition:
-       \@EverySelectfont@EveryHook
-       \@EverySelectfont@AtNextHook
-       \gdef\@EverySelectfont@AtNextHook{}%
-       % end additions
-       \size@update
-       \enc@update}
-  \fi}
-%    \end{macrocode}
-% \end{macro}
 %
 % \begin{macro}{\thu@setup@pdfinfo}
 % 设置一些 pdf 文档信息，依赖于 \pkg{hyperref} 宏包。

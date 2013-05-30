@@ -51,7 +51,7 @@
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{ctexbook}}
 \ExecuteOptions{utf,arialtitle}
 \ProcessOptions\relax
-\LoadClass[cs4size,a4paper,openany,UTF8]{ctexbook}
+\LoadClass[cs4size,a4paper,openany,nocap,UTF8]{ctexbook}
 \ifthu@bachelor\relax\else
   \ifthu@master\relax\else
     \ifthu@doctor\relax\else
@@ -88,6 +88,7 @@
   \setsansfont{Arial}
   \setmonofont{Courier New}
 \else
+  \RequirePackage{CJKspace}
   \ifthu@arial
     \IfFileExists{arial.sty}%
                  {\RequirePackage{arial}}%
@@ -869,26 +870,6 @@
 \fi
 \newcommand{\pozhehao}{\kern0.3ex\rule[0.8ex]{2em}{0.1ex}\kern0.3ex}
 \AtEndOfClass{\input{thuthesis.cfg}}
-\def\thu@fixselectfont{%
-  \ifx\@EverySelectfont@EveryHook\@undefined\else% everysel package is loaded
-    \DeclareRobustCommand{\selectfont}{%
-       \ifx\f@linespread\baselinestretch \else
-          \set@fontsize\baselinestretch\f@size\f@baselineskip \fi
-       \xdef\font@name{%
-          \csname\curr@fontshape/\f@size\endcsname}%
-       \pickup@font
-       \font@name
-       % CJK addition:
-       \CJK@bold@false
-       \csname \curr@fontshape\endcsname
-       % everysel addition:
-       \@EverySelectfont@EveryHook
-       \@EverySelectfont@AtNextHook
-       \gdef\@EverySelectfont@AtNextHook{}%
-       % end additions
-       \size@update
-       \enc@update}
-  \fi}
 \def\thu@setup@pdfinfo{%
   \hypersetup{%
     pdftitle={\thu@ctitle},
