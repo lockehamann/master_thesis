@@ -112,7 +112,6 @@ $\bm{n}$是边界面上的点$\bm{x}$在边界面上的法向量，
   \Sigma(\bm{x}) &\rightarrow \Sigma_{\bm{k}} &
   C_i(\bm{x}) &\rightarrow C_{i,\bm{k}}
 \end{align}
-
 其中$\bm{k}=(k_x,k_y,k_z)$为$xyz$空间离散后的网格坐标，
 为方便起见这里暂时省略能群$g$，时间步长$n$等下标上标，下同。
 
@@ -124,7 +123,8 @@ $\pb[b]{\nabla\cdot D\nabla\phi}_{\bm{k}}$。
 $D_{\bm{k}\pm\hat{\bm{y}}}$、$D_{\bm{k}\pm\hat{\bm{z}}}$
 \footnote{记$\hat{\bm{x}}=(1,0,0)^T$，$\hat{\bm{y}}=(0,1,0)^T$，$\hat{\bm{z}}=(0,0,1)^T$。}
 （这三项以下简记为$D_{\bm{k}\pm\hat{\bm{w}}}$其中$w=x,y,z$）
-未必相同，相邻网格交界面上的$D$取为
+未必相同，根据文献\onlinecite{xiezhongsheng}第二章的推导，
+本文将相邻网格交界面上的$D$取为
 \begin{align}
 D_{\bm{k}\pm\frac{1}{2}\hat{\bm{w}}}
   =\frac{2D_{\bm{k}}D_{\bm{k}\pm\hat{\bm{w}}}}{D_{\bm{k}}+D_{\bm{k}\pm\hat{\bm{w}}}}
