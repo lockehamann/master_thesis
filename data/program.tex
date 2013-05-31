@@ -738,7 +738,7 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
   使用CG求解第2群通量 \algoend
   更新第1群源项\;
   计算下一代的$K_\mathrm{eff}$ \algoend
-  估计$K_\mathrm{eff}$和通量的误差\;
+  估计$K_\mathrm{eff}$和通量的偏差\;
 }
 \setlabelname{\ProgramName 程序临界功能CG-SG算法伪代码}
 \caption{\label{alg:program.eigen.cg-sg}\ProgramName 程序临界功能CG-SG算法伪代码}
@@ -759,7 +759,7 @@ GPU端程序根据信息直接在显存产生完整的材料分布数据。
   使用BiCGStab求解各群通量 \algoend
   更新源项\;
   计算下一代的$K_\mathrm{eff}$ \algoend
-  估计$K_\mathrm{eff}$和通量的误差\;
+  估计$K_\mathrm{eff}$和通量的偏差\;
 }
 \setlabelname{\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
 \caption{\label{alg:program.eigen.bicgstab-mg}\ProgramName 程序临界功能BiCGStab-MG算法伪代码}
@@ -791,9 +791,9 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
   \newcommand{\para}{\pb{\bm{x},t}}
   \nu\Sigma'_{f,g'}\para = \frac{1}{k_\mathrm{eff}}\nu\Sigma_{f,g'}\para
 \end{align}
-但实际计算中，$k_\mathrm{eff}$是由临界计算得到的，实际临界计算往往会有少量误差，
+但实际计算中，$k_\mathrm{eff}$是由临界计算得到的，实际临界计算往往会有少量偏差，
 使得$k_\mathrm{eff}$的计算值和实际值之间有微小的差别，这与源迭代收敛条件有关。
-但这个微小的误差会在后续的动力学过程中表现出来，即第一个时间步中总体通量会有一个小的阶跃，
+但这个微小的偏差会在后续的动力学过程中表现出来，即第一个时间步中总体通量会有一个小的阶跃，
 而且在后续时间步中总体通量也会有小指数上升或小指数下降的趋势，影响时空动力学的计算和结果比较。
 所以本文采用多次试算、修正的方式直至最终$k_\mathrm{eff}$足够接近于1，
 算法伪代码见\floatref{alg:program.kinetics.keff-fix}。
@@ -804,7 +804,7 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
 {
   \lIf(\tcc*[f]{更新系数$c$的上下界})
   {$k>1$}{$\displaystyle c_U:=\frac{c+c_U}{2}$}
-  \lElse(\tcc*[f]{每次减半是考虑到$k_\mathrm{eff}$的计算可能有误差})
+  \lElse(\tcc*[f]{每次减半是考虑到$k_\mathrm{eff}$的计算可能有偏差})
   {$\displaystyle c_L:=\frac{c+c_L}{2}$}
   $\displaystyle c:=\frac{c}{\ k_\mathrm{eff}^{(n)}\ }$\;
   \lIf(\tcc*[f]{确保$c$不会发散})
@@ -897,7 +897,7 @@ BiCGStab-MG算法的伪代码见\floatref{alg:program.eigen.bicgstab-mg}
   使用CG算法求解第1群通量\;
   计算第2群的源项 \algoend
   使用CG算法求解第2群通量\;
-  估算各群通量的误差\;
+  估算各群通量的偏差\;
 }
 \setlabelname{\ProgramName 程序固定源CG-SG算法伪代码}
 \caption{\label{alg:program.kinetics.cg-sg}

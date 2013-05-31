@@ -524,10 +524,10 @@ LMW(Langenbuch-Maurer-Werner)基准题是
 但这两种方法都有各自的问题：
 由于堆芯中通量分布在不同的网格上可相差数个量级，
 如果按照堆芯总功率进行归一化，那么堆芯中部功率较高的部分对归一化系数影响很大，
-高通量区域的误差会通过归一化系数转移到到低通量区域上；
-同理使用最大通量归一化时，通量最高处的误差会影响到其他所有点的误差结果。
+高通量区域的偏差会通过归一化系数转移到到低通量区域上；
+同理使用最大通量归一化时，通量最高处的偏差会影响到其他所有点的偏差结果。
 在常见的组件级通量统计中，这种问题并不明显，
-但在细网结果的相对误差比较中，这种影响就被放大了。
+但在细网结果的相对偏差比较中，这种影响就被放大了。
 
 为了减小高通量网格对归一化系数的影响，本文使用所有网格上的相对幅值的均值作为
 归一化系数，即待验证的通量分布$\phi$和参考通量分布$\psi$间的相对归一化系数取为
@@ -536,15 +536,15 @@ LMW(Langenbuch-Maurer-Werner)基准题是
               {\displaystyle\sum_{\bm{k},g}1}
 \end{align}
 其中$\bm{k}$为空间网格编号，
-则归一化后的各网格的最大相对误差为
+则归一化后的各网格的最大相对偏差为
 \begin{align}
   e_\mathrm{max} = \max_{\bm{k},g}
       \left|
         \frac{\phi_{\bm{k},g}}{\eta\cdot\psi_{\bm{k},g}} - 1
       \right|
 \end{align}
-本文以后提到的最大相对误差均是指上式所定义的最大相对误差，
-而且为了更好地反映有实际意义的堆芯内的通量的相对误差，
+本文以后提到的最大相对偏差均是指上式所定义的最大相对偏差，
+而且为了更好地反映有实际意义的堆芯内的通量的相对偏差，
 一般把堆芯活性区以外的水反射层处通量极低的网格滤掉。
 
 本文中如无特殊声明，计算环境均为
@@ -564,11 +564,11 @@ LMW(Langenbuch-Maurer-Werner)基准题是
 \ProgramName 的通量收敛精度取$\epsilon'_\phi=10^{-6}$，
 需要注意的是\ProgramName 和Citation的收敛精度计算方式不同，
 计算结果见\floatref{tab:result.iaea.self}，
-其中$\max\epsilon_{\phi_{A,g}}$表示各组件通量的最大相对误差。
+其中$\max\epsilon_{\phi_{A,g}}$表示各组件通量的最大相对偏差。
 
 可见在该精度下\ProgramName 计算的$k_\mathrm{eff}$ 偏差小于$1\times10^{-5}$，
-细网通量最大相对误差小于$10^{-3}$，
-对于Multilevel方法通量最大相对误差小于$9\times10^{-4}$。
+细网通量最大相对偏差小于$10^{-3}$，
+对于Multilevel方法通量最大相对偏差小于$9\times10^{-4}$。
 1cm网格$1/8$堆芯的组件通量相对偏差结果见\floatref{fig:result.iaea.aphitable.cg}及
 \floatref{fig:result.iaea.aphitable.cgml}，
 其中$\phi_R$是\ProgramName 的计算结果，$\phi_C$是Citation的计算结果，
@@ -592,7 +592,7 @@ $\epsilon(\phi)$是两者的相对偏差。
 
 \begin{table}
 \centering
-\caption{静态IAEA PWR三维基准题\ProgramName 计算结果及误差}
+\caption{静态IAEA PWR三维基准题\ProgramName 计算结果及偏差}
 \label{tab:result.iaea.self}
 \subcaptionbox{CG-SG算法\label{tab:result.iaea.self.cg}}{
 \begin{tabular}{crcccc}
@@ -925,7 +925,7 @@ $\epsilon(\phi)$是两者的相对偏差。
 一般来说计算时间和迭代次数成正比。
 但无论是计算本征值的外迭代还是求解线性方程的内迭代，
 \ProgramName 和Citation都使用了不同的迭代方式，
-两者对误差的估计方式也有所差别，不宜直接进行比较。
+两者对偏差的估计方式也有所差别，不宜直接进行比较。
 
 \begin{figure}
 \centering
@@ -933,7 +933,7 @@ $\epsilon(\phi)$是两者的相对偏差。
 \caption{\label{fig:testresult.iaea}静态IAEA三维基准题1cm网格\ProgramName 与Citation的计算时间-通量最大偏差图}
 \end{figure}
 
-在实际应用中，相同误差时的计算时间才能反映程序间的速度差异，
+在实际应用中，相同偏差时的计算时间才能反映程序间的速度差异，
 这里分别选取不同的收敛精度使用\ProgramName 和Citation进行计算，
 绘制两者的计算时间--偏差图，
 这里取Citation在$\epsilon_\phi=5\times10^{-7}$时的计算结果作为参考值，
@@ -1171,9 +1171,9 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \item 8cm网格（$10\times10$个），时间步长0.02s、0.05s、0.1s。
 \end{enumerate}
 
-对于线性反应性情况，\ProgramName 程序的结果误差相比阶跃情况要大，
+对于线性反应性情况，\ProgramName 程序的结果偏差相比阶跃情况要大，
 这是因为\ProgramName 程序采用全隐式差分离散，并没有对线性反应性进行处理，
-因此会引入一个和时间步大小有关的误差，时间步越小则结果误差越小，
+因此会引入一个和时间步大小有关的偏差，时间步越小则结果偏差越小，
 这与上面的结果是符合的。
 对于1cm、2cm、4cm，总功率相对偏差大部分在0.01以下，
 网格尺寸加到到8cm后，总功率相对偏差达到0.01左右。
@@ -1182,8 +1182,8 @@ CS-SG & $10^{-6}$ & 164.877 & 8.031013e-06 & 1.035618e-03 & 130.0\\
 \subsection{动态LMW三维基准问题}
 
 LMW基准题中涉及控制棒高度方向的位置变化，
-移动速率为3cm/s，所以本基准题的时间步长取了1/12s、1/6s、1/3s
-这样包含3因子的步长大小，减少由于控制棒不能完整填满某个网格而引起的误差。
+移动速率为3cm/s，所以本基准题的时间步长取了1/12s、1/6s、1/3s，
+尽量减少由于控制棒不能完整填满某个网格而引起的偏差。
 对于控制棒没能完全填满某个网格，即某个网格中同时存在控制棒和非控制棒
 材料的情况，本算例计算中按取整计算，即控制棒超过该网格体积的1/2时，
 把该网格认为由控制棒材料填充，否则按非控制棒材料填充。
@@ -1205,7 +1205,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s1-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s1-err}
 }
 \caption{动态LMW三维基准题计算结果(网格1cm)\label{fig:testresult.lwm.1}}
@@ -1217,7 +1217,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s125-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s125-err}
 }
 \caption{动态LMW三维基准题计算结果(网格1.25cm)\label{fig:testresult.lwm.125}}
@@ -1230,7 +1230,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s2-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s2-err}
 }
 \caption{动态LMW三维基准题计算结果(网格2cm)\label{fig:testresult.lwm.2}}
@@ -1243,7 +1243,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s25-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s25-err}
 }
 \caption{动态LMW三维基准题计算结果(网格2.5cm)\label{fig:testresult.lwm.25}}
@@ -1256,7 +1256,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s5-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s5-err}
 }
 \caption{动态LMW三维基准题计算结果(网格5cm)\label{fig:testresult.lwm.5}}
@@ -1269,7 +1269,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-s10-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-s10-err}
 }
 \caption{动态LMW三维基准题计算结果(网格10cm)\label{fig:testresult.lwm.10}}
@@ -1286,9 +1286,9 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \item 10cm网格（$11\times11\times20=2420$个），时间步长1/12s-10s。
 \end{enumerate}
 
-在误差图中，可以看出总功率相对误差随着模型时间的增加，
+在偏差图中，可以看出总功率相对偏差随着模型时间的增加，
 出现周期性的涨落，而且该周期和网格大小有关，
-这是由于控制棒在高度方向移动后离散到具体的所带来的误差。
+这是由于控制棒在高度方向移动后离散到具体的所带来的偏差。
 
 为了验证这个因素，下面把高度方向的网格大小固定为1cm，
 只改变xy方向上的网格大小，得到
@@ -1301,7 +1301,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-z1s125-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-z1s125-err}
 }
 \caption{动态LMW三维基准题计算结果(网格1.25cm$\times$1.25cm$\times$1cm)\label{fig:testresult.lwm.125z1}}
@@ -1313,7 +1313,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-z1s2-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-z1s2-err}
 }
 \caption{动态LMW三维基准题计算结果(网格2cm$\times$2cm$\times$1cm)\label{fig:testresult.lwm.2z1}}
@@ -1325,7 +1325,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-z1s25-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-z1s25-err}
 }
 \caption{动态LMW三维基准题计算结果(网格2.5cm$\times$2.5cm$\times$1cm)\label{fig:testresult.lwm.25z1}}
@@ -1337,7 +1337,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-z1s5-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-z1s5-err}
 }
 \caption{动态LMW三维基准题计算结果(网格5cm$\times$5cm$\times$1cm)\label{fig:testresult.lwm.5z1}}
@@ -1350,7 +1350,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \includegraphics[scale=0.95]{result-lwm-z1s10-time}
 }
 \\[1cm]
-\subcaptionbox{总功率相对误差}{
+\subcaptionbox{总功率相对偏差}{
 \includegraphics[scale=0.95]{result-lwm-z1s10-err}
 }
 \caption{动态LMW三维基准题计算结果(网格10cm$\times$10cm$\times$1cm)\label{fig:testresult.lwm.10z1}}
@@ -1368,7 +1368,7 @@ LMW基准题中涉及控制棒高度方向的位置变化，
 \item xy方向网格大小10cm，z方向网格大小1cm（$11\times11\times200=24200$个），时间步长1/3s-10s。
 \end{enumerate}
 
-从以上结果中可见，误差的周期性涨落的高频频率基本不随xy方向的网格尺寸改变，
+从以上结果中可见，偏差的周期性涨落的高频频率基本不随xy方向的网格尺寸改变，
 符合之前的解释。
 而且高度方向网格固定为1cm后，总功率偏差只在xy方向网格为10cm时才会明显增大，
 xy方向网格大小在1-5cm时，总功率最大偏差基本不变，
