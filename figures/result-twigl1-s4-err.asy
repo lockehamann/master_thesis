@@ -45,5 +45,5 @@ draw(graph(datas1t005[0],datas1t005[3]),legend="$\Delta t$=0.05s", Dotted);
 draw(graph(datas1t01 [0],datas1t01 [3]),legend="$\Delta t$=0.10s", dashdotted);
 ylimits(3e-6, 1e-1);
 xaxis("模型时间/s", BottomTop,LeftTicks);
-yaxis("总功率相对误差",LeftRight,RightTicks);
+yaxis("总功率相对偏差",LeftRight,RightTicks);
 add(legend(perline=2, linelength=20),point(N),10N);
