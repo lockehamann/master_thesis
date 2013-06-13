@@ -513,6 +513,15 @@ LMW(Langenbuch-Maurer-Werner)基准题是
 
 \section{数值结果验证}
 
+本文中如无特殊声明，计算环境均为
+\begin{itemize}
+\item CPU： 2$\times$ Intel Xeon CPU X5670 2.93GHz (双路服务器)
+\item 内存：24GB
+\item GPU：NVIDIA GeForce GTX TITAN，6GB显存
+\item 操作系统：Windows 7 SP1 64位
+\end{itemize}
+
+\subsection{细网通量相对误差的计算}
 在比较\ProgramName 的计算结果和参考结果之前，
 先介绍本文使用的通量结果偏差的计算方式。
 
@@ -550,13 +559,64 @@ LMW(Langenbuch-Maurer-Werner)基准题是
 而且为了更好地反映有实际意义的堆芯内的通量的相对偏差，
 一般把堆芯活性区以外的水反射层处通量极低的网格滤掉。
 
-本文中如无特殊声明，计算环境均为
-\begin{itemize}
-\item CPU： 2$\times$ Intel Xeon CPU X5670 2.93GHz (双路服务器)
-\item 内存：24GB
-\item GPU：NVIDIA GeForce GTX TITAN，6GB显存
-\item 操作系统：Windows 7 SP1 64位
-\end{itemize}
+下面比较
+\begin{enumerate}[a)]
+\item 参考解和计算结果都使用最大通量归一方法进行归一化后计算相对偏差
+\item 参考解和计算结果都使用总功率归一方法进行归一化后计算相对偏差
+\item 本文的相对偏差算法
+\end{enumerate}
+三种算法在细网结果对比中的效果。
+
+这里选取下一节中IAEA PWR三维基准题的1cm网格参考解作为通量结果A，
+在结果A的基础上增加一个均值为0标准差为0.001的正态分布的相对误差扰动后得到结果B，
+即
+\begin{align}
+  \phi_B = \phi_A (1+0.001\epsilon) \qquad \epsilon \sim N(0,1)
+\end{align}
+此时如果直接计算$\phi_B$相对$\phi_A$的细网相对偏差，
+则各网格上的相对偏差服从均值为0标准差为0.001的正态分布，
+见\floatref{fig:testresult.normphi.ra}，
+扰动的最大值为5.33368e-3，
+最大通量归一化后的相对偏差见\floatref{fig:testresult.normphi.max}，
+相对偏差的最大值为7.61166e-3，
+总功率归一化后的相对偏差见\floatref{fig:testresult.normphi.power}，
+相对偏差的最大值为5.33334e-3，
+本文公式计算的相对偏差见\floatref{fig:testresult.normphi.my}，
+相对偏差的最大值为5.33397e-3。
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{normphi_ra.png}
+\caption{相对偏差扰动分布图\label{fig:testresult.normphi.ra}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{normphi_max.png}
+\caption{最大通量归一化后的相对偏差分布图\label{fig:testresult.normphi.max}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{normphi_power.png}
+\caption{总功率归一化后的相对偏差分布图\label{fig:testresult.normphi.power}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{normphi_my.png}
+\caption{本文公式计算的相对偏差分布图\label{fig:testresult.normphi.my}}
+\end{figure}
+
+可见，最大通量归一化后计算的最大相对偏差显著大于人工引入的偏差，
+不适合用于细网通量相对偏差比较。
+而总功率归一化和本文的方法和人工引入的偏差较为一致。
+但总功率归一化的结果却略小于引入的偏差，这主要是裂变截面的因素，
+实际上在IAEA PWR基准题中，快群的裂变截面为0，实际上快群通量并没有参与归一化过程，
+由于人工引入的偏差和能群无关，所以没有导致结果严重失真。
+故总功率归一化也不适合用于细网通量结果的比较。
+而本文给出的方法计算结果和人工引入的误差相符，验证了该方法的有效性。
+
 
 \subsection{静态IAEA PWR三维基准题}
 
